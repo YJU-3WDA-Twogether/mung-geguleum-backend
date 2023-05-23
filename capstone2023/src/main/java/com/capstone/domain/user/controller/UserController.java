@@ -46,31 +46,9 @@ public class UserController {
 	//json형태로 데이터를 보내야함.
 	//사용자 생성 json형태로 반환.
 	@PostMapping("/create")
-	public ResponseEntity<Boolean> userCreate(@Valid @RequestBody UserCreateForm userCreateForm,BindingResult bindingResult) {
+	public ResponseEntity<Boolean> userCreate(@Valid @RequestBody UserCreateForm userCreateForm) {
 		userService.userCreate(userCreateForm);
 		 return ResponseEntity.ok(true);
-//		 if(bindingResult.hasErrors()) {
-//				System.out.println("바인딩에러");
-//				return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
-//			}
-//			
-//			if(!userCreateForm.getPassword().equals(userCreateForm.getPassword2())) {
-//				bindingResult.rejectValue("password2", "passwordInCorrect" , "2개의 패스워드가 일치하지 않습니다.");
-//				return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
-//			}
-//			
-//			try {
-//				
-//			}catch(DataIntegrityViolationException e) {
-//				e.printStackTrace();
-//				bindingResult.reject("signupFailed", "이미 등록된 사용자입니다.");
-//				return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
-//
-//			}catch(Exception e) {
-//				e.printStackTrace();
-//				bindingResult.reject("signupFailed", e.getMessage());
-//				return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
-//			}
 	}
 	
 	
@@ -91,70 +69,25 @@ public class UserController {
 	}
 	
 	@PutMapping("/update/{uno}")
-	public ResponseEntity<UserDTO> userUpdate(@PathVariable Long uno ,@Valid @RequestBody UserDTO userDTO,BindingResult bindingResult) {
+	public ResponseEntity<UserDTO> userUpdate(@PathVariable Long uno ,@Valid @RequestBody UserDTO userDTO) {
 		UserDTO updateUser = userService.userUpdate(uno, userDTO);
 		return ResponseEntity.ok(updateUser);
-//		if(bindingResult.hasErrors()) {
-//			return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
-//		}
-//		
-//		UserDTO updateUser;
-//		
-//		
-//		try {
-//			updateUser = userService.userUpdate(uno , userDTO);
-//		}catch(DataIntegrityViolationException e) {
-//			e.printStackTrace();
-//			bindingResult.reject("UpdateFailed", "오류가 발생 했습니다.");
-//			return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
-//
-//		}catch(Exception e) {
-//			e.printStackTrace();
-//			bindingResult.reject("UpdateFailed", e.getMessage());
-//			return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
-//		}
-//		if(updateUser == null ) {
-//			return ResponseEntity.notFound().build();
-//		}
-//		
-//		 return ResponseEntity.ok(true);
 	}
 	
 	
 	//사용자 삭제 
 	@DeleteMapping("/delete/{uno}")
 	public ResponseEntity<Boolean> userDelete(@PathVariable Long uno){
-		System.out.println(uno+"가 회원탈퇴를 눌렀습니다.");
-		try {
 		this.userService.userDelete(uno);
-		}catch(Exception e){
-			e.printStackTrace();
-			return new ResponseEntity<>(false , HttpStatus.NO_CONTENT);
-			
-		}
-		
 		return new ResponseEntity<>(true, HttpStatus.NO_CONTENT);
 	}
 	
 	//json형태로 데이터를 보내야함.
 	@PostMapping("/login")
 	//public ResponseEntity<Boolean> userLogin(@Valid @RequestBody UserLoginForm userLoginForm,BindingResult bindingResult) {
-	public ResponseEntity<?> userLogin(@Valid @RequestBody UserLoginForm userLoginForm,BindingResult bindingResult) {
-		System.out.println("누군가 로그인을 시도했다.");
-		
-		if(bindingResult.hasErrors()) {
-			return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
-		}
-			UserDTO userDTO =userService.login(userLoginForm.getUid(), userLoginForm.getPassword());
-			
-			if(userDTO != null) { //로그인 가능
-				System.out.println("로그인 성공");
-				return ResponseEntity.ok(userDTO);
-			}else {
-				System.out.println("로그인 실패");
-
-				return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED);
-			}
+	public ResponseEntity<?> userLogin(@Valid @RequestBody UserLoginForm userLoginForm) {
+		UserDTO userDTO =userService.login(userLoginForm.getUid(), userLoginForm.getPassword());
+		return ResponseEntity.ok(userDTO);
 		
 	}
 	

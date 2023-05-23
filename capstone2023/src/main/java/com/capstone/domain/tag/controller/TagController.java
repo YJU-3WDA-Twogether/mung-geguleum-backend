@@ -23,11 +23,6 @@ public class TagController {
 	  public ResponseEntity<List<Object>> getTagJson() {
 	       List<Object> list = this.tagService.getTagJson();
 	       return new ResponseEntity<>(list, HttpStatus.OK);
-//	       if(list !=null) {
-//	    	   return new ResponseEntity<>(list, HttpStatus.OK);
-//	       }else {
-//	    	   return new ResponseEntity<>(list, HttpStatus.BAD_REQUEST); 
-//	       }
 	    }
 }
  
