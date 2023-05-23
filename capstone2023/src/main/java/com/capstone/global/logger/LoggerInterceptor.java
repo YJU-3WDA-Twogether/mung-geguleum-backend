@@ -21,7 +21,9 @@ public class LoggerInterceptor implements HandlerInterceptor {
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
 	    log.debug("=========================================================");
 	    log.debug("==================== PreHandle Start ==================== \n");
-
+	    long currentTime = System.currentTimeMillis();
+	    request.setAttribute("bTime", currentTime);
+	    
 	    // 사용자가 보낸 파라미터 조회
 	    Enumeration<String> parameterNames = request.getParameterNames();
 	    while (parameterNames.hasMoreElements()) {
@@ -35,6 +37,8 @@ public class LoggerInterceptor implements HandlerInterceptor {
 	    String uri = request.getRequestURI();
 	    log.debug("Request Method: {}", method);
 	    log.debug("Request URI: {}", uri);
+	    
+	    
 
 	    log.debug("==================== PreHandle End =====================");
 	    log.debug("======================================================== \n");
@@ -54,6 +58,18 @@ public class LoggerInterceptor implements HandlerInterceptor {
 	    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
 	        // 응답 데이터 로깅
 		  //System.out.println("afterCompletion");
+		    log.debug("===============================================================");
+		    log.debug("==================== afterCompletion Start ==================== \n");
+		    long currentTime = System.currentTimeMillis();
+		    long beginTime = (long)request.getAttribute("bTime");
+		    long processedTime = currentTime - beginTime;
+		    
+		    
+		    		
+		    log.debug("총 요청 시간은 {}",processedTime);
+		    
+		    log.debug("==================== afterCompletion End ====================");
+		    log.debug("============================================================== \n");
 		
 	    }
 
