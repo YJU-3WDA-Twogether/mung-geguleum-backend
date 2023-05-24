@@ -58,14 +58,7 @@ public class UserController {
 	public ResponseEntity<UserDTO> userGet (@PathVariable Long uno) {
 		//System.out.println(uno);
 		UserDTO userDTO = this.userService.userGet(uno);
-		return ResponseEntity.ok(userDTO);
-//		if(userDTO != null) {
-//			return ResponseEntity.ok(userDTO);
-//		}
-//		else {
-//			return new ResponseEntity<>(userDTO, HttpStatus.NO_CONTENT);
-//		}
-		
+		return ResponseEntity.ok(userDTO);		
 	}
 	
 	@PutMapping("/update/{uno}")
@@ -84,7 +77,6 @@ public class UserController {
 	
 	//json형태로 데이터를 보내야함.
 	@PostMapping("/login")
-	//public ResponseEntity<Boolean> userLogin(@Valid @RequestBody UserLoginForm userLoginForm,BindingResult bindingResult) {
 	public ResponseEntity<?> userLogin(@Valid @RequestBody UserLoginForm userLoginForm) {
 		UserDTO userDTO =userService.login(userLoginForm.getUid(), userLoginForm.getPassword());
 		return ResponseEntity.ok(userDTO);

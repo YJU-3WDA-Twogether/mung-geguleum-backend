@@ -1,17 +1,12 @@
 package com.capstone.global.logger;
 
-import java.io.CharArrayWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Enumeration;
-import java.util.List;
 
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpServletResponseWrapper;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -37,19 +32,13 @@ public class LoggerInterceptor implements HandlerInterceptor {
 	    String uri = request.getRequestURI();
 	    log.debug("Request Method: {}", method);
 	    log.debug("Request URI: {}", uri);
-	    
-	    
-
 	    log.debug("==================== PreHandle End =====================");
 	    log.debug("======================================================== \n");
-
 	    return true;
 	}
 	
 	@Override
-	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws IOException {
-	    //System.out.println("Post Handle");
-	    
+	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView){	    
 	}
 
 
@@ -60,12 +49,10 @@ public class LoggerInterceptor implements HandlerInterceptor {
 		  //System.out.println("afterCompletion");
 		    log.debug("===============================================================");
 		    log.debug("==================== afterCompletion Start ==================== \n");
+		    
 		    long currentTime = System.currentTimeMillis();
 		    long beginTime = (long)request.getAttribute("bTime");
-		    long processedTime = currentTime - beginTime;
-		    
-		    
-		    		
+		    long processedTime = currentTime - beginTime;		
 		    log.debug("총 요청 시간은 {}",processedTime);
 		    
 		    log.debug("==================== afterCompletion End ====================");

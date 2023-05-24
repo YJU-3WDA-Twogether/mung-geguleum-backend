@@ -48,17 +48,6 @@ public class LogService {
 		User puser = this.userRepository.findByUno(logRequest.getPuno()).orElseThrow(() -> new UserNotFoundException());
 		Log log = logMapper.toEntity(post, logState, user, logRequest);
 		return this.logRepository.save(log);
-		
-//		if(post.isPresent() && logState.isPresent() && user.isPresent() && puser.isPresent()) {
-//			log = logMapper.toEntity(post.get(),logState.get(),user.get(),puser.get(), logRequest);
-//			log = this.logRepository.save(log);
-//			
-//			return log;
-//		}else {
-//			System.out.println("LogService : Create 부분에 엔티티 타입 값에 null이 존재합니다. ");
-//		}
-//		
-//		return null;
 	}
 	
 	

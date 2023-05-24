@@ -81,40 +81,7 @@ public class FileService {
              
 	 	}
 	 	return true;
-   }
-//	   try { 
-//		 	for(MultipartFile filetmp : files) {
-//       			//원래파일 이름 추출
-//       			String fname = filetmp.getOriginalFilename();
-//       			//파일이름으로 쓸 uuid 생성
-//       			String uuid = UUID.randomUUID().toString();
-//       			//확장자 추출(ex .png)
-//       			String extension = fname.substring(fname.lastIndexOf("."));
-//       			
-//       			String fsname = uuid + extension;
-//       			
-//       			String fpath = fileDir + fsname;
-//       			Long fsize = filetmp.getSize();
-//	         
-//	           
-//	            file = fileMapper.toEntity(fname, fsname,fsize,fpath, time, post);
-//       		
-//	            filetmp.transferTo(new java.io.File(fpath));
-//	            
-//	            fileRepository.save(file);
-//	             
-//       	}
-//      
-//	   }catch(IOException e){
-//       		e.printStackTrace();
-//       		return false;
-//        
-//       }finally {
-//       	
-//       }
-//      return true;
-//   }
-   
+   }   
    //파일 다운로드메소드        
    @Transactional(rollbackFor = MalformedURLException.class)
    public ResponseEntity<Resource> downloadFile(Long fno, Long uno, Long pno ) throws MalformedURLException{
@@ -136,32 +103,6 @@ public class FileService {
 		 Log log = this.logService.LogCreate(logRequest);
 		 
   	 return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,contentDisposition).body(resource);
-//        if(file.isPresent()) {
-//	        Path filePath = Paths.get(file.get().getFpath());
-//	        try {
-//	        	 UrlResource resource = new UrlResource("file:" + file.get().getFpath());
-//	        	 String encodedFileName = UriUtils.encode(file.get().getFname(), StandardCharsets.UTF_8);
-//	        	 String contentDisposition = "attachment; filename=\"" + encodedFileName + "\"";
-//	        	 
-//	        	 //파일 다운로드 로그 생성.
-//	        	 Optional<Post> post= this.postRepository.findByPno(pno);
-//	        	 Optional<User> user = this.userRepository.findByUno(uno);
-//	        	 LocalDateTime time = LocalDateTime.now();
-//	        	 //2L은 파일다운로드를 의미한다.
-//	        	 
-//	        	 LogRequest logRequest = logMapper.toRequestLog(2L, user.get().getUno(), post.get().getUser().getUno(), post.get().getPno(),time);
-//	        	 System.out.println("로그리퀘스트 제대로 저장됨?" +logRequest.toString());
-//	     		 Log log = this.logService.LogCreate(logRequest);
-//	     		 
-//	        	 return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,contentDisposition).body(resource);
-//	        }catch(MalformedURLException e) {
-//	        	e.printStackTrace();
-//	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-//	        }
-//	     }else{
-//	    	 return ResponseEntity.notFound().build();
-//        }
-      
     }
     
     //파일 단일 조회메소드 

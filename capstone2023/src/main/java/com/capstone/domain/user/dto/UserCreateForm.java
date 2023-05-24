@@ -42,15 +42,4 @@ public class UserCreateForm {
 	@NotEmpty(message = "닉네임은 필수항목입니다.")
 	private String nickname;
 	
-//	@Builder
-//	public User toEntity() {
-//		return User.builder()
-//				.number(null)
-//				.userid(userid)
-//				.username(username)
-//				.password(password)
-//				.email(email)
-//				.nickname(nickname)
-//				.build();
-//	}
 }

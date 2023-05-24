@@ -40,13 +40,7 @@ public class PostMapper {
 				.board(board)
 				.build();
 	}
-	
-	
-	
 
-
-	
-	
 	//DTO에 Entity 담기 
 	public PostRequest toPostPostRequest(Post post) {
 		return PostRequest.builder()
@@ -98,7 +92,6 @@ public class PostMapper {
 							.uid(user.getUid())
 							.uno(post.getUser().getUno())
 							.file(post.getFiles().stream().map(file -> fileMapper.toFileDTO(file,post.getPno())).collect(Collectors.toList()))
-							//.file((post.getFiles()).map(file -> this.fileMapper.toFileDTO(file)))
 							.build();
 					
 							

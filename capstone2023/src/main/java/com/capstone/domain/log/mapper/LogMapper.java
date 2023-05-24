@@ -15,18 +15,7 @@ import jakarta.validation.Valid;
 
 @Component
 public class LogMapper {
-	
-//	public Log toEntity(Post post, LogState logState, User user, User puser,@Valid LogRequest logRequest  ) { //삭제해야됨.
-//		return Log.builder()
-//				.lno(logRequest.getLno())
-//				.puser(puser)
-//				.user(user)
-//				.post(post)
-//				.logState(logState)
-//				.regDate(logRequest.getRegDate())
-//				.build();
-//	}
-	
+		
 	public Log toEntity(Post post, LogState logState, User user, @Valid LogRequest logRequest  ) {
 		return Log.builder()
 				.lno(logRequest.getLno())
