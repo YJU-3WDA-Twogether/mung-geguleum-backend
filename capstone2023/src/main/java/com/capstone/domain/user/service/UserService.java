@@ -15,6 +15,8 @@ import com.capstone.domain.user.dto.UserCreateForm;
 import com.capstone.domain.user.dto.UserDTO;
 import com.capstone.domain.user.entity.User;
 import com.capstone.domain.user.entity.UserGrade;
+import com.capstone.domain.user.exception.UserMissingValueException;
+import com.capstone.domain.user.exception.UserNotFoundException;
 import com.capstone.domain.user.mapper.UserMapper;
 import com.capstone.domain.user.repository.UserGradeRepository;
 import com.capstone.domain.user.repository.UserRepository;
@@ -33,62 +35,38 @@ public class UserService {
 	//유저 회원가입 메소드 
 		public void userCreate(UserCreateForm userCreateForm) {
 //			user.setPassword(passwordEncoder.encode(password));
-		
 			UserGrade userGrade = userGradeRepository.findByGname("일반").get();
-			System.out.println(userGrade.getGid()+" "+userGrade.getGname());
-					
 			User User= userMapper.toEntity(userCreateForm,userGrade);
-			
 			this.userRepository.save(User);	
 		}
-	
-	
 	
 	//유저 본인정보 조회메소드
 	@Transactional
 	public UserDTO userGet(Long uno) {
-		Optional<User> user = this.userRepository.findByUno(uno); 
-		if(user.isPresent()) {
-			UserDTO userDTO = userMapper.toUserDTO(user.get());
-			return userDTO;
-		}
-			
-		return null;
+		User user = this.userRepository.findByUno(uno).orElseThrow(()-> new UserNotFoundException()); 
+		return userMapper.toUserDTO(user);
 	}
 	
 	//유저 정보 수정 메소드 
 	@Transactional
 	public UserDTO userUpdate(Long uno , UserDTO userDTO) {
-		Optional<User> user = userRepository.findByUno(uno);
-		if(user.isPresent()) {
-			User User = userMapper.toEntity(userDTO);
-			userRepository.save(User);
-			return userMapper.toUserDTO(User);
-			
-		}
-		return null;
+		User user = this.userRepository.findByUno(uno).orElseThrow(()-> new UserNotFoundException()); 
+		//추후 NULLPOINTEXCETPION 처리도 추가해야함. 
+		user = userRepository.save(userMapper.toEntity(userDTO));
+		return userMapper.toUserDTO(user);
 	}
-	
-	
-	
 	
 	//회원삭제 메소드
 	@Transactional
 	public void userDelete(Long uno) {
-		this.userRepository.deleteById(uno);
-		
+		this.userRepository.deleteById(uno);	
 	}
 	//유저 로그인 메소드 
 	//추후에 시큐리티 및 jwt 발급을 추가해야함 23.04.04 작성한메소드. 
 	@Transactional
 	public UserDTO login(String uid, String password) {
-		Optional<User> user = this.userRepository.findByUidAndPassword(uid, password);
-		UserDTO userDTO = userMapper.toUserDTO(user.get());
-		if(user.isPresent()) { //로그인 성공임
-			return userDTO;
-		}else {
-			return null;
-		}
+		User user = this.userRepository.findByUidAndPassword(uid, password).orElseThrow(()-> new UserMissingValueException());
+		return userMapper.toUserDTO(user);
 	}
 		
 	//페이징 사용한 유저 조회
@@ -103,6 +81,7 @@ public class UserService {
 	@Transactional
 		public boolean uidchk(String uid) {
 			Optional<User> user = this.userRepository.findByUid(uid);
+			
 			if(user.isPresent()) {
 				return true;
 			}else {

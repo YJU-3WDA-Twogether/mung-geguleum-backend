@@ -1,6 +1,7 @@
 package com.capstone.global.exception;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.AccessDeniedException;
 
 import org.springframework.http.HttpStatus;
@@ -10,15 +11,15 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingPathVariableException;
 import org.springframework.web.bind.MissingRequestValueException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@RestControllerAdvice
+@ControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(CustomException.class)
@@ -109,6 +110,14 @@ public class GlobalExceptionHandler {
 	 //IOException 발생시에 처리한다. 
 	 @ExceptionHandler(IOException.class)
 		public ResponseEntity<ErrorResponse> handleIOException(IOException ex) {
+			log.info("IOException : {}", ex.getMessage());
+			 final ErrorResponse response = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR);
+		        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	 
+	 //IOException 발생시에 처리한다. 
+	 @ExceptionHandler(MalformedURLException.class)
+		public ResponseEntity<ErrorResponse> handleMalformedURLException(MalformedURLException ex) {
 			log.info("IOException : {}", ex.getMessage());
 			 final ErrorResponse response = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR);
 		        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);

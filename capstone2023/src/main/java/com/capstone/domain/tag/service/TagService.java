@@ -18,6 +18,7 @@ import com.capstone.domain.post.entity.Post;
 import com.capstone.domain.tag.entity.Tag;
 import com.capstone.domain.tag.mapper.TagMapper;
 import com.capstone.domain.tag.repository.TagRepository;
+import com.capstone.domain.log.exception.LogNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -42,9 +43,10 @@ public class TagService {
 		//지금은 임시로 Object이지만 추후에 front에서 데이터를 전송하는 타입으로 변경해서 다시받아야함.
 		for(Long tmp : logs) {
 			//tag 안에 담긴 lno를 바탕으로 찾아서 집어넣고 지금은 테스트로 1L을 넣음.
-			Optional<Log> log = this.logRepository.findById(tmp);
-			Tag tag = this.tagMapper.toEntity( post,log.get() );
-			this.tagRepository.save(tag);
+			Log log = this.logRepository.findById(tmp).orElseThrow(() -> new LogNotFoundException());
+			this.tagRepository.save(this.tagMapper.toEntity(post, log));
+			//Tag tag = this.tagMapper.toEntity( post, log);
+			//this.tagRepository.save(tag);
 			
 		}
 	}

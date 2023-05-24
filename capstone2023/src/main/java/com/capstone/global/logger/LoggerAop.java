@@ -55,8 +55,15 @@ public class LoggerAop {
 	    log.debug("==================== Response Start ==================== \n");
 	    
         log.info("method name = {}", method.getName());
-        log.info("return type = {}", returnObj.getClass().getSimpleName());
-        log.info("return value \n {} \n", returnObj);
+        if(returnObj != null) {
+	        log.info("return type = {}", returnObj.getClass().getSimpleName());
+	        log.info("return value \n {} \n", returnObj);
+        }else {
+        	String str = "return 값이 없습니다.";
+        	log.info("return type = {}", str);
+	        log.info("return value \n {} \n", str);
+        }
+        
         
         log.debug("===================== Response End =====================");
 	    log.debug("========================================================\n");

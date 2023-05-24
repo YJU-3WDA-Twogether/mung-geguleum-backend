@@ -1,6 +1,7 @@
 package com.capstone.domain.file.controller;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -26,8 +27,8 @@ public class FileController {
 	private final FileService fileService;
 	
 	@GetMapping("/download/{fno}")
-	    public ResponseEntity<Resource> downloadFile(@PathVariable Long fno,@RequestParam Long uno, @RequestParam Long pno) {	
-					ResponseEntity<Resource> result = this.fileService.downloadFile(fno, uno , pno);
+	    public ResponseEntity<Resource> downloadFile(@PathVariable Long fno,@RequestParam Long uno, @RequestParam Long pno) throws MalformedURLException {	
+			ResponseEntity<Resource> result = this.fileService.downloadFile(fno, uno , pno);
 	    	return result;
 	    }
 	    

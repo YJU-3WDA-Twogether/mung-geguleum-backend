@@ -6,21 +6,21 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriUtils;
 
 import com.capstone.domain.file.dto.FileDTO;
 import com.capstone.domain.file.entity.File;
+import com.capstone.domain.file.exception.FileNotFoundException;
 import com.capstone.domain.file.mapper.FileMapper;
 import com.capstone.domain.file.respository.FileRepository;
 import com.capstone.domain.log.dto.LogRequest;
@@ -29,10 +29,11 @@ import com.capstone.domain.log.mapper.LogMapper;
 import com.capstone.domain.log.service.LogService;
 import com.capstone.domain.post.entity.Post;
 import com.capstone.domain.post.repository.PostRepository;
+import com.capstone.domain.post.exception.*;
 import com.capstone.domain.user.entity.User;
 import com.capstone.domain.user.repository.UserRepository;
+import com.capstone.domain.user.exception.*;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 
@@ -54,102 +55,127 @@ public class FileService {
 
    
    //파일 업로드 메소드
-   @Transactional
-   public Boolean uploadFile(MultipartFile [] files,Post post, LocalDateTime time) {
+   @Transactional(rollbackFor = {IOException.class, Exception.class})
+   public Boolean uploadFile(MultipartFile [] files,Post post, LocalDateTime time) throws Exception{
 	   File file;
 	   FileDTO fileDTO;
-	   
-	   try { 
-       	for(MultipartFile filetmp : files) {
-       			//원래파일 이름 추출
-       			String fname = filetmp.getOriginalFilename();
-       			//파일이름으로 쓸 uuid 생성
-       			String uuid = UUID.randomUUID().toString();
-       			//확장자 추출(ex .png)
-       			String extension = fname.substring(fname.lastIndexOf("."));
-       			
-       			String fsname = uuid + extension;
-       			
-       			String fpath = fileDir + fsname;
-       			Long fsize = filetmp.getSize();
-	         
-	           
-	            file = fileMapper.toEntity(fname, fsname,fsize,fpath, time, post);
-       		
-	            filetmp.transferTo(new java.io.File(fpath));
-	            
-	            fileRepository.save(file);
-	             
-       	}
-	   }catch(IOException e){
-       		e.printStackTrace();
-       		return false;
-        
-       }finally {
-       	
-       }
-       return true;
+	 	for(MultipartFile filetmp : files) {
+   			//원래파일 이름 추출
+   			String fname = filetmp.getOriginalFilename();
+   			//파일이름으로 쓸 uuid 생성
+   			String uuid = UUID.randomUUID().toString();
+   			//확장자 추출(ex .png)
+   			String extension = fname.substring(fname.lastIndexOf("."));
+   			
+   			String fsname = uuid + extension;
+   			
+   			String fpath = fileDir + fsname;
+   			Long fsize = filetmp.getSize();
+         
+           
+            file = fileMapper.toEntity(fname, fsname,fsize,fpath, time, post);
+   		
+            filetmp.transferTo(new java.io.File(fpath));
+            
+            fileRepository.save(file);
+             
+	 	}
+	 	return true;
    }
+//	   try { 
+//		 	for(MultipartFile filetmp : files) {
+//       			//원래파일 이름 추출
+//       			String fname = filetmp.getOriginalFilename();
+//       			//파일이름으로 쓸 uuid 생성
+//       			String uuid = UUID.randomUUID().toString();
+//       			//확장자 추출(ex .png)
+//       			String extension = fname.substring(fname.lastIndexOf("."));
+//       			
+//       			String fsname = uuid + extension;
+//       			
+//       			String fpath = fileDir + fsname;
+//       			Long fsize = filetmp.getSize();
+//	         
+//	           
+//	            file = fileMapper.toEntity(fname, fsname,fsize,fpath, time, post);
+//       		
+//	            filetmp.transferTo(new java.io.File(fpath));
+//	            
+//	            fileRepository.save(file);
+//	             
+//       	}
+//      
+//	   }catch(IOException e){
+//       		e.printStackTrace();
+//       		return false;
+//        
+//       }finally {
+//       	
+//       }
+//      return true;
+//   }
    
    //파일 다운로드메소드        
-   @Transactional
-   public ResponseEntity<Resource> downloadFile(Long fno, Long uno, Long pno ) {
-        Optional <File> file = fileRepository.findByFno(fno);
+   @Transactional(rollbackFor = MalformedURLException.class)
+   public ResponseEntity<Resource> downloadFile(Long fno, Long uno, Long pno ) throws MalformedURLException{
+       File file = fileRepository.findByFno(fno).orElseThrow( () -> new FileNotFoundException() );
+       Path filePath = Paths.get(file.getFpath());
        
-        if(file.isPresent()) {
-	        Path filePath = Paths.get(file.get().getFpath());
-	        try {
-	        	 UrlResource resource = new UrlResource("file:" + file.get().getFpath());
-	        	 String encodedFileName = UriUtils.encode(file.get().getFname(), StandardCharsets.UTF_8);
-	        	 String contentDisposition = "attachment; filename=\"" + encodedFileName + "\"";
-	        	 
-	        	 //파일 다운로드 로그 생성.
-	        	 Optional<Post> post= this.postRepository.findByPno(pno);
-	        	 Optional<User> user = this.userRepository.findByUno(uno);
-	        	 LocalDateTime time = LocalDateTime.now();
-	        	 //2L은 파일다운로드를 의미한다.
-	        	 
-	        	 LogRequest logRequest = logMapper.toRequestLog(2L, user.get().getUno(), post.get().getUser().getUno(), post.get().getPno(),time);
-	        	 System.out.println("로그리퀘스트 제대로 저장됨?" +logRequest.toString());
-	     		 Log log = this.logService.LogCreate(logRequest);
-	     		 
-	        	 return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,contentDisposition).body(resource);
-	        }catch(MalformedURLException e) {
-	        	e.printStackTrace();
-	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-	        }
-	     }else{
-	    	 return ResponseEntity.notFound().build();
-        }
+       UrlResource resource = new UrlResource("file:" + file.getFpath());
+  	 String encodedFileName = UriUtils.encode(file.getFname(), StandardCharsets.UTF_8);
+  	 String contentDisposition = "attachment; filename=\"" + encodedFileName + "\"";
+  	 
+  	 //파일 다운로드 로그 생성.
+  	 Post post= this.postRepository.findByPno(pno).orElseThrow(() -> new PostNotFoundException() );
+  	 User user = this.userRepository.findByUno(uno).orElseThrow( () -> new UserNotFoundException()) ;
+  	 LocalDateTime time = LocalDateTime.now();
+  	 //2L은 파일다운로드를 의미한다.
+  	 
+  	 LogRequest logRequest = logMapper.toRequestLog(2L, user.getUno(), post.getUser().getUno(), post.getPno(),time);
+  	 System.out.println("로그리퀘스트 제대로 저장됨?" +logRequest.toString());
+		 Log log = this.logService.LogCreate(logRequest);
+		 
+  	 return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,contentDisposition).body(resource);
+//        if(file.isPresent()) {
+//	        Path filePath = Paths.get(file.get().getFpath());
+//	        try {
+//	        	 UrlResource resource = new UrlResource("file:" + file.get().getFpath());
+//	        	 String encodedFileName = UriUtils.encode(file.get().getFname(), StandardCharsets.UTF_8);
+//	        	 String contentDisposition = "attachment; filename=\"" + encodedFileName + "\"";
+//	        	 
+//	        	 //파일 다운로드 로그 생성.
+//	        	 Optional<Post> post= this.postRepository.findByPno(pno);
+//	        	 Optional<User> user = this.userRepository.findByUno(uno);
+//	        	 LocalDateTime time = LocalDateTime.now();
+//	        	 //2L은 파일다운로드를 의미한다.
+//	        	 
+//	        	 LogRequest logRequest = logMapper.toRequestLog(2L, user.get().getUno(), post.get().getUser().getUno(), post.get().getPno(),time);
+//	        	 System.out.println("로그리퀘스트 제대로 저장됨?" +logRequest.toString());
+//	     		 Log log = this.logService.LogCreate(logRequest);
+//	     		 
+//	        	 return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,contentDisposition).body(resource);
+//	        }catch(MalformedURLException e) {
+//	        	e.printStackTrace();
+//	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//	        }
+//	     }else{
+//	    	 return ResponseEntity.notFound().build();
+//        }
       
     }
     
     //파일 단일 조회메소드 
-   @Transactional
-    public UrlResource readFile(Long fno) {
-    	 Optional <File> file = fileRepository.findByFno(fno);
-    	 
-    	 try {
-			return new UrlResource("file:" + file.get().getFpath());
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-    	 return null;
-    	
+   @Transactional(rollbackFor = MalformedURLException.class)
+    public UrlResource readFile(Long fno) throws MalformedURLException {
+    	File file = fileRepository.findByFno(fno).orElseThrow(() -> new FileNotFoundException() );
+		return new UrlResource("file:" + file.getFpath());
     }
    
    @Transactional
     public void deleteFile(Long fno) {
-   	 	Optional <File> file = fileRepository.findByFno(fno);
-          
-        
-        if(file.isPresent()) {
-        	File files = fileMapper.toEntity(fileMapper.toFileDTO(file.get(), true));
-        	 this.fileRepository.save(files);
-        	 System.out.println("파일 삭제 했습니다.");
-        }else {
-        	System.out.println("삭제할 파일이 없습니다.");
-        }
+   	 File file = fileRepository.findByFno(fno).orElseThrow(() -> new FileNotFoundException() );
+   	 File files = fileMapper.toEntity(fileMapper.toFileDTO(file, true));
+	 this.fileRepository.save(files);   
     }
 
 

@@ -18,7 +18,7 @@ public interface LogRepository extends JpaRepository<Log ,Long>{
 	@Query("SELECT l From Log l WHERE l.user.uno = :uno AND l.logState.lsno = :lsno")
 	Page<Log> findByUserAndLogState(@Param("uno") Long uno, @Param("lsno") Long lsno, Pageable pageable);
 	
-	@Query("SELECT l From Log l WHERE l.puser.uno = :puno AND l.logState.lsno = :lsno")
+	@Query("SELECT l From Log l WHERE l.post.user.uno = :puno AND l.logState.lsno = :lsno")
 	Page<Log> findByPuserAndLogState(@Param("puno") Long puno, @Param("lsno") Long lsno, Pageable pageable);
 	
 	

@@ -38,9 +38,9 @@ public class Log {
 
     //게시글 작성한 유저에 대한 정보를 담는다.
     //로그인한사람과 해당 정보가 일치할 경우 알람로그에 전송된다.
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "p_uno")
-    private User puser;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "p_uno")
+//    private User puser;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lsno")
@@ -50,6 +50,7 @@ public class Log {
 	@Column(name="regdate")
 	private LocalDateTime regDate;
 
+    //게시글 작성한 유저에 대한 정보를 해당 부분에서 추출하면된다.
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pno")
     private Post post;

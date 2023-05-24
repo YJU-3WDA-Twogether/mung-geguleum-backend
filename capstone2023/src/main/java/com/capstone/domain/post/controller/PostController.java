@@ -41,14 +41,13 @@ public class PostController {
 	
 	//특정 게시판의 게시글 전체조회 (ex: 음악 게시판의 모든 게시글조회)
 	@GetMapping("/getlist/{bname}")
-	public ResponseEntity<Page> getList(@RequestParam(value="page", defaultValue="0") int page,@PathVariable String bname) {
+	public ResponseEntity<Page> getList(@RequestParam(value="page", defaultValue="0") int page, @PathVariable String bname) {
 		Page<PostResponse> paging = this.postService.getList(page, bname);
 		return ResponseEntity.ok(paging);
 	}
 	
 	@PostMapping("/create")
-	//@Transactional(rollbackFor = {RuntimeException.class, Exception.class})
-	public  ResponseEntity<Boolean> postCreate( @Valid PostRequest postRequest){
+	public  ResponseEntity<Boolean> postCreate( @Valid PostRequest postRequest) throws Exception{
 		postService.postCreate(postRequest);
 		return ResponseEntity.ok(true);
 	}

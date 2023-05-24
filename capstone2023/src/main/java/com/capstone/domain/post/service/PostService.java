@@ -5,7 +5,6 @@ package com.capstone.domain.post.service;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -15,6 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.capstone.domain.board.entity.Board;
+import com.capstone.domain.board.exception.BoardNotFoundException;
 import com.capstone.domain.board.repository.BoardRepository;
 import com.capstone.domain.file.dto.FileDTO;
 import com.capstone.domain.file.mapper.FileMapper;
@@ -28,11 +28,13 @@ import com.capstone.domain.post.dto.PostResponse;
 import com.capstone.domain.post.entity.Post;
 import com.capstone.domain.post.mapper.PostMapper;
 import com.capstone.domain.post.repository.PostRepository;
+import com.capstone.domain.post.exception.PostNotFoundException;
 import com.capstone.domain.tag.service.TagService;
 import com.capstone.domain.user.entity.User;
+import com.capstone.domain.user.exception.UserNotFoundException;
 import com.capstone.domain.user.repository.UserRepository;
 
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -50,14 +52,16 @@ public class PostService {
 	private final FileMapper fileMapper;
 	
 	//게시판 생성 메소드
-	@Transactional(rollbackOn = {Exception.class})
-	public void postCreate(PostRequest postRequest){
+	@Transactional(rollbackFor = {Exception.class, IOException.class})
+	public void postCreate(PostRequest postRequest) throws Exception{
 		LocalDateTime time = LocalDateTime.now();
 		postRequest.setRegDate(time);
-		User user = this.userRepository.findByUno(postRequest.getUno()).orElseThrow(()-> new RuntimeException());
-		Board board = this.boardRepository.findByBno(postRequest.getBno()).orElseThrow(()-> new RuntimeException());
+		User user = this.userRepository.findByUno(postRequest.getUno()).orElseThrow(()-> new UserNotFoundException ());
+		Board board = this.boardRepository.findByBno(postRequest.getBno()).orElseThrow(()-> new BoardNotFoundException ());
 		Post post = postMapper.toEntity(postRequest,board ,user);
+		
 		post = this.postRepository.save(post);
+		
 		if(postRequest.getFile()!=null) {
 			this.fileService.uploadFile(postRequest.getFile(),post ,time);
 		}
@@ -66,8 +70,10 @@ public class PostService {
 		Long lsno = 1L;
 		LogRequest logRequest = logMapper.toRequestLog(lsno, user.getUno(), post.getPno(),time);
 		Log log = this.logService.LogCreate(logRequest);
-		//재창작이 아닐경우
-		if(board.getBno()!=4&&postRequest.getTag() !=null) {
+		
+		//재창작인 경우 
+		
+		if(board.getBno()==4&&postRequest.getTag() !=null) {
 			tagService.tagCreate(postRequest.getTag(),post);
 		}	
 	}
@@ -106,7 +112,7 @@ public class PostService {
 	//게시판 디테일 조회하는 메소드
 	@Transactional
 	public PostResponse postRead(Long pno) {
-	    Post post= postRepository.findByPnoWithFiles(pno).orElseThrow(()-> new RuntimeException());
+	    Post post= postRepository.findByPnoWithFiles(pno).orElseThrow(()-> new PostNotFoundException());
 		List<FileDTO> fileDTOList = post.getFiles().stream()
     	        .map(file -> fileMapper.toFileDTO(file, pno))
     	        .collect(Collectors.toList());
@@ -118,12 +124,12 @@ public class PostService {
 	//게시판 수정 메소드
 	@Transactional
 	public PostResponse postUpdate(Long pno, PostRequest postDTO) {
-			Post post= this.postRepository.findByPno(pno).orElseThrow(() -> new RuntimeException()) ;
-			User user = this.userRepository.findByUno(postDTO.getUno()).orElseThrow(() -> new RuntimeException());
-			Board board = this.boardRepository.findByBno(postDTO.getBno()).orElseThrow( () -> new RuntimeException());		
-			Post Post = postMapper.toEntity(postDTO ,board ,user);
-			this.postRepository.save(Post);
-			return postMapper.toPostResponse(Post);
+			Post post= this.postRepository.findByPno(pno).orElseThrow(() -> new PostNotFoundException()) ;
+			//pk값은 존재하고 나머지 값이 null일 경우에 nullpointException을 추가적으로 발행해줘야함.
+			User user = this.userRepository.findByUno(postDTO.getUno()).orElseThrow(() -> new UserNotFoundException());
+			Board board = this.boardRepository.findByBno(postDTO.getBno()).orElseThrow( () -> new BoardNotFoundException());		
+			post = postMapper.toEntity(postDTO ,board ,user);
+			return postMapper.toPostResponse(this.postRepository.save(post));
 	}
 	
 	
