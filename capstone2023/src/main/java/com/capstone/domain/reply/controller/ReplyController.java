@@ -23,4 +23,10 @@ public class ReplyController {
         return ResponseEntity.ok(true);
     }
 
+    @DeleteMapping("/delete/{ano}")
+    public ResponseEntity<Boolean> commentDelete(@PathVariable Long ano) {
+        replyService.replyDelete(ano);
+        return ResponseEntity.ok(true);
+    }
+
 }

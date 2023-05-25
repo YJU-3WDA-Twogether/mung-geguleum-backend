@@ -54,4 +54,13 @@ public class ReplyService {
         Reply reply = replyMapper.toEntity(replyDTO, user, post, parentReply);
         replyRepository.save(reply);
     }
+
+    @Transactional
+    public void replyDelete(Long ano) {
+        Reply reply = replyRepository.findById(ano)
+                .orElseThrow(() -> new ReplyNotFoundException());
+
+        // 댓글 삭제 로직
+        replyRepository.delete(reply);
+    }
 }
