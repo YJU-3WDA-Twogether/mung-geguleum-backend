@@ -63,4 +63,15 @@ public class ReplyService {
         // 댓글 삭제 로직
         replyRepository.delete(reply);
     }
+
+    @Transactional
+    public void replyUpdate(ReplyDTO replyDTO) {
+        Reply reply = replyRepository.findById(replyDTO.getAno())
+                .orElseThrow(() -> new ReplyNotFoundException());
+
+        // 댓글 수정 로직
+        reply.setComment(replyDTO.getComment());
+
+        replyRepository.save(reply);
+    }
 }

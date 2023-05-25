@@ -29,4 +29,10 @@ public class ReplyController {
         return ResponseEntity.ok(true);
     }
 
+    @PutMapping("/update/{ano}") // 댓글 수정
+    public ResponseEntity<Boolean> commentUpdate(@PathVariable Long ano, @RequestBody ReplyDTO replyDTO) {
+        replyDTO.setAno(ano);
+        replyService.replyUpdate(replyDTO);
+        return ResponseEntity.ok(true);
+    }
 }
