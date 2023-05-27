@@ -22,6 +22,19 @@ public class ReplyMapper {
                 .parentReply(parentReply)
                 .build();
     }
+
+    public ReplyDTO toReplyDTO(@Valid Reply reply, Long pno){
+        return ReplyDTO.builder()
+                .rno(reply.getRno())
+                .comment(reply.getComment())
+                .deph(reply.getDeph())
+                .regDate(reply.getRegDate())
+                .modDate(reply.getModDate())
+                .pno(pno)
+                .uno(reply.getUser().getUno())
+                .cno(reply.getParentReply() != null ? reply.getParentReply().getRno() : null)
+                .build();
+    }
     public ReplyDTO toReplyResponse(Reply reply){
         return ReplyDTO.builder()
                 .rno(reply.getRno())

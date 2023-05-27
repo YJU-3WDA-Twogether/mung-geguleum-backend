@@ -7,6 +7,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.capstone.domain.reply.dto.ReplyDTO;
+import com.capstone.domain.reply.mapper.ReplyMapper;
+import com.capstone.domain.reply.repository.ReplyRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -43,6 +46,7 @@ public class PostService {
 	private final UserRepository userRepository;
 	private final PostRepository postRepository;
 	private final BoardRepository boardRepository;
+
 	private final FileService fileService;
 	private final LogService logService;
 	private final TagService tagService;
@@ -50,6 +54,7 @@ public class PostService {
 	private final PostMapper postMapper;
 	private final LogMapper logMapper;
 	private final FileMapper fileMapper;
+    private final ReplyMapper replyMapper;
 	
 	//게시판 생성 메소드
 	@Transactional(rollbackFor = {Exception.class, IOException.class})
@@ -116,7 +121,12 @@ public class PostService {
 		List<FileDTO> fileDTOList = post.getFiles().stream()
     	        .map(file -> fileMapper.toFileDTO(file, pno))
     	        .collect(Collectors.toList());
-	   return postMapper.toPostResponse(post, fileDTOList);
+
+        List<ReplyDTO> replyDTOList = post.getReplys().stream()
+                .map(reply -> replyMapper.toReplyDTO(reply, pno))
+                .collect(Collectors.toList());
+
+	   return postMapper.toPostResponse(post, fileDTOList, replyDTOList);
 	}
 	
 	

@@ -3,6 +3,7 @@ package com.capstone.domain.post.mapper;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.capstone.domain.reply.dto.ReplyDTO;
 import org.springframework.stereotype.Component;
 
 import com.capstone.domain.board.entity.Board;
@@ -64,7 +65,7 @@ public class PostMapper {
 		}
 	
 	//DTO에 Entity 담기 페이징 기능을 할때 파일도 담아서 같이보낸다. postEntity에서 조인을 통해서 데이터 호출해야함.
-		public PostResponse toPostResponse(Post post, List<FileDTO> file) {
+		public PostResponse toPostResponse(Post post, List<FileDTO> file, List<ReplyDTO> reply) {
 			return PostResponse.builder()
 					.pno(post.getPno())
 					.title(post.getTitle())
@@ -75,6 +76,7 @@ public class PostMapper {
 					.uno(post.getUser().getUno())
 					.bname(post.getBoard().getBname())
 					.file(file)
+					.reply(reply)
 					.build();
 		}
 		
