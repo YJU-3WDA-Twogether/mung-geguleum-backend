@@ -23,15 +23,15 @@ public class ReplyController {
         return ResponseEntity.ok(true);
     }
 
-    @DeleteMapping("/delete/{ano}")
-    public ResponseEntity<Boolean> commentDelete(@PathVariable Long ano) {
-        replyService.replyDelete(ano);
+    @DeleteMapping("/delete/{rno}")
+    public ResponseEntity<Boolean> commentDelete(@PathVariable Long rno) {
+        replyService.replyDelete(rno);
         return ResponseEntity.ok(true);
     }
 
-    @PutMapping("/update/{ano}") // 댓글 수정
-    public ResponseEntity<Boolean> commentUpdate(@PathVariable Long ano, @RequestBody ReplyDTO replyDTO) {
-        replyDTO.setAno(ano);
+    @PutMapping("/update/{rno}") // 댓글 수정
+    public ResponseEntity<Boolean> commentUpdate(@PathVariable Long rno, @RequestBody ReplyDTO replyDTO) {
+        replyDTO.setRno(rno);
         replyService.replyUpdate(replyDTO);
         return ResponseEntity.ok(true);
     }

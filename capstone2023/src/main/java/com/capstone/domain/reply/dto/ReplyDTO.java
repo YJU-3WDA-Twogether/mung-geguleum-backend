@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
     @NoArgsConstructor
     @AllArgsConstructor
     public class ReplyDTO {
-        private Long ano;   //댓글번호
+        private Long rno;   //댓글번호
 
         private String comment; //댓글
 

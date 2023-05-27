@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface ReplyRepository extends JpaRepository<Reply, Long> {
 
-    Optional<Object> findByAno(Long cno);
+    Optional<Object> findByRno(Long cno);
 }

@@ -15,7 +15,7 @@ import lombok.*;
 public class Reply extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long ano;   //댓글번호
+    private Long rno;   //댓글번호
 
     @Column(length=255)
     private String comment; //댓글

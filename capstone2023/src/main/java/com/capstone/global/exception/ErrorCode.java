@@ -63,7 +63,9 @@ public enum ErrorCode {
 	
 	//
 	//Reply
-	, 
+	,REPLY_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND,"R001", "존재하지 않는 댓글입니다..")
+	,REPLY_NULL_POINT_ERROR(HttpStatus.BAD_REQUEST, "R002", "삭제된 댓글 입니다.")
+	,REPLY_INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"R003", "업")
 	
 	
 	;

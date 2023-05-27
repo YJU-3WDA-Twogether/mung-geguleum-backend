@@ -14,7 +14,7 @@ public class ReplyMapper {
 
     public Reply toEntity(@Valid ReplyDTO replyDTO, User user, Post post, Reply parentReply){
         return Reply.builder()
-                .ano(replyDTO.getAno())
+                .rno(replyDTO.getRno())
                 .comment(replyDTO.getComment())
                 .user(user)
                 .post(post)
@@ -24,7 +24,7 @@ public class ReplyMapper {
     }
     public ReplyDTO toReplyResponse(Reply reply){
         return ReplyDTO.builder()
-                .ano(reply.getAno())
+                .rno(reply.getRno())
                 .comment(reply.getComment())
                 .deph(reply.getDeph())
                 .regDate(reply.getRegDate())
