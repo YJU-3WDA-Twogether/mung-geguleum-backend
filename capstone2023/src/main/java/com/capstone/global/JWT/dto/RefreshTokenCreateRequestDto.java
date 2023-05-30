@@ -1,6 +1,5 @@
 package com.capstone.global.JWT.dto;
 
-
 import com.capstone.global.JWT.entity.RefreshToken;
 
 import lombok.Builder;

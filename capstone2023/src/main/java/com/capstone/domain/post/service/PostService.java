@@ -53,7 +53,7 @@ public class PostService {
 	
 	//게시판 생성 메소드
 	@Transactional(rollbackFor = {Exception.class, IOException.class})
-	public void postCreate(PostRequest postRequest) throws Exception {
+	public void postCreate(PostRequest postRequest) throws Exception{
 		LocalDateTime time = LocalDateTime.now();
 		postRequest.setRegDate(time);
 		User user = this.userRepository.findByUno(postRequest.getUno()).orElseThrow(()-> new UserNotFoundException ());
