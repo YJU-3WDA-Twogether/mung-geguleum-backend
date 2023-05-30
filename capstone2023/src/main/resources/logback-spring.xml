@@ -2,7 +2,7 @@
 <configuration debug="true">
 
     <!-- Appenders -->
-    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+   <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <charset>UTF-8</charset>
             <Pattern>%d %5p [%c] %m%n</Pattern>
@@ -17,9 +17,9 @@
     </appender>
 
     <!-- Logger -->
-    <logger name="com.capstone" level="DEBUG" appender-ref="console" />
-    <logger name="com.capstone.Config" level="DEBUG" appender-ref="console" />
-    <logger name="com.capstone.Controller" level="DEBUG" appender-ref="console" />
+	 <logger name="com.capstone" level="DEBUG" appender-ref="console" />
+ <logger name="com.capstone.Config" level="DEBUG" appender-ref="console" />
+    <logger name="com.capstone.domain.file.controller" level="DEBUG" appender-ref="console" />
     <logger name="jdbc.sqlonly" level="INFO" appender-ref="console-infolog" />
     <logger name="jdbc.resultsettable" level="INFO" appender-ref="console-infolog" />
 
