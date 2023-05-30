@@ -1,8 +1,7 @@
 package com.capstone.domain.reply.service;
 
-import com.capstone.domain.reply.dto.ReplyDTO;
+import com.capstone.domain.reply.dto.ReplyRequest;
 import com.capstone.domain.reply.entity.Reply;
-import com.capstone.domain.reply.exception.ReplyInternalServerException;
 import com.capstone.domain.reply.exception.ReplyNotFoundException;
 import com.capstone.domain.reply.exception.ReplyNullPointException;
 import com.capstone.domain.reply.mapper.ReplyMapper;
@@ -31,11 +30,7 @@ public class ReplyService {
 
 
     @Transactional
-    public void replyCreate(ReplyDTO replyDTO) {
-        LocalDateTime time = LocalDateTime.now();
-        replyDTO.setRegDate(time);
-        replyDTO.setModDate(time);
-
+    public void replyCreate(ReplyRequest replyDTO) {
 
         // 유저 참조 설정
         User user = this.userRepository.findByUno(replyDTO.getUno())
@@ -50,7 +45,7 @@ public class ReplyService {
         Reply parentReply = null;
         if (replyDTO.getDeph() == 2) {
             parentReply = (Reply) replyRepository.findByRno(replyDTO.getCno())
-                    .orElseThrow(() -> new ReplyNotFoundException());   //예외처리 제대로 해줘야 함
+                    .orElseThrow(() -> new ReplyNotFoundException());
         }
 
         Reply reply = replyMapper.toEntity(replyDTO, user, post, parentReply);
@@ -59,7 +54,7 @@ public class ReplyService {
 
     @Transactional
     public void replyDelete(Long rno) {
-        Reply reply = replyRepository.findById(rno)
+        Reply reply = (Reply) replyRepository.findByRno(rno)
                 .orElseThrow(() -> new ReplyNullPointException());
 
         // 댓글 삭제 로직
@@ -67,13 +62,24 @@ public class ReplyService {
     }
 
     @Transactional
-    public void replyUpdate(ReplyDTO replyDTO) {
-        Reply reply = replyRepository.findById(replyDTO.getRno())
-                .orElseThrow(() -> new ReplyInternalServerException());
+    public void replyUpdate(ReplyRequest replyDTO) {
 
+        // 유저 참조 설정
+        User user = this.userRepository.findByUno(replyDTO.getUno())
+                .orElseThrow(() -> new UserNotFoundException());
+
+        // 게시글 참조 설정
+        Post post = this.postRepository.findByPno(replyDTO.getPno())
+                .orElseThrow(() -> new PostNotFoundException());
+
+        // 부모 댓글 참조 설정(대댓글일 경우)
+        Reply parentReply = null;
+        if (replyDTO.getDeph() == 2) {
+            parentReply = (Reply) replyRepository.findByRno(replyDTO.getCno())
+                    .orElseThrow(() -> new ReplyNotFoundException());
+        }
         // 댓글 수정 로직
-        reply.setComment(replyDTO.getComment());
-
+        Reply reply = replyMapper.toEntity(replyDTO, user, post, parentReply);
         replyRepository.save(reply);
     }
 }

@@ -7,9 +7,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.capstone.domain.reply.dto.ReplyDTO;
+import com.capstone.domain.reply.dto.ReplyResponse;
 import com.capstone.domain.reply.mapper.ReplyMapper;
-import com.capstone.domain.reply.repository.ReplyRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -117,12 +116,12 @@ public class PostService {
 	//게시판 디테일 조회하는 메소드
 	@Transactional
 	public PostResponse postRead(Long pno) {
-	    Post post= postRepository.findByPnoWithFiles(pno).orElseThrow(()-> new PostNotFoundException());
+	    Post post= postRepository.findByFilesAndReply(pno).orElseThrow(()-> new PostNotFoundException());
 		List<FileDTO> fileDTOList = post.getFiles().stream()
     	        .map(file -> fileMapper.toFileDTO(file, pno))
     	        .collect(Collectors.toList());
 
-        List<ReplyDTO> replyDTOList = post.getReplys().stream()
+        List<ReplyResponse> replyDTOList = post.getReplys().stream()
                 .map(reply -> replyMapper.toReplyDTO(reply, pno))
                 .collect(Collectors.toList());
 

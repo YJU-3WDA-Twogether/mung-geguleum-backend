@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Getter
-@Setter
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,7 +17,7 @@ public class Reply extends BaseEntity{
     private Long rno;   //댓글번호
 
     @Column(length=255)
-    private String comment; //댓글
+    private String reply; //댓글
 
     @Column
     private Long deph;  //댓글 깊이

@@ -38,7 +38,7 @@ public interface PostRepository extends JpaRepository<Post, Long>{
 //	    List<Object[]> findBypnoWithFiles();
 	    
 	    @Query("SELECT p FROM Post p LEFT JOIN FETCH p.files JOIN p.board b Join p.user u LEFT Join p.replys WHERE p.pno = :pno")
-	    Optional<Post> findByPnoWithFiles(@Param("pno") Long pno);
+	    Optional<Post> findByFilesAndReply(@Param("pno") Long pno);
 
 	    
 	    

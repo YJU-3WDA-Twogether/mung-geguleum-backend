@@ -1,6 +1,7 @@
 package com.capstone.domain.reply.mapper;
 
-import com.capstone.domain.reply.dto.ReplyDTO;
+import com.capstone.domain.reply.dto.ReplyRequest;
+import com.capstone.domain.reply.dto.ReplyResponse;
 import com.capstone.domain.reply.entity.Reply;
 import com.capstone.domain.post.entity.Post;
 import com.capstone.domain.user.entity.User;
@@ -12,10 +13,10 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ReplyMapper {
 
-    public Reply toEntity(@Valid ReplyDTO replyDTO, User user, Post post, Reply parentReply){
+    public Reply toEntity(@Valid ReplyRequest replyDTO, User user, Post post, Reply parentReply){
         return Reply.builder()
                 .rno(replyDTO.getRno())
-                .comment(replyDTO.getComment())
+                .reply(replyDTO.getReply())
                 .user(user)
                 .post(post)
                 .deph(replyDTO.getDeph())
@@ -23,25 +24,24 @@ public class ReplyMapper {
                 .build();
     }
 
-    public ReplyDTO toReplyDTO(@Valid Reply reply, Long pno){
-        return ReplyDTO.builder()
+    public ReplyResponse toReplyDTO(@Valid Reply reply, Long pno){
+        return ReplyResponse.builder()
                 .rno(reply.getRno())
-                .comment(reply.getComment())
+                .reply(reply.getReply())
                 .deph(reply.getDeph())
                 .regDate(reply.getRegDate())
                 .modDate(reply.getModDate())
                 .pno(pno)
                 .uno(reply.getUser().getUno())
                 .cno(reply.getParentReply() != null ? reply.getParentReply().getRno() : null)
+                .uname(reply.getUser().getUname())
                 .build();
     }
-    public ReplyDTO toReplyResponse(Reply reply){
-        return ReplyDTO.builder()
+    public ReplyRequest toReplyResponse(Reply reply){
+        return ReplyRequest.builder()
                 .rno(reply.getRno())
-                .comment(reply.getComment())
+                .reply(reply.getReply())
                 .deph(reply.getDeph())
-                .regDate(reply.getRegDate())
-                .modDate(reply.getModDate())
                 .build();
     }
 }
