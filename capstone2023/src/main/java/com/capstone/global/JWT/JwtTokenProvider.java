@@ -1,120 +1,103 @@
 package com.capstone.global.JWT;
-
-import java.nio.charset.StandardCharsets;
-import java.util.Date;
-import java.util.Map;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.capstone.global.JWT.dto.RefreshTokenCreateRequestDto;
-import com.capstone.global.JWT.exception.TokenExpiredException;
-import com.capstone.global.JWT.exception.TokenInvalidException;
-import com.capstone.global.JWT.repository.RefreshTokenRepository;
-
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.http.HttpServletRequest;
-
-
-
-@Component
-public class JwtTokenProvider {
-	private final String secretKey;
-	private final long accessTokenExpireSeconds;
-	private final long refreshTokenExpireSeconds;
-	private final RefreshTokenRepository refreshTokenRepository;
-
-	private final String bearerType = "Bearer ";
-
-	@Value("${jwt.header.access-token}")
-	String accessTokenHeader;
-
-	@Value("${jwt.header.refresh-token}")
-	String refreshTokenHeader;
-
-	public JwtTokenProvider(
-		@Value("${jwt.secret-key}") String secretKey,
-		@Value("${jwt.expire-seconds.access-token}") long accessTokenExpireSeconds,
-		@Value("${jwt.expire-seconds.refresh-token}") long refreshTokenExpireSeconds,
-		RefreshTokenRepository refreshTokenRepository) {
-		this.secretKey = secretKey;
-		this.accessTokenExpireSeconds = accessTokenExpireSeconds;
-		this.refreshTokenExpireSeconds = refreshTokenExpireSeconds;
-		this.refreshTokenRepository = refreshTokenRepository;
-	}
-
-	public String createAccessToken(Long userId, String role) {
-		Map<String, Object> claims = Map.of("userId", userId, "role", role);
-		Date now = new Date();
-		Date expiredDate = new Date(now.getTime() + accessTokenExpireSeconds * 1000L);
-
-		return Jwts.builder()
-			.setClaims(claims)
-			.setIssuedAt(now)
-			.setExpiration(expiredDate)
-			.signWith(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)))
-			.compact();
-	}
-
-	public String createRefreshToken() {
-		Date now = new Date();
-		Date expiredDate = new Date(now.getTime() + refreshTokenExpireSeconds * 1000L);
-		return Jwts.builder()
-			.setIssuedAt(now)
-			.setExpiration(expiredDate)
-			.signWith(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)))
-			.compact();
-	}
-
-	public Claims getClaims(String token) {
-		return Jwts.parserBuilder()
-			.setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)))
-			.build()
-			.parseClaimsJws(token)
-			.getBody();
-	}
-
-	public Optional<String> extractAccessToken(HttpServletRequest request) {
-		return Optional.ofNullable(request.getHeader(accessTokenHeader))
-			.filter(accessToken -> accessToken.startsWith(bearerType))
-			.map(accessToken -> accessToken.replace(bearerType, ""));
-	}
-
-	@Transactional
-	public void updateRefreshToken(Long uno, String refreshToken) {
-		refreshTokenRepository.findByUno(uno)
-			.ifPresentOrElse(
-				token -> token.update(refreshToken),
-				() -> saveRefreshToken(uno, refreshToken)
-			);
-	}
-
-	@Transactional
-	public void saveRefreshToken(Long uno, String refreshToken) {
-		RefreshTokenCreateRequestDto refreshTokenCreateRequestDto = RefreshTokenCreateRequestDto.builder()
-			.uno(uno)
-			.refreshToken(refreshToken)
-			.build();
-		refreshTokenRepository.save(refreshTokenCreateRequestDto.toEntity());
-	}
-
-	public void validateToken(String token) {
-		try {
-			Jwts.parserBuilder()
-				.setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)))
-				.build()
-				.parseClaimsJws(token);
-		} catch (ExpiredJwtException e) {
-			throw new TokenExpiredException();
-		} catch (JwtException | IllegalArgumentException e) {
-			throw new TokenInvalidException();
-		}
-	}
-
-}
+//package com.capstone.JWT;
+//
+//import java.awt.RenderingHints.Key;
+//import java.util.Arrays;
+//import java.util.Collection;
+//import java.util.Date;
+//import java.util.stream.Collectors;
+//
+//import org.springframework.boot.autoconfigure.neo4j.Neo4jProperties.Authentication;
+//import org.springframework.stereotype.Component;
+//
+//import com.capstone.Entity.User;
+//
+//import lombok.Value;
+//import lombok.extern.slf4j.Slf4j;
+//
+//@Slf4j
+//@Component
+//public class JwtTokenProvider {
+// 
+//    private final Key key;
+// 
+//    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
+//        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+//        this.key = Keys.hmacShaKeyFor(keyBytes);
+//    }
+// 
+//    // 유저 정보를 가지고 AccessToken, RefreshToken 을 생성하는 메서드
+//    public TokenInfo generateToken(Authentication authentication) {
+//        // 권한 가져오기
+//        String authorities = authentication.getAuthorities().stream()
+//                .map(GrantedAuthority::getAuthority)
+//                .collect(Collectors.joining(","));
+// 
+//        long now = (new Date()).getTime();
+//        // Access Token 생성
+//        Date accessTokenExpiresIn = new Date(now + 86400000);
+//        String accessToken = Jwts.builder()
+//                .setSubject(authentication.getName())
+//                .claim("auth", authorities)
+//                .setExpiration(accessTokenExpiresIn)
+//                .signWith(key, SignatureAlgorithm.HS256)
+//                .compact();
+// 
+//        // Refresh Token 생성
+//        String refreshToken = Jwts.builder()
+//                .setExpiration(new Date(now + 86400000))
+//                .signWith(key, SignatureAlgorithm.HS256)
+//                .compact();
+// 
+//        return TokenInfo.builder()
+//                .grantType("Bearer")
+//                .accessToken(accessToken)
+//                .refreshToken(refreshToken)
+//                .build();
+//    }
+// 
+//    // JWT 토큰을 복호화하여 토큰에 들어있는 정보를 꺼내는 메서드
+//    public Authentication getAuthentication(String accessToken) {
+//        // 토큰 복호화
+//        Claims claims = parseClaims(accessToken);
+// 
+//        if (claims.get("auth") == null) {
+//            throw new RuntimeException("권한 정보가 없는 토큰입니다.");
+//        }
+// 
+//        // 클레임에서 권한 정보 가져오기
+//        Collection<? extends GrantedAuthority> authorities =
+//                Arrays.stream(claims.get("auth").toString().split(","))
+//                        .map(SimpleGrantedAuthority::new)
+//                        .collect(Collectors.toList());
+// 
+//        // UserDetails 객체를 만들어서 Authentication 리턴
+//        UserDetails principal = new User(claims.getSubject(), "", authorities);
+//        return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+//    }
+// 
+//    // 토큰 정보를 검증하는 메서드
+//    public boolean validateToken(String token) {
+//        try {
+//            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+//            return true;
+//        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
+//            log.info("Invalid JWT Token", e);
+//        } catch (ExpiredJwtException e) {
+//            log.info("Expired JWT Token", e);
+//        } catch (UnsupportedJwtException e) {
+//            log.info("Unsupported JWT Token", e);
+//        } catch (IllegalArgumentException e) {
+//            log.info("JWT claims string is empty.", e);
+//        }
+//        return false;
+//    }
+// 
+//    private Claims parseClaims(String accessToken) {
+//        try {
+//            return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
+//        } catch (ExpiredJwtException e) {
+//            return e.getClaims();
+//        }
+//    }
+//}
