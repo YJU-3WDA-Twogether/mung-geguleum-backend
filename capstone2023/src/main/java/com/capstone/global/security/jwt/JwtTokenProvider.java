@@ -1,4 +1,4 @@
-package com.capstone.global.JWT;
+package com.capstone.global.security.jwt;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -9,10 +9,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.capstone.global.JWT.dto.RefreshTokenCreateRequestDto;
-import com.capstone.global.JWT.exception.TokenExpiredException;
-import com.capstone.global.JWT.exception.TokenInvalidException;
-import com.capstone.global.JWT.repository.RefreshTokenRepository;
+import com.capstone.global.security.jwt.dto.RefreshTokenCreateRequestDto;
+import com.capstone.global.security.jwt.exception.TokenExpiredException;
+import com.capstone.global.security.jwt.exception.TokenInvalidException;
+import com.capstone.global.security.jwt.repository.RefreshTokenRepository;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -20,8 +20,6 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
-
-
 
 @Component
 public class JwtTokenProvider {
@@ -49,8 +47,8 @@ public class JwtTokenProvider {
 		this.refreshTokenRepository = refreshTokenRepository;
 	}
 
-	public String createAccessToken(Long userId, String role) {
-		Map<String, Object> claims = Map.of("userId", userId, "role", role);
+	public String createAccessToken(Long uno, String role) {
+		Map<String, Object> claims = Map.of("uno", uno, "role", role);
 		Date now = new Date();
 		Date expiredDate = new Date(now.getTime() + accessTokenExpireSeconds * 1000L);
 

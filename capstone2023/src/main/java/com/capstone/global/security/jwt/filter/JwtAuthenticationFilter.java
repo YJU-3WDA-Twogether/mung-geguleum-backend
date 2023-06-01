@@ -1,4 +1,6 @@
-package com.capstone.global.JWT.filter;
+package com.capstone.global.security.jwt.filter;
+
+
 
 import java.io.IOException;
 
@@ -6,14 +8,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.capstone.global.JWT.JwtAuthenticationToken;
-import com.capstone.global.JWT.service.TokenService;
+import com.capstone.global.security.jwt.JwtAuthenticationToken;
+import com.capstone.global.security.jwt.service.TokenService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

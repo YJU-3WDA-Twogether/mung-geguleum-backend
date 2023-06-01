@@ -1,12 +1,12 @@
-package com.capstone.global.JWT.filter;
+package com.capstone.global.security.jwt.filter;
 
 import java.io.IOException;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.capstone.global.JWT.exception.TokenException;
 import com.capstone.global.exception.ErrorResponse;
+import com.capstone.global.security.jwt.exception.TokenException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.FilterChain;

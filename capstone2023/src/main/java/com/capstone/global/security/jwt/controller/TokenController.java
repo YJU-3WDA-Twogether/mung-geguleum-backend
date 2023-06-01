@@ -1,6 +1,4 @@
-package com.capstone.global.JWT.controller;
-
-
+package com.capstone.global.security.jwt.controller;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -11,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.capstone.global.JWT.dto.TokenReIssueResponseDto;
-import com.capstone.global.JWT.service.TokenService;
+import com.capstone.global.security.jwt.dto.TokenReIssueResponseDto;
+import com.capstone.global.security.jwt.service.TokenService;
 
 import lombok.RequiredArgsConstructor;
 

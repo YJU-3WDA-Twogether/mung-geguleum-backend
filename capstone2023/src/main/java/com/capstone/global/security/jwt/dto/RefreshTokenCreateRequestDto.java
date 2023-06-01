@@ -1,6 +1,8 @@
-package com.capstone.global.JWT.dto;
+package com.capstone.global.security.jwt.dto;
 
-import com.capstone.global.JWT.entity.RefreshToken;
+
+
+import com.capstone.global.security.jwt.entity.RefreshToken;
 
 import lombok.Builder;
 import lombok.Getter;

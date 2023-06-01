@@ -1,4 +1,5 @@
-package com.capstone.global.JWT;
+package com.capstone.global.security.jwt;
+
 
 import java.util.Collection;
 

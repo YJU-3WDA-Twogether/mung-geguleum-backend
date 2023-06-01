@@ -1,4 +1,5 @@
-package com.capstone.global.JWT.dto;
+package com.capstone.global.security.jwt.dto;
+
 
 public class TokenReIssueResponseDto {
 

@@ -1,9 +1,12 @@
-package com.capstone.global.JWT.service;
+package com.capstone.global.security.jwt.service;
+
+
 
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,13 +14,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.capstone.domain.user.entity.User;
 import com.capstone.domain.user.exception.UserNotFoundException;
 import com.capstone.domain.user.repository.UserRepository;
-import com.capstone.global.JWT.JwtAuthentication;
-import com.capstone.global.JWT.JwtAuthenticationToken;
-import com.capstone.global.JWT.JwtTokenProvider;
-import com.capstone.global.JWT.dto.TokenReIssueResponseDto;
-import com.capstone.global.JWT.entity.RefreshToken;
-import com.capstone.global.JWT.exception.RefreshTokenNotFoundException;
-import com.capstone.global.JWT.repository.RefreshTokenRepository;
+import com.capstone.global.security.jwt.JwtAuthentication;
+import com.capstone.global.security.jwt.JwtAuthenticationToken;
+import com.capstone.global.security.jwt.JwtTokenProvider;
+import com.capstone.global.security.jwt.dto.TokenInfo;
+import com.capstone.global.security.jwt.dto.TokenReIssueResponseDto;
+import com.capstone.global.security.jwt.entity.RefreshToken;
+import com.capstone.global.security.jwt.exception.RefreshTokenNotFoundException;
+import com.capstone.global.security.jwt.repository.RefreshTokenRepository;
 import com.capstone.global.util.CookieUtils;
 
 import io.jsonwebtoken.Claims;
@@ -58,14 +62,14 @@ public class TokenService {
 
 	}
 
-	public String reIssueAccessToken(Long userId, String role) {
-		return jwtTokenProvider.createAccessToken(userId, role);
+	public String reIssueAccessToken(Long uno, String role) {
+		return jwtTokenProvider.createAccessToken(uno, role);
 	}
 
 	@Transactional
-	public String reIssueRefreshToken(Long userId) {
+	public String reIssueRefreshToken(Long uno) {
 		String token = jwtTokenProvider.createRefreshToken();
-		RefreshToken reIssuedRefreshToken = new RefreshToken(userId, token);
+		RefreshToken reIssuedRefreshToken = new RefreshToken(uno, token);
 
 		return refreshTokenRepository.save(reIssuedRefreshToken).getRefreshToken();
 	}
@@ -90,13 +94,29 @@ public class TokenService {
 
 		Claims claims = jwtTokenProvider.getClaims(accessToken);
 
-		Long userId = claims.get("userId", Long.class);
+		Long uno = claims.get("uno", Long.class);
 		String role = claims.get("role", String.class);
 
-		JwtAuthentication principal = new JwtAuthentication(accessToken, userId, role);
+		JwtAuthentication principal = new JwtAuthentication(accessToken, uno, role);
 		List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
 
 		return new JwtAuthenticationToken(principal, null, authorities);
+	}
+	
+	public TokenInfo generateToken(Authentication authentication) {
+		System.out.println(authentication.getName() +" 테스트입니다..");
+		User user = userRepository.findByUid(authentication.getName())
+				.orElseThrow(() -> new UserNotFoundException());
+		System.out.println("user 아이디"+user.getUid());
+		String refreshToken = jwtTokenProvider.createRefreshToken();
+		String accessToken = jwtTokenProvider.createAccessToken(user.getUno(), user.getUserGrade().getGname());
+		jwtTokenProvider.saveRefreshToken(user.getUno(), refreshToken);
+		
+		  return TokenInfo.builder()
+	                .grantType("Bearer")
+	                .accessToken(accessToken)
+	                .refreshToken(refreshToken)
+	                .build();
 	}
 
 }

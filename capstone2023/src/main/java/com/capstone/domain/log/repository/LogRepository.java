@@ -12,7 +12,8 @@ import com.capstone.domain.log.entity.Log;
 
 public interface LogRepository extends JpaRepository<Log ,Long>{
 
-	@Query("SELECT l FROM Log l WHERE l.user.uno = :uno AND DATE_FORMAT(l.regDate, '%Y-%m') LIKE %:date%")
+//	@Query("SELECT l FROM Log l WHERE l.user.uno = :uno AND DATE_FORMAT(l.regDate, '%Y-%m') LIKE %:date%")
+	@Query(value = "SELECT l FROM Log l WHERE l.user.uno = :uno AND DATE_FORMAT(l.regDate, '%Y-%m') LIKE :date", nativeQuery = true)
 	Page<Log> findByUserAndRegDate(@Param("uno") Long uno, @Param("date") String date, Pageable pageable);
 	 
 	@Query("SELECT l From Log l WHERE l.user.uno = :uno AND l.logState.lsno = :lsno")
@@ -22,6 +23,11 @@ public interface LogRepository extends JpaRepository<Log ,Long>{
 	Page<Log> findByPuserAndLogState(@Param("puno") Long puno, @Param("lsno") Long lsno, Pageable pageable);
 	
 	
+
+	 
+
 	
+
+
 }
 	

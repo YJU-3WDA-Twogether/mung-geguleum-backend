@@ -1,4 +1,4 @@
-package com.capstone.global.JWT;
+package com.capstone.global.security.jwt.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

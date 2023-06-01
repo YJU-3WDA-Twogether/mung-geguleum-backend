@@ -1,6 +1,7 @@
-package com.capstone.global.JWT;
+package com.capstone.global.security.jwt;
 
-import com.capstone.global.JWT.exception.TokenInvalidException;
+
+import com.capstone.global.security.jwt.exception.TokenInvalidException;
 
 import lombok.ToString;
 

@@ -1,4 +1,5 @@
-package com.capstone.global.JWT.exception;
+package com.capstone.global.security.jwt.exception;
+
 
 import com.capstone.global.exception.ErrorCode;
 

@@ -1,4 +1,5 @@
-package com.capstone.global.JWT.filter;
+package com.capstone.global.security.jwt.filter;
+
 
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
