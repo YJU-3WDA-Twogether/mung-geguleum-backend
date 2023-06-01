@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.capstone.domain.board.entity.Board;
 import com.capstone.domain.file.entity.File;
+import com.capstone.domain.heart.entity.Heart;
 import com.capstone.domain.log.entity.Log;
 import com.capstone.domain.reply.entity.Reply;
 import com.capstone.domain.tag.entity.Tag;
@@ -60,5 +61,8 @@ public class Post extends BaseEntity{
 
     @OneToMany(mappedBy = "post", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<Reply> replys = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    private List<Heart> hearts = new ArrayList<>();
 }
    

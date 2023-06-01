@@ -3,7 +3,9 @@ package com.capstone.domain.post.mapper;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.capstone.domain.heart.entity.Heart;
 import com.capstone.domain.reply.dto.ReplyResponse;
+import com.capstone.domain.reply.entity.Reply;
 import org.springframework.stereotype.Component;
 
 import com.capstone.domain.board.entity.Board;
@@ -82,7 +84,7 @@ public class PostMapper {
 		
 		
 		//DTO에 Entity 담기 
-				public PostResponse toPostResponse(Post post,Board board, User user) {
+				public PostResponse toPostResponse(Post post,Board board, User user, List<ReplyResponse> reply, List<Heart> heart) {
 					return PostResponse.builder()
 							.pno(post.getPno())
 							.title(post.getTitle())
@@ -92,6 +94,8 @@ public class PostMapper {
 							.bname(board.getBname())
 							.uid(user.getUid())
 							.uno(post.getUser().getUno())
+							.rCount((long) reply.size())
+							.hCount((long) heart.size())
 							.file(post.getFiles().stream().map(file -> fileMapper.toFileDTO(file,post.getPno())).collect(Collectors.toList()))
 							.build();
 					
