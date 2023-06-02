@@ -3,9 +3,6 @@ package com.capstone.domain.post.mapper;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.capstone.domain.heart.entity.Heart;
-import com.capstone.domain.reply.dto.ReplyResponse;
-import com.capstone.domain.reply.entity.Reply;
 import org.springframework.stereotype.Component;
 
 import com.capstone.domain.board.entity.Board;
@@ -15,6 +12,8 @@ import com.capstone.domain.post.dto.PostRequest;
 import com.capstone.domain.post.dto.PostResponse;
 import com.capstone.domain.post.entity.Post;
 import com.capstone.domain.user.entity.User;
+import com.capstone.domain.user.repository.UserGradeRepository;
+import com.capstone.domain.user.repository.UserRepository;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -65,8 +64,7 @@ public class PostMapper {
 		}
 	
 	//DTO에 Entity 담기 페이징 기능을 할때 파일도 담아서 같이보낸다. postEntity에서 조인을 통해서 데이터 호출해야함.
-		public PostResponse toPostResponse(Post post, List<FileDTO> file, List<ReplyResponse> reply) {
-
+		public PostResponse toPostResponse(Post post, List<FileDTO> file) {
 			return PostResponse.builder()
 					.pno(post.getPno())
 					.title(post.getTitle())
@@ -77,14 +75,13 @@ public class PostMapper {
 					.uno(post.getUser().getUno())
 					.bname(post.getBoard().getBname())
 					.file(file)
-					.reply(reply)
 					.build();
 		}
 		
 		
 		
 		//DTO에 Entity 담기 
-				public PostResponse toPostResponse(Post post,Board board, User user, List<ReplyResponse> reply, List<Heart> heart) {
+				public PostResponse toPostResponse(Post post,Board board, User user) {
 					return PostResponse.builder()
 							.pno(post.getPno())
 							.title(post.getTitle())
@@ -94,8 +91,6 @@ public class PostMapper {
 							.bname(board.getBname())
 							.uid(user.getUid())
 							.uno(post.getUser().getUno())
-							.rCount((long) reply.size())
-							.hCount((long) heart.size())
 							.file(post.getFiles().stream().map(file -> fileMapper.toFileDTO(file,post.getPno())).collect(Collectors.toList()))
 							.build();
 					
