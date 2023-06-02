@@ -4,7 +4,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +18,7 @@ import com.capstone.domain.user.dto.UserCreateForm;
 import com.capstone.domain.user.dto.UserDTO;
 import com.capstone.domain.user.dto.UserLoginForm;
 import com.capstone.domain.user.service.UserService;
+import com.capstone.global.security.jwt.dto.TokenInfo;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -75,11 +75,13 @@ public class UserController {
 		return new ResponseEntity<>(true, HttpStatus.NO_CONTENT);
 	}
 	
-	//json형태로 데이터를 보내야함.
+
 	@PostMapping("/login")
 	public ResponseEntity<?> userLogin(@Valid @RequestBody UserLoginForm userLoginForm) {
-		UserDTO userDTO =userService.login(userLoginForm.getUid(), userLoginForm.getPassword());
-		return ResponseEntity.ok(userDTO);
+		TokenInfo tokenInfo =userService.login(userLoginForm.getUid(), userLoginForm.getPassword());
+		return ResponseEntity.ok(tokenInfo);
+		
+	
 		
 	}
 	

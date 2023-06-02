@@ -18,10 +18,7 @@
 
     <!-- Logger -->
     <logger name="com.capstone" level="DEBUG" appender-ref="console" />
-    <logger name="com.capstone.Config" level="DEBUG" appender-ref="console" />
-    <logger name="com.capstone.Controller" level="DEBUG" appender-ref="console" />
-    <logger name="jdbc.sqlonly" level="INFO" appender-ref="console-infolog" />
-    <logger name="jdbc.resultsettable" level="INFO" appender-ref="console-infolog" />
+
 
     <!-- Root Logger -->
     <root level="off">

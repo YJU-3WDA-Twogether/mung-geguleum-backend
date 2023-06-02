@@ -19,6 +19,7 @@ public enum ErrorCode {
 	, MISSING_REQUEST_VALUE_ERROR(HttpStatus.BAD_REQUEST,"C009","입력된 주소 값이 잘못되었습니다.")
 	, INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR , "C010" , "관리자에게 문의하여 주세요.")
 	
+	
 	//Service 단에서 처리할 에러코드
 	
 	//User
