@@ -98,7 +98,7 @@ public class UserController {
 		}
 	}
 	
-	//email중복체크
+	//email중복체크 
 	@GetMapping("/emailchk/{email}")
 	public ResponseEntity<Boolean> emailchk(@PathVariable String email){
 		boolean b = this.userService.emailchk(email);
