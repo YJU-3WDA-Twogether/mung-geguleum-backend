@@ -44,7 +44,7 @@ public interface PostRepository extends JpaRepository<Post, Long>{
 	    
 	    
 	  //모든게시판을 조회하기위해서 사용하는 쿼리다. 애는 된다.
-		  @Query("SELECT distinct p, b, u FROM Post p JOIN p.board b JOIN p.user u left JOIN p.files ")
+		  @Query("SELECT distinct p, b, u FROM Post p JOIN p.board b JOIN p.user u left JOIN p.files")
 		    Page<Object[]> findAllWithBoardAndUser(Pageable pageable);
 		    
 		//특정 게시판을 조회하는 메소드

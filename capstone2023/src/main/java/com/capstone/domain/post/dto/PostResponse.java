@@ -3,6 +3,7 @@ package com.capstone.domain.post.dto;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.capstone.domain.heart.dto.HeartDTO;
 import com.capstone.domain.reply.dto.ReplyResponse;
 import org.springframework.stereotype.Component;
 
@@ -47,4 +48,6 @@ public class PostResponse {
 	
 	//추후 댓글 DTO 담아서 저장한다음에 보내면됩니다.
 	List <ReplyResponse> reply;
+
+	List <HeartDTO> heart;
 }

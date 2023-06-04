@@ -5,14 +5,11 @@ package com.capstone.domain.post.service;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.capstone.domain.heart.Mapping.HeartMapper;
-import com.capstone.domain.heart.dto.HeartRequest;
-import com.capstone.domain.heart.entity.Heart;
+import com.capstone.domain.heart.Mapper.HeartMapper;
+import com.capstone.domain.heart.dto.HeartDTO;
 import com.capstone.domain.reply.dto.ReplyResponse;
-import com.capstone.domain.reply.entity.Reply;
 import com.capstone.domain.reply.mapper.ReplyMapper;
 import com.capstone.domain.reply.repository.ReplyRepository;
 import org.springframework.data.domain.Page;
@@ -96,15 +93,18 @@ public class PostService {
 		Pageable pageable = PageRequest.of(page,30);
 		//Pageable pageable = PageRequest.of(page,10);
 		Page<Object[]> result = postRepository.findAllWithBoardAndUser(pageable);
+
 	    return result.map(objects -> {
 	        Post post = (Post) objects[0];
 	        Board board = (Board) objects[1];
 	        User user = (User) objects[2];
+
 			List<ReplyResponse> replyDTOList = post.getReplys().stream()
 					.map(reply -> replyMapper.toReplyDTO(reply, post.getPno()))
 					.collect(Collectors.toList());
-			List<Heart> heartDTOList = post.getHearts().stream()
-					.map(heart -> heartMapper.toEntity(post, user))
+
+			List<HeartDTO> heartDTOList = post.getHearts().stream()
+					.map(heart -> heartMapper.toHeartDTO(heart))
 					.collect(Collectors.toList());
 	        return postMapper.toPostResponse(post,board,user, replyDTOList, heartDTOList) ;
 
@@ -123,14 +123,16 @@ public class PostService {
 	        Post post = (Post) objects[0];
 	        Board board = (Board) objects[1];
 	        User user = (User) objects[2];
+
 			List<ReplyResponse> replyDTOList = post.getReplys().stream()
 					.map(reply -> replyMapper.toReplyDTO(reply, post.getPno()))
 					.collect(Collectors.toList());
 
-			List<Heart> heartDTOList = post.getHearts().stream()
-					.map(heart -> heartMapper.toEntity(post, user))
+			List<HeartDTO> heartDTOList = post.getHearts().stream()
+					.map(heart -> heartMapper.toHeartDTO(heart))
 					.collect(Collectors.toList());
-	        return postMapper.toPostResponse(post,board,user,replyDTOList, heartDTOList) ;
+
+			return postMapper.toPostResponse(post,board,user, replyDTOList, heartDTOList) ;
 
 	    });
 	}
@@ -144,8 +146,8 @@ public class PostService {
     	        .collect(Collectors.toList());
 
         List<ReplyResponse> replyDTOList = post.getReplys().stream()
-                .map(reply -> replyMapper.toReplyDTO(reply, pno))
-                .collect(Collectors.toList());
+				.map(reply -> replyMapper.toReplyDTO(reply, pno))
+				.collect(Collectors.toList());
 
 	   return postMapper.toPostResponse(post, fileDTOList, replyDTOList);
 	}
@@ -179,14 +181,15 @@ public class PostService {
 			Post post = (Post) objects[0];
 			Board board = (Board) objects[1];
 			User user = (User) objects[2];
+
 			List<ReplyResponse> replyDTOList = post.getReplys().stream()
 					.map(reply -> replyMapper.toReplyDTO(reply, post.getPno()))
 					.collect(Collectors.toList());
 
-			List<Heart> heartDTOList = post.getHearts().stream()
-					.map(heart -> heartMapper.toEntity(post, user))
+			List<HeartDTO> heartDTOList = post.getHearts().stream()
+					.map(heart -> heartMapper.toHeartDTO(heart))
 					.collect(Collectors.toList());
-			return postMapper.toPostResponse(post,board,user,replyDTOList, heartDTOList) ;
+			return postMapper.toPostResponse(post,board,user, replyDTOList, heartDTOList) ;
 		});
 	}
 
