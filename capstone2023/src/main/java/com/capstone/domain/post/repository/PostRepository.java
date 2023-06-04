@@ -27,7 +27,8 @@ public interface PostRepository extends JpaRepository<Post, Long>{
 	List<Post> findByTitleLike(String title);
 	
 	Page<Post> findAll(Pageable pageable);
-	
+
+
 	Page<Post> findAllByUserAndBoard(User user, Board board, Pageable pageable);
 	
 	
@@ -49,11 +50,8 @@ public interface PostRepository extends JpaRepository<Post, Long>{
 		//특정 게시판을 조회하는 메소드
 	    @Query("SELECT distinct p, b, u FROM Post p left JOIN p.files JOIN p.board b JOIN p.user u  WHERE b.bname = :bname ORDER BY p.pno DESC")
 	    Page<Object[]> findAllByBoardName(String bname, Pageable pageable);
-	    
-	    
-	   
-	   
 
+		@Query("SELECT distinct p, b, u FROM Post p left JOIN p.files JOIN p.board b JOIN p.user u  WHERE u.uno = :uno ORDER BY p.pno DESC")
+		Page<Object[]> findMyPost(Pageable pageable, Long uno);
 
-	
 }

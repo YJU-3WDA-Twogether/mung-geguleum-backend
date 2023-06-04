@@ -170,7 +170,25 @@ public class PostService {
 		this.postRepository.deleteById(pno);
 	}
 		
+	// 내가 쓴 게시글 메소드
+	@Transactional
+	public Page<PostResponse> getMyPost(int page, Long uno) {
+		Pageable pageable = PageRequest.of(page, 30, Sort.by("pno").descending());
+		Page<Object[]> result = postRepository.findMyPost(pageable, uno);
+		return result.map(objects -> {
+			Post post = (Post) objects[0];
+			Board board = (Board) objects[1];
+			User user = (User) objects[2];
+			List<ReplyResponse> replyDTOList = post.getReplys().stream()
+					.map(reply -> replyMapper.toReplyDTO(reply, post.getPno()))
+					.collect(Collectors.toList());
 
+			List<Heart> heartDTOList = post.getHearts().stream()
+					.map(heart -> heartMapper.toEntity(post, user))
+					.collect(Collectors.toList());
+			return postMapper.toPostResponse(post,board,user,replyDTOList, heartDTOList) ;
+		});
+	}
 
 	
 }

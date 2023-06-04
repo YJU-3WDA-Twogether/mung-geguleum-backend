@@ -72,8 +72,14 @@ public class PostController {
 			return new ResponseEntity<>(true, HttpStatus.NO_CONTENT);
 		}
 
-	
+	//내가 쓴 게시글 조회
+	@GetMapping("/getMyPost")
+	public ResponseEntity<Page> getMyPost(@RequestParam(value="page", defaultValue="0") int page, @RequestParam Long uno){
+		Page<PostResponse> paging = this.postService.getMyPost(page, uno);
+		return ResponseEntity.ok(paging);
+	}
 
-		
-	
+
+
+
 }
