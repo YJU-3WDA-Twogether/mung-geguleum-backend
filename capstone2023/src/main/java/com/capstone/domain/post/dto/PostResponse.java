@@ -44,6 +44,10 @@ public class PostResponse {
 
 	private Long hCount;
 
+	private Long lCount;
+
+	private Boolean hExist;
+
 	List <FileDTO> file;
 	
 	//추후 댓글 DTO 담아서 저장한다음에 보내면됩니다.

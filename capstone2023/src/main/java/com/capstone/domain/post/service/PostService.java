@@ -89,7 +89,7 @@ public class PostService {
 	
 	//모든페이지 전체조회함.
 	@Transactional
-	public Page<PostResponse> getList(int page) {
+	public Page<PostResponse> getList(int page, Long uno) {
 		Pageable pageable = PageRequest.of(page,30);
 		//Pageable pageable = PageRequest.of(page,10);
 		Page<Object[]> result = postRepository.findAllWithBoardAndUser(pageable);
@@ -106,7 +106,7 @@ public class PostService {
 			List<HeartDTO> heartDTOList = post.getHearts().stream()
 					.map(heart -> heartMapper.toHeartDTO(heart))
 					.collect(Collectors.toList());
-	        return postMapper.toPostResponse(post,board,user, replyDTOList, heartDTOList) ;
+	        return postMapper.toPostResponse(post,board,user, replyDTOList, heartDTOList, uno) ;
 
 	    });
 	}
@@ -114,7 +114,7 @@ public class PostService {
 	
 	//한  종류 게시판 조회
 	@Transactional
-	public Page<PostResponse> getList(int page, String bname){
+	public Page<PostResponse> getList(int page, String bname, Long uno){
 		//Pageable pageable = PageRequest.of(page,10);
 		 Pageable pageable = PageRequest.of(page, 30, Sort.by("pno").descending());
 		Page<Object[]> result = postRepository.findAllByBoardName(bname, pageable);
@@ -132,7 +132,7 @@ public class PostService {
 					.map(heart -> heartMapper.toHeartDTO(heart))
 					.collect(Collectors.toList());
 
-			return postMapper.toPostResponse(post,board,user, replyDTOList, heartDTOList) ;
+			return postMapper.toPostResponse(post,board,user, replyDTOList, heartDTOList, uno) ;
 
 	    });
 	}
@@ -189,7 +189,7 @@ public class PostService {
 			List<HeartDTO> heartDTOList = post.getHearts().stream()
 					.map(heart -> heartMapper.toHeartDTO(heart))
 					.collect(Collectors.toList());
-			return postMapper.toPostResponse(post,board,user, replyDTOList, heartDTOList) ;
+			return postMapper.toPostResponse(post,board,user, replyDTOList, heartDTOList, uno) ;
 		});
 	}
 

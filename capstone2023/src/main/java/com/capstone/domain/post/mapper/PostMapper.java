@@ -85,7 +85,14 @@ public class PostMapper {
 		
 		
 		//DTO에 Entity 담기 
-				public PostResponse toPostResponse(Post post,Board board, User user, List<ReplyResponse> replyDTO, List<HeartDTO> heartDTO) {
+				public PostResponse toPostResponse(Post post,Board board, User user, List<ReplyResponse> replyDTO, List<HeartDTO> heartDTO, Long uno) {
+					long logCount = post.getLogs().stream()
+							.filter(log -> log.getLogState().getLsno() == 2)
+							.count();
+
+					boolean hExist = post.getHearts().stream()
+							.anyMatch(heart -> heart.getUser().getUno().equals(uno));
+
 					return PostResponse.builder()
 							.pno(post.getPno())
 							.title(post.getTitle())
@@ -97,6 +104,8 @@ public class PostMapper {
 							.uno(post.getUser().getUno())
 							.rCount((long) post.getReplys().size())
 							.hCount((long) post.getHearts().size())
+							.lCount(logCount)
+							.hExist(hExist)
 							.file(post.getFiles().stream().map(file -> fileMapper.toFileDTO(file,post.getPno())).collect(Collectors.toList()))
 							.heart(heartDTO)
 							.reply(replyDTO)
