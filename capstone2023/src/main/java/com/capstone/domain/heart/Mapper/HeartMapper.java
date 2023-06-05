@@ -1,10 +1,9 @@
-package com.capstone.domain.heart.Mapping;
+package com.capstone.domain.heart.Mapper;
 
-import com.capstone.domain.heart.dto.HeartRequest;
+import com.capstone.domain.heart.dto.HeartDTO;
 import com.capstone.domain.heart.entity.Heart;
 import com.capstone.domain.post.entity.Post;
 import com.capstone.domain.user.entity.User;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +15,13 @@ public class HeartMapper {
         return Heart.builder()
                 .post(post)
                 .user(user)
+                .build();
+    }
+
+    public HeartDTO toHeartDTO(Heart heart) {
+        return HeartDTO.builder()
+                .pno(heart.getPost().getPno())
+                .uno(heart.getUser().getUno())
                 .build();
     }
 }

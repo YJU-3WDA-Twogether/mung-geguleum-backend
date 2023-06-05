@@ -34,15 +34,15 @@ public class PostController {
 	private final PostService postService;
 	
 	@GetMapping("/getlist")
-	public ResponseEntity<Page> getList(@RequestParam(value="page", defaultValue="0") int page) {
-		Page<PostResponse> paging = this.postService.getList(page);
+	public ResponseEntity<Page> getList(@RequestParam(value="page", defaultValue="0") int page, @RequestParam Long uno) {
+		Page<PostResponse> paging = this.postService.getList(page, uno);
 		return ResponseEntity.ok(paging);	
 	}
 	
 	//특정 게시판의 게시글 전체조회 (ex: 음악 게시판의 모든 게시글조회)
 	@GetMapping("/getlist/{bname}")
-	public ResponseEntity<Page> getList(@RequestParam(value="page", defaultValue="0") int page, @PathVariable String bname) {
-		Page<PostResponse> paging = this.postService.getList(page, bname);
+	public ResponseEntity<Page> getList(@RequestParam(value="page", defaultValue="0") int page, @PathVariable String bname, @RequestParam Long uno) {
+		Page<PostResponse> paging = this.postService.getList(page, bname, uno);
 		return ResponseEntity.ok(paging);
 	}
 	
@@ -72,8 +72,14 @@ public class PostController {
 			return new ResponseEntity<>(true, HttpStatus.NO_CONTENT);
 		}
 
-	
+	//내가 쓴 게시글 조회
+	@GetMapping("/getMyPost")
+	public ResponseEntity<Page> getMyPost(@RequestParam(value="page", defaultValue="0") int page, @RequestParam Long uno){
+		Page<PostResponse> paging = this.postService.getMyPost(page, uno);
+		return ResponseEntity.ok(paging);
+	}
 
-		
-	
+
+
+
 }
