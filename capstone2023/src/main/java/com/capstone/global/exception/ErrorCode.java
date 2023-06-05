@@ -58,15 +58,19 @@ public enum ErrorCode {
 	,REFRESH_TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "A001", "존재하지 않는 리프레쉬 토큰입니다.")
 	,TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "A002", "유효하지 않은 토큰입니다.")
 	,TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "A003", "만료된 토큰입니다.")
-	
-	
+
+
 	//Heart
-	
+	,HEART_ALREADY_EXIST(HttpStatus.CONFLICT, "H001", "유저가 이미 하트를 눌렀습니다.")
+	,HEART_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, "H002", " 존재하지 않는 하트입니다.")
 	//
 	//Reply
-	, 
-	
-	
+	,REPLY_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND,"R001", "존재하지 않는 댓글입니다..")
+	,REPLY_NULL_POINT_ERROR(HttpStatus.BAD_REQUEST, "R002", "삭제된 댓글 입니다.")
+	,REPLY_INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"R003", "관리자에게 문의하여 주세요.")
+
+
+
 	;
 	
 	private final HttpStatus status;
