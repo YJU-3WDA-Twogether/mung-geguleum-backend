@@ -6,9 +6,6 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.core.Authentication;
 //import org.springframework.security.crypto.password.PasswordEncoder;
 //import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,12 +15,11 @@ import com.capstone.domain.user.dto.UserCreateForm;
 import com.capstone.domain.user.dto.UserDTO;
 import com.capstone.domain.user.entity.User;
 import com.capstone.domain.user.entity.UserGrade;
+import com.capstone.domain.user.exception.UserMissingValueException;
 import com.capstone.domain.user.exception.UserNotFoundException;
 import com.capstone.domain.user.mapper.UserMapper;
 import com.capstone.domain.user.repository.UserGradeRepository;
 import com.capstone.domain.user.repository.UserRepository;
-import com.capstone.global.security.jwt.dto.TokenInfo;
-import com.capstone.global.security.jwt.service.TokenService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -34,9 +30,6 @@ public class UserService {
 	private final UserGradeRepository userGradeRepository;
 	private final UserRepository userRepository;
 	private final UserMapper userMapper;
-	private final AuthenticationManagerBuilder authenticationManagerBuilder;
-	private final TokenService tokenService;
-	    
 //	private final PasswordEncoder passwordEncoder;
 //	
 	//유저 회원가입 메소드 
@@ -69,21 +62,11 @@ public class UserService {
 		this.userRepository.deleteById(uno);	
 	}
 	//유저 로그인 메소드 
+	//추후에 시큐리티 및 jwt 발급을 추가해야함 23.04.04 작성한메소드. 
 	@Transactional
-	public TokenInfo login(String uid, String password) {
-		
-		   UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(uid, password);
-		   
-	        // 2. 실제 검증 (사용자 비밀번호 체크)이 이루어지는 부분
-	        // authenticate 매서드가 실행될 때 CustomUserDetailsService 에서 만든 loadUserByUsername 메서드가 실행
-	        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-	 
-	        // 3. 인증 정보를 기반으로 JWT 토큰 생성
-	        TokenInfo tokenInfo = tokenService.generateToken(authentication);
-	 
-	        return tokenInfo;
-	//	return null;
-		
+	public UserDTO login(String uid, String password) {
+		User user = this.userRepository.findByUidAndPassword(uid, password).orElseThrow(()-> new UserMissingValueException());
+		return userMapper.toUserDTO(user);
 	}
 		
 	//페이징 사용한 유저 조회

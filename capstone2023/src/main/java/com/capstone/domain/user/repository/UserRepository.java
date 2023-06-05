@@ -12,7 +12,6 @@ import com.capstone.domain.user.entity.User;
 
 public interface UserRepository extends JpaRepository<User, Long>{
 	
-	@Query("SELECT u FROM User u LEFT JOIN FETCH u.userGrade where uno = :uno")
 	Optional<User> findByUno(Long uno);
 	
 	Optional<User> findByUid(String uid);

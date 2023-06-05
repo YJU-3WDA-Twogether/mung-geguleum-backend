@@ -5,20 +5,14 @@ import java.util.List;
 
 import com.capstone.domain.board.entity.Board;
 import com.capstone.domain.file.entity.File;
+import com.capstone.domain.heart.entity.Heart;
 import com.capstone.domain.log.entity.Log;
+import com.capstone.domain.reply.entity.Reply;
 import com.capstone.domain.tag.entity.Tag;
 import com.capstone.domain.user.entity.User;
 import com.capstone.global.entity.BaseEntity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -64,5 +58,11 @@ public class Post extends BaseEntity{
     
     @OneToMany(mappedBy = "post")
     private List<Tag> tags = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    private List<Reply> replys = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    private List<Heart> hearts = new ArrayList<>();
 }
    
