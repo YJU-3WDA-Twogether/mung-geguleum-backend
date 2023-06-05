@@ -2,9 +2,9 @@ package com.capstone.domain.heart.service;
 
 
 import com.capstone.domain.board.exception.BoardNotFoundException;
-import com.capstone.domain.heart.Mapper.HeartMapper;
+import com.capstone.domain.heart.Mapping.HeartMapper;
+import com.capstone.domain.heart.dto.HeartRequest;
 
-import com.capstone.domain.heart.dto.HeartDTO;
 import com.capstone.domain.heart.entity.Heart;
 
 import com.capstone.domain.heart.exception.HeartExistException;
@@ -28,7 +28,7 @@ public class HeartService {
 
     private final HeartMapper heartMapper;
     @Transactional
-    public void insert(HeartDTO heartDTO){
+    public void insert(HeartRequest heartDTO){
 
         User user = userRepository.findById(heartDTO.getUno())
                 .orElseThrow(() -> new UserNotFoundException());
@@ -48,7 +48,7 @@ public class HeartService {
     }
 
     @Transactional
-    public void delete(HeartDTO heartDTO) {
+    public void delete(HeartRequest heartDTO) {
 
         User user = userRepository.findById(heartDTO.getUno())
                 .orElseThrow(() -> new UserNotFoundException());

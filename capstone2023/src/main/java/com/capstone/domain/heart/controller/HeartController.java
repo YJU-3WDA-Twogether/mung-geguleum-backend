@@ -1,7 +1,8 @@
 package com.capstone.domain.heart.controller;
 
 
-import com.capstone.domain.heart.dto.HeartDTO;
+import com.capstone.domain.heart.dto.HeartRequest;
+
 import com.capstone.domain.heart.service.HeartService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,13 +21,13 @@ public class HeartController {
     private final HeartService heartService;
 
     @PostMapping("/get")
-    public ResponseEntity<Boolean> insert(@RequestBody @Valid HeartDTO heartDTO) {
+    public ResponseEntity<Boolean> insert(@RequestBody @Valid HeartRequest heartDTO) {
         heartService.insert(heartDTO);
         return ResponseEntity.ok(true);
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<Boolean> delete(@RequestBody @Valid HeartDTO heartDTO) {
+    public ResponseEntity<Boolean> delete(@RequestBody @Valid HeartRequest heartDTO) {
         heartService.delete(heartDTO);
         return ResponseEntity.ok(true);
     }

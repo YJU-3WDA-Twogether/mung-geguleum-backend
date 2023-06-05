@@ -10,11 +10,10 @@ import org.springframework.stereotype.Component;
 @Component
 @NoArgsConstructor
 @AllArgsConstructor
-public class HeartDTO {
+public class HeartRequest {
 
     private Long uno;
 
     private Long pno;
 
 }
-
