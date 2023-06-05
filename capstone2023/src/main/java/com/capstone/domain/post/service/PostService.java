@@ -5,16 +5,8 @@ package com.capstone.domain.post.service;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.capstone.domain.heart.Mapping.HeartMapper;
-import com.capstone.domain.heart.dto.HeartRequest;
-import com.capstone.domain.heart.entity.Heart;
-import com.capstone.domain.reply.dto.ReplyResponse;
-import com.capstone.domain.reply.entity.Reply;
-import com.capstone.domain.reply.mapper.ReplyMapper;
-import com.capstone.domain.reply.repository.ReplyRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -51,8 +43,6 @@ public class PostService {
 	private final UserRepository userRepository;
 	private final PostRepository postRepository;
 	private final BoardRepository boardRepository;
-	private final ReplyRepository replyRepository;
-
 	private final FileService fileService;
 	private final LogService logService;
 	private final TagService tagService;
@@ -60,8 +50,6 @@ public class PostService {
 	private final PostMapper postMapper;
 	private final LogMapper logMapper;
 	private final FileMapper fileMapper;
-    private final ReplyMapper replyMapper;
-	private final HeartMapper heartMapper;
 	
 	//게시판 생성 메소드
 	@Transactional(rollbackFor = {Exception.class, IOException.class})
@@ -100,14 +88,8 @@ public class PostService {
 	        Post post = (Post) objects[0];
 	        Board board = (Board) objects[1];
 	        User user = (User) objects[2];
-			List<ReplyResponse> replyDTOList = post.getReplys().stream()
-					.map(reply -> replyMapper.toReplyDTO(reply, post.getPno()))
-					.collect(Collectors.toList());
-			List<Heart> heartDTOList = post.getHearts().stream()
-					.map(heart -> heartMapper.toEntity(post, user))
-					.collect(Collectors.toList());
-	        return postMapper.toPostResponse(post,board,user, replyDTOList, heartDTOList) ;
-
+	        return postMapper.toPostResponse(post,board,user) ;
+	        		
 	    });
 	}
 
@@ -118,36 +100,23 @@ public class PostService {
 		//Pageable pageable = PageRequest.of(page,10);
 		 Pageable pageable = PageRequest.of(page, 30, Sort.by("pno").descending());
 		Page<Object[]> result = postRepository.findAllByBoardName(bname, pageable);
-
 	    return result.map(objects -> {
 	        Post post = (Post) objects[0];
 	        Board board = (Board) objects[1];
 	        User user = (User) objects[2];
-			List<ReplyResponse> replyDTOList = post.getReplys().stream()
-					.map(reply -> replyMapper.toReplyDTO(reply, post.getPno()))
-					.collect(Collectors.toList());
-
-			List<Heart> heartDTOList = post.getHearts().stream()
-					.map(heart -> heartMapper.toEntity(post, user))
-					.collect(Collectors.toList());
-	        return postMapper.toPostResponse(post,board,user,replyDTOList, heartDTOList) ;
-
+	        return postMapper.toPostResponse(post,board,user) ;
+	        		
 	    });
 	}
 	
 	//게시판 디테일 조회하는 메소드
 	@Transactional
 	public PostResponse postRead(Long pno) {
-	    Post post= postRepository.findByFilesAndReply(pno).orElseThrow(()-> new PostNotFoundException());
+	    Post post= postRepository.findByPnoWithFiles(pno).orElseThrow(()-> new PostNotFoundException());
 		List<FileDTO> fileDTOList = post.getFiles().stream()
     	        .map(file -> fileMapper.toFileDTO(file, pno))
     	        .collect(Collectors.toList());
-
-        List<ReplyResponse> replyDTOList = post.getReplys().stream()
-                .map(reply -> replyMapper.toReplyDTO(reply, pno))
-                .collect(Collectors.toList());
-
-	   return postMapper.toPostResponse(post, fileDTOList, replyDTOList);
+	   return postMapper.toPostResponse(post, fileDTOList);
 	}
 	
 	
