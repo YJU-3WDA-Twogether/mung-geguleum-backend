@@ -34,8 +34,13 @@ public class SecurityConfig {
 			.cors()
 			.and()
 			.authorizeHttpRequests()
-			.requestMatchers("/**").permitAll()
-			.requestMatchers("/token", "/user/login","/user/create","/user/read/**","post/getlist/**").permitAll()
+			.requestMatchers("/").permitAll()
+			.requestMatchers("/token" ).permitAll()
+			.requestMatchers("/user/login", "user/read/**","user/create" ,"/user/useridchk/**","/user/emailchk/**","/user/nicknamechk/**" ).permitAll() //user관련된 permitall입니다.
+			.requestMatchers("/post/getlist/**","/post/read/**").permitAll() //post컨트롤러와 관련된 설정
+			.requestMatchers("/file/read/**").permitAll()
+			.requestMatchers("/log/getlist").permitAll()
+			.requestMatchers("/tag/json").permitAll()
 			.anyRequest().authenticated()
 			.and()
 			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
