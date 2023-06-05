@@ -3,6 +3,7 @@ package com.capstone.domain.post.dto;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.capstone.domain.reply.dto.ReplyResponse;
 import org.springframework.stereotype.Component;
 
 import com.capstone.domain.file.dto.FileDTO;
@@ -37,9 +38,13 @@ public class PostResponse {
 	private String uid;
 	
 	private Long uno;
-	
+
+	private Long rCount;
+
+	private Long hCount;
+
 	List <FileDTO> file;
 	
 	//추후 댓글 DTO 담아서 저장한다음에 보내면됩니다.
-	List <Object> reply;
+	List <ReplyResponse> reply;
 }
