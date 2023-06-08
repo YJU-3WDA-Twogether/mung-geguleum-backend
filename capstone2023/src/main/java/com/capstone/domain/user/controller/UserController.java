@@ -20,6 +20,8 @@ import com.capstone.domain.user.dto.UserLoginForm;
 import com.capstone.domain.user.service.UserService;
 import com.capstone.global.security.jwt.dto.TokenInfo;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -77,12 +79,16 @@ public class UserController {
 	
 
 	@PostMapping("/login")
-	public ResponseEntity<?> userLogin(@Valid @RequestBody UserLoginForm userLoginForm) {
+	public ResponseEntity<?> userLogin(@Valid @RequestBody UserLoginForm userLoginForm , HttpServletResponse response) {
 		TokenInfo tokenInfo =userService.login(userLoginForm.getUid(), userLoginForm.getPassword());
-		return ResponseEntity.ok(tokenInfo);
-		
-	
-		
+		  Cookie refreshTokenCookie = new Cookie("refreshToken", tokenInfo.getRefreshToken());
+	        refreshTokenCookie.setHttpOnly(true);
+	        refreshTokenCookie.setSecure(false);
+	        refreshTokenCookie.setPath("/");
+	        refreshTokenCookie.setDomain("localhost");
+	        refreshTokenCookie.setMaxAge(14 * 24 * 60 * 60);
+	        response.addCookie(refreshTokenCookie);
+		return ResponseEntity.ok(tokenInfo.getAccessToken());
 	}
 	
 //유저 관련 중복 체크란 
