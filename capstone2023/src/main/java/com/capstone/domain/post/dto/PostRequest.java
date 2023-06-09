@@ -36,7 +36,7 @@ public class PostRequest {
 	
 	private Long bno;
 	
-	private Long uno;
+	//private Long uno;
 	
 	MultipartFile[] file;
 	

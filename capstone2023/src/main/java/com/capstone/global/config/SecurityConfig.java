@@ -37,10 +37,12 @@ public class SecurityConfig {
 			.requestMatchers("/").permitAll()
 			.requestMatchers("/token" ).permitAll()
 			.requestMatchers("/user/login", "user/read/**","user/create" ,"/user/useridchk/**","/user/emailchk/**","/user/nicknamechk/**" ).permitAll() //user관련된 permitall입니다.
-			.requestMatchers("/post/getlist/**","/post/read/**").permitAll() //post컨트롤러와 관련된 설정
+			.requestMatchers("/post/getlist/**","/post/read/**","post/create/**").permitAll() //post컨트롤러와 관련된 설정
+
 			.requestMatchers("/file/read/**").permitAll()
 			.requestMatchers("/log/getlist").permitAll()
 			.requestMatchers("/tag/json").permitAll()
+//				.requestMatchers("/post/create").permitAll()
 			.anyRequest().authenticated()
 			.and()
 			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

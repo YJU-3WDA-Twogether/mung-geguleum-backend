@@ -102,7 +102,7 @@ public class TokenService {
 
 		return new JwtAuthenticationToken(principal, null, authorities);
 	}
-	
+	@Transactional
 	public TokenInfo generateToken(Authentication authentication) {
 		System.out.println(authentication.getName() +" 테스트입니다..");
 		User user = userRepository.findByUid(authentication.getName())

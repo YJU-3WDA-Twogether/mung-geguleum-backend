@@ -20,12 +20,20 @@ public class LoggerInterceptor implements HandlerInterceptor {
 	    request.setAttribute("bTime", currentTime);
 	    
 	    // 사용자가 보낸 파라미터 조회
+		log.debug("============{}",request.getHeaderNames());
+		Enumeration<String> HeaderNames = request.getHeaderNames();
+		while (HeaderNames.hasMoreElements()) {
+			String HeaderName = HeaderNames.nextElement();
+			String HeaderValue = request.getParameter(HeaderName);
+			log.debug("Parameter: {} = {} \n", HeaderName, HeaderValue);
+		}
 	    Enumeration<String> parameterNames = request.getParameterNames();
 	    while (parameterNames.hasMoreElements()) {
 	        String parameterName = parameterNames.nextElement();
 	        String parameterValue = request.getParameter(parameterName);
 	        log.debug("Parameter: {} = {} \n", parameterName, parameterValue);
 	    }
+
 
 	    // 요청 방식과 주소 로깅
 	    String method = request.getMethod();
