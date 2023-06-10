@@ -29,9 +29,10 @@ public class PostController {
 	private final PostService postService;
 	
 	@GetMapping("/getlist")
-	public ResponseEntity<Page> getList(@RequestParam(value="page", defaultValue="0") int page, @AuthenticationPrincipal JwtAuthentication user) {
-		Page<PostResponse> paging = this.postService.getList(page, user.userId);
-		System.out.println(user.userId);
+//	public ResponseEntity<Page> getList(@RequestParam(value="page", defaultValue="0") int page, @AuthenticationPrincipal JwtAuthentication user) {
+		public ResponseEntity<Page> getList(@RequestParam(value="page", defaultValue="0") int page ) {
+		Page<PostResponse> paging = this.postService.getList(page, 16L);
+		
 		return ResponseEntity.ok(paging);	
 	}
 	
@@ -44,8 +45,8 @@ public class PostController {
 	}
 	
 	@PostMapping("/create")
-	//public  ResponseEntity<Boolean> postCreate(@RequestBody PostRequest postRequest, @AuthenticationPrincipal JwtAuthentication user) throws Exception{
-		public  ResponseEntity<Boolean> postCreate(@RequestBody PostRequest postRequest) throws Exception{
+	public  ResponseEntity<Boolean> postCreate(@RequestBody PostRequest postRequest, @AuthenticationPrincipal JwtAuthentication user) throws Exception{
+	//	public  ResponseEntity<Boolean> postCreate(@RequestBody PostRequest postRequest) throws Exception{
 		postService.postCreate(postRequest, 1L);
 		return ResponseEntity.ok(true);
 	}

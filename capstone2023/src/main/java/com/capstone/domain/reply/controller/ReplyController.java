@@ -17,6 +17,7 @@ public class ReplyController {
 
     @PostMapping("/create")  // 댓글 작성
     public ResponseEntity<Boolean> replyCreate(@Valid @RequestBody ReplyRequest replyDTO) {
+    	replyDTO.setUno(16L);
         replyService.replyCreate(replyDTO);
         return ResponseEntity.ok(true);
     }

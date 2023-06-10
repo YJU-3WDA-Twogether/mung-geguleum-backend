@@ -34,7 +34,7 @@ public class SecurityConfig {
 			.cors()
 			.and()
 			.authorizeHttpRequests()
-			.requestMatchers("/").permitAll()
+			.requestMatchers("/**").permitAll()
 			.requestMatchers("/token" ).permitAll()
 			.requestMatchers("/user/login", "user/read/**","user/create" ,"/user/useridchk/**","/user/emailchk/**","/user/nicknamechk/**" ).permitAll() //user관련된 permitall입니다.
 			.requestMatchers("/post/getlist/**","/post/read/**","post/create/**").permitAll() //post컨트롤러와 관련된 설정

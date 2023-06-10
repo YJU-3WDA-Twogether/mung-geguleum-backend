@@ -52,7 +52,7 @@ public class TokenService {
 		User user = userRepository.findByUno(refreshToken.getUno())
 			.orElseThrow(() -> new UserNotFoundException());
 
-		String reIssuedAccessToken = reIssueAccessToken(user.getUno(), user.getUserGrade().getGname());
+		String reIssuedAccessToken = reIssueAccessToken(user.getUno(),user.getUid(),user.getNickname(), user.getUserGrade().getGname());
 		String reIssuedRefreshToken = reIssueRefreshToken(user.getUno());
 
 		String accessTokenCookie = createAccessTokenCookie(reIssuedAccessToken);
@@ -62,8 +62,8 @@ public class TokenService {
 
 	}
 
-	public String reIssueAccessToken(Long uno, String role) {
-		return jwtTokenProvider.createAccessToken(uno, role);
+	public String reIssueAccessToken(Long uno,String uid , String nickname, String role) {
+		return jwtTokenProvider.createAccessToken(uno,uid,nickname, role);
 	}
 
 	@Transactional
@@ -105,11 +105,12 @@ public class TokenService {
 	@Transactional
 	public TokenInfo generateToken(Authentication authentication) {
 		System.out.println(authentication.getName() +" 테스트입니다..");
+	
 		User user = userRepository.findByUid(authentication.getName())
 				.orElseThrow(() -> new UserNotFoundException());
 		System.out.println("user 아이디"+user.getUid());
 		String refreshToken = jwtTokenProvider.createRefreshToken();
-		String accessToken = jwtTokenProvider.createAccessToken(user.getUno(), user.getUserGrade().getGname());
+		String accessToken = jwtTokenProvider.createAccessToken(user.getUno(),user.getUid(),user.getNickname(), user.getUserGrade().getGname());
 		jwtTokenProvider.saveRefreshToken(user.getUno(), refreshToken);
 		
 		  return TokenInfo.builder()
