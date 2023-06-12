@@ -21,15 +21,15 @@ public class HeartController {
 
     private final HeartService heartService;
 
-    @PostMapping("/get")
+    @PostMapping("/create")
     public ResponseEntity<Boolean> insert(@RequestBody @Valid HeartDTO heartDTO, @AuthenticationPrincipal JwtAuthentication user) {
-        heartService.insert(heartDTO, user.userId);
+        heartService.create(heartDTO, user.uno);
         return ResponseEntity.ok(true);
     }
 
     @DeleteMapping("/delete")
     public ResponseEntity<Boolean> delete(@RequestBody @Valid HeartDTO heartDTO, @AuthenticationPrincipal JwtAuthentication user) {
-        heartService.delete(heartDTO, user.userId);
+        heartService.delete(heartDTO, user.uno);
         return ResponseEntity.ok(true);
     }
 }

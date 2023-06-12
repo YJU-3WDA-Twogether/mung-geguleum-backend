@@ -7,8 +7,8 @@ import com.capstone.domain.board.entity.Board;
 import com.capstone.domain.file.entity.File;
 import com.capstone.domain.heart.entity.Heart;
 import com.capstone.domain.log.entity.Log;
+import com.capstone.domain.postSource.entity.PostSource;
 import com.capstone.domain.reply.entity.Reply;
-import com.capstone.domain.tag.entity.Tag;
 import com.capstone.domain.user.entity.User;
 import com.capstone.global.entity.BaseEntity;
 
@@ -57,7 +57,7 @@ public class Post extends BaseEntity{
     private List<Log> logs = new ArrayList<>();
     
     @OneToMany(mappedBy = "post")
-    private List<Tag> tags = new ArrayList<>();
+    private List<PostSource> postSources = new ArrayList<>();
 
     @OneToMany(mappedBy = "post", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<Reply> replys = new ArrayList<>();

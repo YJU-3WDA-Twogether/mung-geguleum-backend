@@ -52,7 +52,7 @@ public class TokenService {
 		User user = userRepository.findByUno(refreshToken.getUno())
 			.orElseThrow(() -> new UserNotFoundException());
 
-		String reIssuedAccessToken = reIssueAccessToken(user.getUno(), user.getUserGrade().getGname());
+		String reIssuedAccessToken = reIssueAccessToken(user.getUno(),user.getUid(),user.getNickname(), user.getUserGrade().getGname());
 		String reIssuedRefreshToken = reIssueRefreshToken(user.getUno());
 
 		String accessTokenCookie = createAccessTokenCookie(reIssuedAccessToken);
@@ -62,8 +62,8 @@ public class TokenService {
 
 	}
 
-	public String reIssueAccessToken(Long uno, String role) {
-		return jwtTokenProvider.createAccessToken(uno, role);
+	public String reIssueAccessToken(Long uno,String uid , String nickname, String role) {
+		return jwtTokenProvider.createAccessToken(uno,uid,nickname, role);
 	}
 
 	@Transactional
@@ -91,25 +91,28 @@ public class TokenService {
 	}
 
 	public JwtAuthenticationToken getAuthentication(String accessToken) {
-
+		System.out.println("하이");
 		Claims claims = jwtTokenProvider.getClaims(accessToken);
 
 		Long uno = claims.get("uno", Long.class);
+		String uid = claims.get("uid", String.class);
+		String nickname = claims.get("nickname",String.class);
 		String role = claims.get("role", String.class);
-
-		JwtAuthentication principal = new JwtAuthentication(accessToken, uno, role);
+		System.out.println(role);
+		JwtAuthentication principal = new JwtAuthentication(accessToken, uno,uid,nickname,role);
 		List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
-
+		System.out.println(authorities.get(0));
 		return new JwtAuthenticationToken(principal, null, authorities);
 	}
 	@Transactional
 	public TokenInfo generateToken(Authentication authentication) {
 		System.out.println(authentication.getName() +" 테스트입니다..");
+	
 		User user = userRepository.findByUid(authentication.getName())
 				.orElseThrow(() -> new UserNotFoundException());
 		System.out.println("user 아이디"+user.getUid());
 		String refreshToken = jwtTokenProvider.createRefreshToken();
-		String accessToken = jwtTokenProvider.createAccessToken(user.getUno(), user.getUserGrade().getGname());
+		String accessToken = jwtTokenProvider.createAccessToken(user.getUno(),user.getUid(),user.getNickname(), user.getUserGrade().getGname());
 		jwtTokenProvider.saveRefreshToken(user.getUno(), refreshToken);
 		
 		  return TokenInfo.builder()
@@ -117,6 +120,18 @@ public class TokenService {
 	                .accessToken(accessToken)
 	                .refreshToken(refreshToken)
 	                .build();
+	}
+	
+	@Transactional
+	public TokenInfo deleteToken (Long uno) {
+		RefreshToken token = refreshTokenRepository.findById(uno).orElseThrow( () -> new RefreshTokenNotFoundException());
+		refreshTokenRepository.deleteById(uno);
+		  return TokenInfo.builder()
+	                .grantType(null)
+	                .accessToken(null)
+	                .refreshToken(null)
+	                .build();
+		
 	}
 
 }

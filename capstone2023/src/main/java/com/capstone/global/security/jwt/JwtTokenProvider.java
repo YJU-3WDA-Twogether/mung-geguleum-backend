@@ -47,8 +47,8 @@ public class JwtTokenProvider {
 		this.refreshTokenRepository = refreshTokenRepository;
 	}
 
-	public String createAccessToken(Long uno, String role) {
-		Map<String, Object> claims = Map.of("uno", uno, "role", role);
+	public String createAccessToken(Long uno,String uid , String nickname, String role) {
+		Map<String, Object> claims = Map.of("uno", uno, "uid",uid ,"nickname" ,nickname ,"role", role);
 		Date now = new Date();
 		Date expiredDate = new Date(now.getTime() + accessTokenExpireSeconds * 1000L);
 

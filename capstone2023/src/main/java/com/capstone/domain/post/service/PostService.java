@@ -7,16 +7,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.capstone.domain.heart.Mapper.HeartMapper;
-import com.capstone.domain.heart.dto.HeartDTO;
-import com.capstone.domain.reply.dto.ReplyResponse;
-import com.capstone.domain.reply.mapper.ReplyMapper;
-import com.capstone.domain.reply.repository.ReplyRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.capstone.domain.board.entity.Board;
 import com.capstone.domain.board.exception.BoardNotFoundException;
@@ -31,15 +27,17 @@ import com.capstone.domain.log.service.LogService;
 import com.capstone.domain.post.dto.PostRequest;
 import com.capstone.domain.post.dto.PostResponse;
 import com.capstone.domain.post.entity.Post;
+import com.capstone.domain.post.exception.PostForbiddenException;
+import com.capstone.domain.post.exception.PostNotFoundException;
 import com.capstone.domain.post.mapper.PostMapper;
 import com.capstone.domain.post.repository.PostRepository;
-import com.capstone.domain.post.exception.PostNotFoundException;
-import com.capstone.domain.tag.service.TagService;
+import com.capstone.domain.postSource.service.PostSourceService;
+import com.capstone.domain.reply.dto.ReplyResponse;
+import com.capstone.domain.reply.mapper.ReplyMapper;
 import com.capstone.domain.user.entity.User;
 import com.capstone.domain.user.exception.UserNotFoundException;
 import com.capstone.domain.user.repository.UserRepository;
 
-import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -48,17 +46,16 @@ public class PostService {
 	private final UserRepository userRepository;
 	private final PostRepository postRepository;
 	private final BoardRepository boardRepository;
-	private final ReplyRepository replyRepository;
 
 	private final FileService fileService;
 	private final LogService logService;
-	private final TagService tagService;
+	private final PostSourceService tagService;
 	
 	private final PostMapper postMapper;
 	private final LogMapper logMapper;
 	private final FileMapper fileMapper;
     private final ReplyMapper replyMapper;
-	private final HeartMapper heartMapper;
+	
 	
 	//게시판 생성 메소드
 	@Transactional(rollbackFor = {Exception.class, IOException.class})
@@ -83,7 +80,7 @@ public class PostService {
 		//재창작인 경우 
 		
 		if(board.getBno()==4&&postRequest.getTag() !=null) {
-			tagService.tagCreate(postRequest.getTag(),post);
+			tagService.postSourceCreate(postRequest.getTag(),post);
 		}	
 	}
 	
@@ -98,16 +95,7 @@ public class PostService {
 	        Post post = (Post) objects[0];
 	        Board board = (Board) objects[1];
 	        User user = (User) objects[2];
-
-			List<ReplyResponse> replyDTOList = post.getReplys().stream()
-					.map(reply -> replyMapper.toReplyDTO(reply, post.getPno()))
-					.collect(Collectors.toList());
-
-			List<HeartDTO> heartDTOList = post.getHearts().stream()
-					.map(heart -> heartMapper.toHeartDTO(heart))
-					.collect(Collectors.toList());
-	        return postMapper.toPostResponse(post,board,user, replyDTOList, heartDTOList, uno) ;
-
+	        return postMapper.toPostResponse(post,board,user, uno) ;
 	    });
 	}
 
@@ -123,17 +111,7 @@ public class PostService {
 	        Post post = (Post) objects[0];
 	        Board board = (Board) objects[1];
 	        User user = (User) objects[2];
-
-			List<ReplyResponse> replyDTOList = post.getReplys().stream()
-					.map(reply -> replyMapper.toReplyDTO(reply, post.getPno()))
-					.collect(Collectors.toList());
-
-			List<HeartDTO> heartDTOList = post.getHearts().stream()
-					.map(heart -> heartMapper.toHeartDTO(heart))
-					.collect(Collectors.toList());
-
-			return postMapper.toPostResponse(post,board,user, replyDTOList, heartDTOList, uno) ;
-
+			return postMapper.toPostResponse(post,board,user,uno) ;
 	    });
 	}
 	
@@ -160,7 +138,11 @@ public class PostService {
 			Post post= this.postRepository.findByPno(pno).orElseThrow(() -> new PostNotFoundException()) ;
 			//pk값은 존재하고 나머지 값이 null일 경우에 nullpointException을 추가적으로 발행해줘야함.
 			User user = this.userRepository.findByUno(uno).orElseThrow(() -> new UserNotFoundException());
-			Board board = this.boardRepository.findByBno(postDTO.getBno()).orElseThrow( () -> new BoardNotFoundException());		
+			Board board = this.boardRepository.findByBno(postDTO.getBno()).orElseThrow( () -> new BoardNotFoundException());
+			if(!post.getUser().getUno().equals(user.getUno())) {
+				System.out.println("post : "+ post.getUser().getUno()+" user : " + user.getUno());
+				throw new PostForbiddenException();
+			}
 			post = postMapper.toEntity(postDTO ,board ,user);
 			return postMapper.toPostResponse(this.postRepository.save(post));
 	}
@@ -168,7 +150,11 @@ public class PostService {
 	
 	//게시판 삭제메소드
 	@Transactional
-	public void postDelete(Long pno) {
+	public void postDelete(Long pno, Long uno) {
+		Post post= this.postRepository.findByPno(pno).orElseThrow(() -> new PostNotFoundException()) ;
+		User user = this.userRepository.findByUno(uno).orElseThrow(() -> new UserNotFoundException());
+		if(!post.getUser().getUno().equals(user.getUno()))
+			throw new PostForbiddenException();
 		this.postRepository.deleteById(pno);
 	}
 		
@@ -181,15 +167,7 @@ public class PostService {
 			Post post = (Post) objects[0];
 			Board board = (Board) objects[1];
 			User user = (User) objects[2];
-
-			List<ReplyResponse> replyDTOList = post.getReplys().stream()
-					.map(reply -> replyMapper.toReplyDTO(reply, post.getPno()))
-					.collect(Collectors.toList());
-
-			List<HeartDTO> heartDTOList = post.getHearts().stream()
-					.map(heart -> heartMapper.toHeartDTO(heart))
-					.collect(Collectors.toList());
-			return postMapper.toPostResponse(post,board,user, replyDTOList, heartDTOList, uno) ;
+			return postMapper.toPostResponse(post,board,user) ;
 		});
 	}
 

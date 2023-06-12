@@ -1,23 +1,24 @@
 package com.capstone.domain.heart.service;
 
 
+import org.springframework.stereotype.Service;
+
 import com.capstone.domain.board.exception.BoardNotFoundException;
 import com.capstone.domain.heart.Mapper.HeartMapper;
-
 import com.capstone.domain.heart.dto.HeartDTO;
 import com.capstone.domain.heart.entity.Heart;
-
 import com.capstone.domain.heart.exception.HeartExistException;
 import com.capstone.domain.heart.exception.HeartNotFoundException;
 import com.capstone.domain.heart.repository.HeartRepository;
 import com.capstone.domain.post.entity.Post;
+import com.capstone.domain.post.exception.PostNotFoundException;
 import com.capstone.domain.post.repository.PostRepository;
 import com.capstone.domain.user.entity.User;
 import com.capstone.domain.user.exception.UserNotFoundException;
 import com.capstone.domain.user.repository.UserRepository;
+
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +29,7 @@ public class HeartService {
 
     private final HeartMapper heartMapper;
     @Transactional
-    public void insert(HeartDTO heartDTO, Long uno){
+    public void create(HeartDTO heartDTO, Long uno){
 
         User user = userRepository.findById(uno)
                 .orElseThrow(() -> new UserNotFoundException());
@@ -54,7 +55,7 @@ public class HeartService {
                 .orElseThrow(() -> new UserNotFoundException());
 
         Post post = postRepository.findById(heartDTO.getPno())
-                .orElseThrow(() -> new BoardNotFoundException ());
+                .orElseThrow(() -> new PostNotFoundException ());
 
         Heart heart = heartRepository.findByUserAndPost(user, post)
                 .orElseThrow(() -> new HeartNotFoundException());

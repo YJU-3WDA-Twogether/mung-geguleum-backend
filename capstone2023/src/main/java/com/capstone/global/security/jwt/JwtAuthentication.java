@@ -9,18 +9,22 @@ import lombok.ToString;
 public class JwtAuthentication {
 
 	public final String accessToken;
-	public final Long userId;
+	public final Long uno;
+	public final String uid;
+	public final String nickname;
 	public final String role;
 
-	public JwtAuthentication(String accessToken, Long userId, String role) {
+	public JwtAuthentication(String accessToken, Long uno, String uid, String nickname, String role) {
 		if (accessToken.isEmpty() || accessToken.isBlank()) {
 			throw new TokenInvalidException();
 		}
-		if (userId <= 0 || userId == null) {
+		if (uno <= 0 || uno == null) {
 			throw new TokenInvalidException();
 		}
 		this.accessToken = accessToken;
-		this.userId = userId;
+		this.uno = uno;
+		this.uid = uid;
+		this.nickname = nickname;
 		this.role = role;
 	}
 

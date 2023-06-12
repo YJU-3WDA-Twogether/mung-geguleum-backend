@@ -73,7 +73,7 @@ public class LogService {
 	}
 	
 	@Transactional
-	public Page<LogResponse> getTagList(Long uno, int page){
+	public Page<LogResponse> getPostSourceList(Long uno, int page){
 		//Pageable pageable = PageRequest.of(page,10);
 		Pageable pageable = PageRequest.of(page,100);
 		Page <Log> logList = this.logRepository.findByUserAndLogState(uno, 2L, pageable);

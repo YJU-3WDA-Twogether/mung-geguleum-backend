@@ -1,4 +1,4 @@
-package com.capstone.domain.tag.entity;
+package com.capstone.domain.postSource.entity;
 
 import com.capstone.domain.log.entity.Log;
 import com.capstone.domain.post.entity.Post;
@@ -24,19 +24,18 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "tag")
 @ToString
-public class Tag {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "tno")
-    private Long tno;
-
+public class PostSource {
+   
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long psno;
+	
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pno")
     private Post post;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "lno")
-    private Log log;
+    @JoinColumn(name = "parent_pno")
+    private Post parentPost;
 }

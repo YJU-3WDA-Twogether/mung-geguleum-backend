@@ -1,11 +1,13 @@
 package com.capstone.domain.user.controller;
 
+import com.capstone.global.security.jwt.JwtAuthentication;
 import com.capstone.global.security.jwt.dto.TokenInfo;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -42,9 +44,6 @@ public class UserController {
 		return ResponseEntity.ok(list);
 
 	}
-	//사용자 전체 조회한 거 리턴함 페이징기능
-
-
 
 	//json형태로 데이터를 보내야함.
 	//사용자 생성 json형태로 반환.
@@ -53,8 +52,6 @@ public class UserController {
 		userService.userCreate(userCreateForm);
 		return ResponseEntity.ok(true);
 	}
-
-
 
 	@ResponseBody
 	@GetMapping("/read/{uno}")
@@ -65,16 +62,16 @@ public class UserController {
 	}
 
 	@PutMapping("/update/{uno}")
-	public ResponseEntity<UserDTO> userUpdate(@PathVariable Long uno ,@Valid @RequestBody UserDTO userDTO) {
-		UserDTO updateUser = userService.userUpdate(uno, userDTO);
+	public ResponseEntity<UserDTO> userUpdate(@PathVariable Long uno ,@Valid @RequestBody UserDTO userDTO, @AuthenticationPrincipal JwtAuthentication user ) {
+		UserDTO updateUser = userService.userUpdate(uno, userDTO, user.uno);
 		return ResponseEntity.ok(updateUser);
 	}
 
 
 	//사용자 삭제 
 	@DeleteMapping("/delete/{uno}")
-	public ResponseEntity<Boolean> userDelete(@PathVariable Long uno){
-		this.userService.userDelete(uno);
+	public ResponseEntity<Boolean> userDelete(@PathVariable Long uno, @AuthenticationPrincipal JwtAuthentication user ){
+		this.userService.userDelete(uno,user.uno);
 		return new ResponseEntity<>(true, HttpStatus.NO_CONTENT);
 	}
 
@@ -130,4 +127,18 @@ public class UserController {
 		}
 	}
 	//유저 중복 체크 끝
+	
+	@GetMapping("/logout")
+	public ResponseEntity<?> userLogout(HttpServletResponse response,@AuthenticationPrincipal JwtAuthentication user ) {
+		
+		TokenInfo tokenInfo =userService.logout(user.uno);
+		Cookie refreshTokenCookie = new Cookie("refreshToken", tokenInfo.getRefreshToken());
+//		refreshTokenCookie.setHttpOnly(true);
+//		refreshTokenCookie.setSecure(false);
+		refreshTokenCookie.setPath("/");
+//		refreshTokenCookie.setDomain("localhost");
+		refreshTokenCookie.setMaxAge(0);
+		response.addCookie(refreshTokenCookie);
+		return ResponseEntity.ok(tokenInfo.getAccessToken());
+	}
 }

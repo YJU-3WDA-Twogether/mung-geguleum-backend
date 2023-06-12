@@ -28,7 +28,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     // 해당하는 User 의 데이터가 존재한다면 UserDetails 객체로 만들어서 리턴
     private UserDetails createUserDetails(com.capstone.domain.user.entity.User member) {
         return User.builder()
-                .username(member.getNickname())
+                .username((member.getUid()))
                 .password(passwordEncoder.encode(member.getPassword()))
                 .roles(member.getUserGrade().getGname())
                 .build();
