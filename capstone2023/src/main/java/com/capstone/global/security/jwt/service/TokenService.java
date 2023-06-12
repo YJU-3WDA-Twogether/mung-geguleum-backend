@@ -95,9 +95,11 @@ public class TokenService {
 		Claims claims = jwtTokenProvider.getClaims(accessToken);
 
 		Long uno = claims.get("uno", Long.class);
+		String uid = claims.get("uid", String.class);
+		String nickname = claims.get("nickname",String.class);
 		String role = claims.get("role", String.class);
 
-		JwtAuthentication principal = new JwtAuthentication(accessToken, uno, role);
+		JwtAuthentication principal = new JwtAuthentication(accessToken, uno,uid,nickname,role);
 		List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
 
 		return new JwtAuthenticationToken(principal, null, authorities);
@@ -118,6 +120,18 @@ public class TokenService {
 	                .accessToken(accessToken)
 	                .refreshToken(refreshToken)
 	                .build();
+	}
+	
+	@Transactional
+	public TokenInfo deleteToken (Long uno) {
+		RefreshToken token = refreshTokenRepository.findById(uno).orElseThrow( () -> new RefreshTokenNotFoundException());
+		refreshTokenRepository.deleteById(uno);
+		  return TokenInfo.builder()
+	                .grantType(null)
+	                .accessToken(null)
+	                .refreshToken(null)
+	                .build();
+		
 	}
 
 }

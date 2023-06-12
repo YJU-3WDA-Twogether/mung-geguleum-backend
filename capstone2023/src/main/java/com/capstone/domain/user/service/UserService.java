@@ -3,8 +3,6 @@ package com.capstone.domain.user.service;
 
 import java.util.Optional;
 
-import com.capstone.global.security.jwt.dto.TokenInfo;
-import com.capstone.global.security.jwt.service.TokenService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,11 +18,13 @@ import com.capstone.domain.user.dto.UserCreateForm;
 import com.capstone.domain.user.dto.UserDTO;
 import com.capstone.domain.user.entity.User;
 import com.capstone.domain.user.entity.UserGrade;
-import com.capstone.domain.user.exception.UserMissingValueException;
+import com.capstone.domain.user.exception.UserInvalidException;
 import com.capstone.domain.user.exception.UserNotFoundException;
 import com.capstone.domain.user.mapper.UserMapper;
 import com.capstone.domain.user.repository.UserGradeRepository;
 import com.capstone.domain.user.repository.UserRepository;
+import com.capstone.global.security.jwt.dto.TokenInfo;
+import com.capstone.global.security.jwt.service.TokenService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -57,8 +57,12 @@ public class UserService {
 
 	//유저 정보 수정 메소드
 	@Transactional
-	public UserDTO userUpdate(Long uno , UserDTO userDTO) {
-		User user = this.userRepository.findByUno(uno).orElseThrow(()-> new UserNotFoundException());
+	public UserDTO userUpdate(Long uno , UserDTO userDTO, Long uno2) {
+		if(!uno.equals(uno2)) {
+			System.out.println("uno : "+uno + "uno2 : "+uno2);
+			throw new UserInvalidException();	
+		}
+		User user = userRepository.findByUno(uno).orElseThrow(()-> new UserNotFoundException());
 		//추후 NULLPOINTEXCETPION 처리도 추가해야함.
 		user = userRepository.save(userMapper.toEntity(userDTO));
 		return userMapper.toUserDTO(user);
@@ -66,7 +70,11 @@ public class UserService {
 
 	//회원삭제 메소드
 	@Transactional
-	public void userDelete(Long uno) {
+	public void userDelete(Long uno,Long uno2) {
+		if(!uno.equals(uno2)) {
+			System.out.println("uno : "+uno + "uno2 : "+uno2);
+			throw new UserInvalidException();	
+		}
 		this.userRepository.deleteById(uno);
 	}
 	//유저 로그인 메소드
@@ -127,6 +135,15 @@ public class UserService {
 		}else {
 			return false;
 		}
+	}
+	
+	@Transactional
+	public TokenInfo logout(Long uno) {
+		User user = userRepository.findById(uno).orElseThrow(() -> new UserNotFoundException());
+		TokenInfo tokenInfo = tokenService.deleteToken(user.getUno());
+		return tokenInfo;
+		//	return null;
+
 	}
 
 }

@@ -34,15 +34,20 @@ public class SecurityConfig {
 			.cors()
 			.and()
 			.authorizeHttpRequests()
-			.requestMatchers("/**").permitAll()
 			.requestMatchers("/token" ).permitAll()
 			.requestMatchers("/user/login", "user/read/**","user/create" ,"/user/useridchk/**","/user/emailchk/**","/user/nicknamechk/**" ).permitAll() //user관련된 permitall입니다.
-			.requestMatchers("/post/getlist/**","/post/read/**","post/create/**").permitAll() //post컨트롤러와 관련된 설정
-
+			.requestMatchers("/post/getlist/**","/post/read/**" , "/post/getMyPost/**" ).permitAll() //post컨트롤러와 관련된 설정
 			.requestMatchers("/file/read/**").permitAll()
 			.requestMatchers("/log/getlist").permitAll()
-			.requestMatchers("/tag/json").permitAll()
-//				.requestMatchers("/post/create").permitAll()
+			.requestMatchers("/postSource/getlist/**").permitAll()
+			
+			.requestMatchers("/user/logout","/user/update/**","/user/delete/**").hasRole("일반")
+			.requestMatchers("/post/create" , "/post/update/**" , "/post/delete/**"  ).hasRole("일반")
+			.requestMatchers("/file/delete/**","file/download/**").hasRole("일반")
+			.requestMatchers("/log/getpostsourcelist","/log/getdownlist").hasRole("일반")
+			.requestMatchers("/heart/**").hasRole("일반")
+			.requestMatchers("/reply/**").hasRole("일반")
+			//.requestMatchers("/**").hasRole("관리자")
 			.anyRequest().authenticated()
 			.and()
 			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

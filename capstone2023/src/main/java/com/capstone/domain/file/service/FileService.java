@@ -113,10 +113,12 @@ public class FileService {
     }
    
    @Transactional
-    public void deleteFile(Long fno) {
+    public void deleteFile(Long fno,Long uno) {
    	 File file = fileRepository.findByFno(fno).orElseThrow(() -> new FileNotFoundException() );
-   	 File files = fileMapper.toEntity(fileMapper.toFileDTO(file, true));
-	 this.fileRepository.save(files);   
+   	 if(!file.getPost().getUser().getUno().equals(uno)) {
+   		 throw new PostForbiddenException();
+   	 }
+	 this.fileRepository.deleteById(fno); 
     }
 
 

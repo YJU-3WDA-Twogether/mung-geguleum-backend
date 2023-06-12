@@ -35,6 +35,7 @@ public enum ErrorCode {
 	,POST_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND,"P001", "존재하지 않는 피드 입니다.")
 	,POST_NULL_POINT_ERROR(HttpStatus.BAD_REQUEST,"P002" , "삭제된 게시글 입니다.") //게시글 삭제를 누를 경우 pk는 보존하고 해당 값에 담긴 나머지 컬럼을 null로 처리한다.
 	,POST_INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "P003", "관리자에게 문의하여 주세요.")
+	,POST_FORBIDDEN_ERROR(HttpStatus.FORBIDDEN,"P004","권한이 없습니다.")
 	//LogState
 	,LOGSTATE_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND,"LS001", "존재하지 않는 로그 유형 입니다.")
 	
@@ -68,6 +69,7 @@ public enum ErrorCode {
 	,REPLY_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND,"R001", "존재하지 않는 댓글입니다..")
 	,REPLY_NULL_POINT_ERROR(HttpStatus.BAD_REQUEST, "R002", "삭제된 댓글 입니다.")
 	,REPLY_INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"R003", "관리자에게 문의하여 주세요.")
+	,REPLY_FORBIDDEN_ERROR(HttpStatus.FORBIDDEN,"R004","권한이 없습니다.")
 	,
 	
 	;

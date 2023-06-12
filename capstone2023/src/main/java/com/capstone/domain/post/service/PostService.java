@@ -27,12 +27,13 @@ import com.capstone.domain.log.service.LogService;
 import com.capstone.domain.post.dto.PostRequest;
 import com.capstone.domain.post.dto.PostResponse;
 import com.capstone.domain.post.entity.Post;
+import com.capstone.domain.post.exception.PostForbiddenException;
 import com.capstone.domain.post.exception.PostNotFoundException;
 import com.capstone.domain.post.mapper.PostMapper;
 import com.capstone.domain.post.repository.PostRepository;
+import com.capstone.domain.postSource.service.PostSourceService;
 import com.capstone.domain.reply.dto.ReplyResponse;
 import com.capstone.domain.reply.mapper.ReplyMapper;
-import com.capstone.domain.tag.service.TagService;
 import com.capstone.domain.user.entity.User;
 import com.capstone.domain.user.exception.UserNotFoundException;
 import com.capstone.domain.user.repository.UserRepository;
@@ -48,7 +49,7 @@ public class PostService {
 
 	private final FileService fileService;
 	private final LogService logService;
-	private final TagService tagService;
+	private final PostSourceService tagService;
 	
 	private final PostMapper postMapper;
 	private final LogMapper logMapper;
@@ -79,7 +80,7 @@ public class PostService {
 		//재창작인 경우 
 		
 		if(board.getBno()==4&&postRequest.getTag() !=null) {
-			tagService.tagCreate(postRequest.getTag(),post);
+			tagService.postSourceCreate(postRequest.getTag(),post);
 		}	
 	}
 	
@@ -137,7 +138,11 @@ public class PostService {
 			Post post= this.postRepository.findByPno(pno).orElseThrow(() -> new PostNotFoundException()) ;
 			//pk값은 존재하고 나머지 값이 null일 경우에 nullpointException을 추가적으로 발행해줘야함.
 			User user = this.userRepository.findByUno(uno).orElseThrow(() -> new UserNotFoundException());
-			Board board = this.boardRepository.findByBno(postDTO.getBno()).orElseThrow( () -> new BoardNotFoundException());		
+			Board board = this.boardRepository.findByBno(postDTO.getBno()).orElseThrow( () -> new BoardNotFoundException());
+			if(!post.getUser().getUno().equals(user.getUno())) {
+				System.out.println("post : "+ post.getUser().getUno()+" user : " + user.getUno());
+				throw new PostForbiddenException();
+			}
 			post = postMapper.toEntity(postDTO ,board ,user);
 			return postMapper.toPostResponse(this.postRepository.save(post));
 	}
@@ -145,7 +150,11 @@ public class PostService {
 	
 	//게시판 삭제메소드
 	@Transactional
-	public void postDelete(Long pno) {
+	public void postDelete(Long pno, Long uno) {
+		Post post= this.postRepository.findByPno(pno).orElseThrow(() -> new PostNotFoundException()) ;
+		User user = this.userRepository.findByUno(uno).orElseThrow(() -> new UserNotFoundException());
+		if(!post.getUser().getUno().equals(user.getUno()))
+			throw new PostForbiddenException();
 		this.postRepository.deleteById(pno);
 	}
 		
