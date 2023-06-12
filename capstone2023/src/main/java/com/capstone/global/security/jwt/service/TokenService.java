@@ -91,17 +91,17 @@ public class TokenService {
 	}
 
 	public JwtAuthenticationToken getAuthentication(String accessToken) {
-
+		System.out.println("하이");
 		Claims claims = jwtTokenProvider.getClaims(accessToken);
 
 		Long uno = claims.get("uno", Long.class);
 		String uid = claims.get("uid", String.class);
 		String nickname = claims.get("nickname",String.class);
 		String role = claims.get("role", String.class);
-
+		System.out.println(role);
 		JwtAuthentication principal = new JwtAuthentication(accessToken, uno,uid,nickname,role);
 		List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
-
+		System.out.println(authorities.get(0));
 		return new JwtAuthenticationToken(principal, null, authorities);
 	}
 	@Transactional
