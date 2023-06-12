@@ -27,9 +27,7 @@ public class PostSourceController {
 	   }
 	  @GetMapping("/getlist/{pno}")
 	  public ResponseEntity<List<Object>> getList(@PathVariable Long pno) {
-		  System.out.println("hhhhhhhhhhhhh");
 	       List<Object> list = this.tagService.getPostSource(pno);
-	       
 	       return new ResponseEntity<>(list, HttpStatus.OK);
 	   } 
 }
