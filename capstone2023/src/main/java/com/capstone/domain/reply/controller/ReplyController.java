@@ -19,7 +19,7 @@ public class ReplyController {
     private final ReplyService replyService;
 
     @PostMapping("/create")  // 댓글 작성
-    public ResponseEntity<Boolean> replyCreate(@Valid @RequestBody ReplyRequest replyDTO, @AuthenticationPrincipal JwtAuthentication user) {
+    public ResponseEntity<Boolean> replyCreate(@RequestBody ReplyRequest replyDTO, @AuthenticationPrincipal JwtAuthentication user) {
         replyService.replyCreate(replyDTO, user.uno);
         return ResponseEntity.ok(true);
     }

@@ -25,8 +25,9 @@ public class LoggerInterceptor implements HandlerInterceptor {
 		while (HeaderNames.hasMoreElements()) {
 			String HeaderName = HeaderNames.nextElement();
 			String HeaderValue = request.getParameter(HeaderName);
-			log.debug("Parameter: {} = {} \n", HeaderName, HeaderValue);
+			log.debug("Header: {} = {} \n", HeaderName, HeaderValue);
 		}
+		System.out.println();
 	    Enumeration<String> parameterNames = request.getParameterNames();
 	    while (parameterNames.hasMoreElements()) {
 	        String parameterName = parameterNames.nextElement();

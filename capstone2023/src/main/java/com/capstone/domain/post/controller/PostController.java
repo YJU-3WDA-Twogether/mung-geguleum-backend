@@ -71,8 +71,8 @@ public class PostController {
 
 	//내가 쓴 게시글 조회
 	@GetMapping("/getMyPost")
-	public ResponseEntity<Page> getMyPost(@RequestParam(value="page", defaultValue="0") int page, @AuthenticationPrincipal JwtAuthentication user){
-		Page<PostResponse> paging = this.postService.getMyPost(page, user.uno);
+	public ResponseEntity<Page> getMyPost(@RequestParam(value="page", defaultValue="0") int page, Long uno){
+		Page<PostResponse> paging = this.postService.getMyPost(page, uno);
 		return ResponseEntity.ok(paging);
 	}
 

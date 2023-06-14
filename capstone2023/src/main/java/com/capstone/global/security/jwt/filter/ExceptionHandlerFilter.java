@@ -28,7 +28,7 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
 		FilterChain filterChain) throws ServletException, IOException {
 		try {
 			log.info("======================================================== \n request : {}", request);
-			log.info("======================================================== \n request : {}", request.getHeaderNames());
+			log.info("======================================================== ExceptionHandlerFilter \n request : {}", request.getHeaderNames().toString());
 
 			filterChain.doFilter(request, response);
 		} catch (TokenException e) {
