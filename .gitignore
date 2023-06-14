@@ -23,3 +23,11 @@
 hs_err_pid*
 replay_pid*
 /.metadata/
+capstone2023/bin/src/main/resources/application.properties
+capstone2023/bin/.mvn/wrapper/maven-wrapper.properties
+capstone2023/bin/mvnw
+capstone2023/bin/src/main/resources/logback-spring.xml
+capstone2023/src/main/resources/application.properties
+capstone2023/bin/pom.xml
+capstone2023/bin/mvnw.cmd
+capstone2023/src/main/resources/application.properties

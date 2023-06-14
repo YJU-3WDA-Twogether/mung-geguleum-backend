@@ -48,20 +48,7 @@ public class User {
 	@CreatedDate
 	@Column(name="regdate")
 	private LocalDateTime regDate;
-	
-	
-	
-// @Builder
-//	public User (Long uno, String uid, String uname, String password, String email, String nickname ) {
-//		this.uno = uno;
-//		this.uid = uid;
-//		this.uname = uname;
-//		this.password = password;
-//		this.email  = email;
-//		this.nickname = nickname;
-//		
-//	};
-	
+		
 	@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_grade_id")
     private UserGrade userGrade;

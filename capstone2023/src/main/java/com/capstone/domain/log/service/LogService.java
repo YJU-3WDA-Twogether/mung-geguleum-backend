@@ -19,11 +19,13 @@ import com.capstone.domain.log.mapper.LogMapper;
 import com.capstone.domain.log.repository.LogRepository;
 import com.capstone.domain.logState.entity.LogState;
 import com.capstone.domain.logState.repository.LogStateRepository;
+import com.capstone.domain.logState.exception.*;
 import com.capstone.domain.post.entity.Post;
 import com.capstone.domain.post.repository.PostRepository;
+import com.capstone.domain.post.exception.*;
 import com.capstone.domain.user.entity.User;
 import com.capstone.domain.user.repository.UserRepository;
-
+import com.capstone.domain.user.exception.*;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -40,21 +42,12 @@ public class LogService {
 	@Transactional
 	public Log LogCreate(LogRequest logRequest) {
 		System.out.println("로그 생성 요청");
-		Optional<Post> post = this.postRepository.findByPno(logRequest.getPno());
-		Optional<LogState> logState = this.logStateRepository.findByLsno(logRequest.getLsno());
-		Optional<User> user = this.userRepository.findByUno(logRequest.getUno());
-		Optional<User> puser = this.userRepository.findByUno(logRequest.getPuno());
-		Log log;
-		if(post.isPresent() && logState.isPresent() && user.isPresent() && puser.isPresent()) {
-			log = logMapper.toEntity(post.get(),logState.get(),user.get(),puser.get(), logRequest);
-			log = this.logRepository.save(log);
-			
-			return log;
-		}else {
-			System.out.println("LogService : Create 부분에 엔티티 타입 값에 null이 존재합니다. ");
-		}
-		
-		return null;
+		Post post = this.postRepository.findByPno(logRequest.getPno()).orElseThrow(()-> new PostNotFoundException());
+		LogState logState = this.logStateRepository.findByLsno(logRequest.getLsno()).orElseThrow(() -> new LogStateNotFoundException());
+		User user = this.userRepository.findByUno(logRequest.getUno()).orElseThrow(() -> new UserNotFoundException());
+		User puser = this.userRepository.findByUno(logRequest.getPuno()).orElseThrow(() -> new UserNotFoundException());
+		Log log = logMapper.toEntity(post, logState, user, logRequest);
+		return this.logRepository.save(log);
 	}
 	
 	
@@ -80,7 +73,7 @@ public class LogService {
 	}
 	
 	@Transactional
-	public Page<LogResponse> getTagList(Long uno, int page){
+	public Page<LogResponse> getPostSourceList(Long uno, int page){
 		//Pageable pageable = PageRequest.of(page,10);
 		Pageable pageable = PageRequest.of(page,100);
 		Page <Log> logList = this.logRepository.findByUserAndLogState(uno, 2L, pageable);

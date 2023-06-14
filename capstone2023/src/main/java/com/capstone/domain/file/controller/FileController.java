@@ -1,10 +1,12 @@
 package com.capstone.domain.file.controller;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.capstone.domain.file.service.FileService;
+import com.capstone.global.security.jwt.JwtAuthentication;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,8 +29,8 @@ public class FileController {
 	private final FileService fileService;
 	
 	@GetMapping("/download/{fno}")
-	    public ResponseEntity<Resource> downloadFile(@PathVariable Long fno,@RequestParam Long uno, @RequestParam Long pno) {	
-					ResponseEntity<Resource> result = this.fileService.downloadFile(fno, uno , pno);
+	    public ResponseEntity<Resource> downloadFile(@PathVariable Long fno,@AuthenticationPrincipal JwtAuthentication user, @RequestParam Long pno) throws MalformedURLException {	
+			ResponseEntity<Resource> result = this.fileService.downloadFile(fno, user.uno , pno);
 	    	return result;
 	    }
 	    
@@ -41,8 +44,8 @@ public class FileController {
 	   
 	    //파일 삭제 메소드
 	    @DeleteMapping("/delete/{fno}")
-	    public ResponseEntity<?> deleteFile(@PathVariable Long fno) {
-	        this.fileService.deleteFile(fno);
+	    public ResponseEntity<?> deleteFile(@PathVariable Long fno, @AuthenticationPrincipal JwtAuthentication user) {
+	        this.fileService.deleteFile(fno,user.uno);
 	        return ResponseEntity.ok().build();
 	    }
 }

@@ -46,8 +46,7 @@ public class File {
 		@Column(name="regdate")
 		private LocalDateTime regDate;
 	      
-	   // @ManyToOne(fetch = FetchType.LAZY)
-	    @ManyToOne()
+	    @ManyToOne(fetch = FetchType.LAZY)
 	    @JoinColumn(name = "pno")
 	    private Post post;
 

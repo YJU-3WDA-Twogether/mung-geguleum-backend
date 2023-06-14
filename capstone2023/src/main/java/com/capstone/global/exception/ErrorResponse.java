@@ -1,26 +1,27 @@
 package com.capstone.global.exception;
 
-import java.time.LocalDateTime;
+import org.springframework.http.HttpStatus;
 
-import org.springframework.http.ResponseEntity;
-
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 public class ErrorResponse {
-    private final LocalDateTime timestamp = LocalDateTime.now();
-    private final int status;
-    private final String code;
-    private final String message;
+	private HttpStatus status;
+	private String code;
+	private String message;
 
-    public ErrorResponse(ErrorCode errorCode){
-        this.status = errorCode.getStatus();
-        this.message = errorCode.getMessage();
-        this.code = errorCode.getCode();
-    }
+
+	private ErrorResponse(final ErrorCode code) {
+		this.message = code.getMessage();
+		this.status = code.getStatus();
+		this.code = code.getCode();
+	}
+	
+	public static ErrorResponse of(final ErrorCode code) {
+		return new ErrorResponse(code);
+	}
     
   
 }

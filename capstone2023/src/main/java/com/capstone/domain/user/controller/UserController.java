@@ -1,8 +1,13 @@
 package com.capstone.domain.user.controller;
 
+import com.capstone.global.security.jwt.JwtAuthentication;
+import com.capstone.global.security.jwt.dto.TokenInfo;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,172 +33,112 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/user")
 
 public class UserController {
-	
+
 	private final UserService userService;
-	
+
 	//사용자 전체조회 json형태로 반환
-		@ResponseBody
-		@GetMapping("/list")
-		public ResponseEntity<Page> list (@RequestParam(value="page", defaultValue="0") int page) {
-			Page<UserDTO> list = this.userService.getList(page);
-			return ResponseEntity.ok(list);
-			
-		}
-		//사용자 전체 조회한 거 리턴함 페이징기능
-			
-	
+	@ResponseBody
+	@GetMapping("/list")
+	public ResponseEntity<Page> list (@RequestParam(value="page", defaultValue="0") int page) {
+		Page<UserDTO> list = this.userService.getList(page);
+		return ResponseEntity.ok(list);
+
+	}
 
 	//json형태로 데이터를 보내야함.
 	//사용자 생성 json형태로 반환.
 	@PostMapping("/create")
-	public ResponseEntity<Boolean> userCreate(@Valid @RequestBody UserCreateForm userCreateForm,BindingResult bindingResult) {
+	public ResponseEntity<Boolean> userCreate(@Valid @RequestBody UserCreateForm userCreateForm) {
 		userService.userCreate(userCreateForm);
-		 return ResponseEntity.ok(true);
-//		 if(bindingResult.hasErrors()) {
-//				System.out.println("바인딩에러");
-//				return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
-//			}
-//			
-//			if(!userCreateForm.getPassword().equals(userCreateForm.getPassword2())) {
-//				bindingResult.rejectValue("password2", "passwordInCorrect" , "2개의 패스워드가 일치하지 않습니다.");
-//				return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
-//			}
-//			
-//			try {
-//				
-//			}catch(DataIntegrityViolationException e) {
-//				e.printStackTrace();
-//				bindingResult.reject("signupFailed", "이미 등록된 사용자입니다.");
-//				return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
-//
-//			}catch(Exception e) {
-//				e.printStackTrace();
-//				bindingResult.reject("signupFailed", e.getMessage());
-//				return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
-//			}
+		return ResponseEntity.ok(true);
 	}
-	
-	
-	
+
 	@ResponseBody
 	@GetMapping("/read/{uno}")
 	public ResponseEntity<UserDTO> userGet (@PathVariable Long uno) {
 		//System.out.println(uno);
 		UserDTO userDTO = this.userService.userGet(uno);
 		return ResponseEntity.ok(userDTO);
-//		if(userDTO != null) {
-//			return ResponseEntity.ok(userDTO);
-//		}
-//		else {
-//			return new ResponseEntity<>(userDTO, HttpStatus.NO_CONTENT);
-//		}
-		
 	}
-	
+
 	@PutMapping("/update/{uno}")
-	public ResponseEntity<UserDTO> userUpdate(@PathVariable Long uno ,@Valid @RequestBody UserDTO userDTO,BindingResult bindingResult) {
-		UserDTO updateUser = userService.userUpdate(uno, userDTO);
+	public ResponseEntity<UserDTO> userUpdate(@PathVariable Long uno ,@Valid @RequestBody UserDTO userDTO, @AuthenticationPrincipal JwtAuthentication user ) {
+		UserDTO updateUser = userService.userUpdate(uno, userDTO, user.uno);
 		return ResponseEntity.ok(updateUser);
-//		if(bindingResult.hasErrors()) {
-//			return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
-//		}
-//		
-//		UserDTO updateUser;
-//		
-//		
-//		try {
-//			updateUser = userService.userUpdate(uno , userDTO);
-//		}catch(DataIntegrityViolationException e) {
-//			e.printStackTrace();
-//			bindingResult.reject("UpdateFailed", "오류가 발생 했습니다.");
-//			return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
-//
-//		}catch(Exception e) {
-//			e.printStackTrace();
-//			bindingResult.reject("UpdateFailed", e.getMessage());
-//			return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
-//		}
-//		if(updateUser == null ) {
-//			return ResponseEntity.notFound().build();
-//		}
-//		
-//		 return ResponseEntity.ok(true);
 	}
-	
-	
+
+
 	//사용자 삭제 
 	@DeleteMapping("/delete/{uno}")
-	public ResponseEntity<Boolean> userDelete(@PathVariable Long uno){
-		System.out.println(uno+"가 회원탈퇴를 눌렀습니다.");
-		try {
-		this.userService.userDelete(uno);
-		}catch(Exception e){
-			e.printStackTrace();
-			return new ResponseEntity<>(false , HttpStatus.NO_CONTENT);
-			
-		}
-		
+	public ResponseEntity<Boolean> userDelete(@PathVariable Long uno, @AuthenticationPrincipal JwtAuthentication user ){
+		this.userService.userDelete(uno,user.uno);
 		return new ResponseEntity<>(true, HttpStatus.NO_CONTENT);
 	}
-	
-	//json형태로 데이터를 보내야함.
-	@PostMapping("/login")
-	//public ResponseEntity<Boolean> userLogin(@Valid @RequestBody UserLoginForm userLoginForm,BindingResult bindingResult) {
-	public ResponseEntity<?> userLogin(@Valid @RequestBody UserLoginForm userLoginForm,BindingResult bindingResult) {
-		System.out.println("누군가 로그인을 시도했다.");
-		
-		if(bindingResult.hasErrors()) {
-			return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
-		}
-			UserDTO userDTO =userService.login(userLoginForm.getUid(), userLoginForm.getPassword());
-			
-			if(userDTO != null) { //로그인 가능
-				System.out.println("로그인 성공");
-				return ResponseEntity.ok(userDTO);
-			}else {
-				System.out.println("로그인 실패");
 
-				return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED);
-			}
-		
+
+	@PostMapping("/login")
+	public ResponseEntity<?> userLogin(@Valid @RequestBody UserLoginForm userLoginForm , HttpServletResponse response) {
+		TokenInfo tokenInfo =userService.login(userLoginForm.getUid(), userLoginForm.getPassword());
+		Cookie refreshTokenCookie = new Cookie("refreshToken", tokenInfo.getRefreshToken());
+		refreshTokenCookie.setHttpOnly(true);
+		refreshTokenCookie.setSecure(false);
+		refreshTokenCookie.setPath("/");
+		refreshTokenCookie.setDomain("localhost");
+		refreshTokenCookie.setMaxAge(14 * 24 * 60 * 60);
+		response.addCookie(refreshTokenCookie);
+		return ResponseEntity.ok(tokenInfo.getAccessToken());
 	}
-	
-//유저 관련 중복 체크란 
-	//userid중복체크 
+
+	//유저 관련 중복 체크란
+	//userid중복체크
 	@GetMapping("/useridchk/{userid}")
 	public ResponseEntity<Boolean>  useridchk(@PathVariable String userid) {
 		boolean b = this.userService.uidchk(userid);
-		
+
 		if(b) { //중복이라면
 			return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
 		}else {
-			 return ResponseEntity.ok(true);
+			return ResponseEntity.ok(true);
 		}
 	}
-	
+
 	//email중복체크
 	@GetMapping("/emailchk/{email}")
 	public ResponseEntity<Boolean> emailchk(@PathVariable String email){
 		boolean b = this.userService.emailchk(email);
-		
+
 		if(b){
 			return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
 		}else {
 			return ResponseEntity.ok(true);
 		}
-			
+
 	}
-	
+
 	//nickname중복체크
-		@GetMapping("/nicknamechk/{nickname}")
-		public ResponseEntity<Boolean> nicknamechk(@PathVariable String nickname){
-			boolean b = this.userService.nicknamechk(nickname);
-			
-			if(b){
-				return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
-			}else {
-				return ResponseEntity.ok(true);
-			}	
+	@GetMapping("/nicknamechk/{nickname}")
+	public ResponseEntity<Boolean> nicknamechk(@PathVariable String nickname){
+		boolean b = this.userService.nicknamechk(nickname);
+
+		if(b){
+			return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+		}else {
+			return ResponseEntity.ok(true);
 		}
-		//유저 중복 체크 끝 
+	}
+	//유저 중복 체크 끝
+	
+	@GetMapping("/logout")
+	public ResponseEntity<?> userLogout(HttpServletResponse response,@AuthenticationPrincipal JwtAuthentication user ) {
+		
+		TokenInfo tokenInfo =userService.logout(user.uno);
+		Cookie refreshTokenCookie = new Cookie("refreshToken", tokenInfo.getRefreshToken());
+//		refreshTokenCookie.setHttpOnly(true);
+//		refreshTokenCookie.setSecure(false);
+		refreshTokenCookie.setPath("/");
+//		refreshTokenCookie.setDomain("localhost");
+		refreshTokenCookie.setMaxAge(0);
+		response.addCookie(refreshTokenCookie);
+		return ResponseEntity.ok(tokenInfo.getAccessToken());
+	}
 }

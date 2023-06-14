@@ -17,35 +17,35 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class LoggerAop {
 	
-	@Pointcut("execution(* com.capstone.Controller..**(..))")
+	//추후에 컨트롤러나 서비스가 늘어나면 주석처리한 부분처럼 늘리면됩니다.
+	@Pointcut("execution(* com.capstone.domain.post.controller..**(..)) || execution(* com.capstone.domain.post.service..**(..))"
+			+ "||execution(* com.capstone.domain.log.controller..**(..)) || execution(* com.capstone.domain.log.service..**(..))"
+			+ "||execution(* com.capstone.domain.tag.controller..**(..)) || execution(* com.capstone.domain.tag.service..**(..))"
+			+ "||execution(* com.capstone.domain.user.controller..**(..)) || execution(* com.capstone.domain.user.service..**(..))"
+			+ "||execution(* com.capstone.domain.file.controller..**(..)) || execution(* com.capstone.domain.file.service..**(..))")
+			//+ "||execution(* com.capstone.domain.logState.controller..**(..)) || execution(* com.capstone.domain.tag.service..**(..))"
+			//+ "||execution(* com.capstone.domain.board.controller..**(..)) || execution(* com.capstone.domain.board.service..**(..))")
     private void cut(){}
 	
-	 // Pointcut에 의해 필터링된 경로로 들어오는 경우 메서드 호출 전에 적용
-    @Before("cut()")
-    public void beforeParameterLog(JoinPoint joinPoint) {
-        // 메서드 정보 받아오기
-        Method method = getMethod(joinPoint);
-        log.info("======= method name = {} =======", method.getName());
-
-        // 파라미터 받아오기
-        Object[] args = joinPoint.getArgs();
-        if (args.length <= 0) log.info("no parameter");
-        for (Object arg : args) {
-            log.info("parameter type = {}", arg.getClass().getSimpleName());
-            log.info("parameter value = {} \n", arg);
-        }
-    }
-
     // Poincut에 의해 필터링된 경로로 들어오는 경우 메서드 리턴 후에 적용
     @AfterReturning(value = "cut()", returning = "returnObj")
     public void afterReturnLog(JoinPoint joinPoint, Object returnObj) {
         // 메서드 정보 받아오기
         Method method = getMethod(joinPoint);
-        log.info("======= method name = {} =======", method.getName());
-
-        log.info("return type = {}", returnObj.getClass().getSimpleName());
-        log.info("return value = {} \n", returnObj);
-       
+	    log.debug("========================================================");
+	    log.debug("==================== Response Start ==================== \n");
+	    
+        log.info("method name = {}", method.getName());
+        if(returnObj != null) {
+	        log.info("return type = {}", returnObj.getClass().getSimpleName());
+	        log.info("return value \n {} \n", returnObj);
+        }else {
+        	String str = "return 값이 없습니다.";
+        	log.info("return type = {}", str);
+	        log.info("return value \n {} \n", str);
+        }
+        log.debug("===================== Response End =====================");
+	    log.debug("========================================================\n");
     }
 
     // JoinPoint로 메서드 정보 가져오기
