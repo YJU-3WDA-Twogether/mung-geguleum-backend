@@ -5,8 +5,6 @@ import java.time.LocalDateTime;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.capstone.domain.postSource.dto.PostSourceRequest;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -36,7 +34,7 @@ public class PostRequest {
 	
 	private Long bno;
 	
-	//private Long uno;
+	private Long uno;
 	
 	MultipartFile[] file;
 	

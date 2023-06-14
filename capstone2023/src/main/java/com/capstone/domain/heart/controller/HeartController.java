@@ -22,13 +22,13 @@ public class HeartController {
     private final HeartService heartService;
 
     @PostMapping("/create")
-    public ResponseEntity<Boolean> insert(@RequestBody @Valid HeartDTO heartDTO, @AuthenticationPrincipal JwtAuthentication user) {
+    public ResponseEntity<Boolean> insert(@RequestBody HeartDTO heartDTO, @AuthenticationPrincipal JwtAuthentication user) {
         heartService.create(heartDTO, user.uno);
         return ResponseEntity.ok(true);
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<Boolean> delete(@RequestBody @Valid HeartDTO heartDTO, @AuthenticationPrincipal JwtAuthentication user) {
+    public ResponseEntity<Boolean> delete(@RequestBody HeartDTO heartDTO, @AuthenticationPrincipal JwtAuthentication user) {
         heartService.delete(heartDTO, user.uno);
         return ResponseEntity.ok(true);
     }

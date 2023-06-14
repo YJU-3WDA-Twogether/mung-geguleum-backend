@@ -32,7 +32,7 @@ public class ReplyService {
 
     @Transactional
     public void replyCreate(ReplyRequest replyDTO,Long uno) {
-
+    	System.out.println(replyDTO.toString()+" ==============================================================");
         // 유저 참조 설정
         User user = this.userRepository.findByUno(uno)
                 .orElseThrow(() -> new UserNotFoundException());
