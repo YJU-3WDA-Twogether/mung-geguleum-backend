@@ -42,9 +42,8 @@ public class PostController {
 	}
 	
 	@PostMapping("/create")
-	//public  ResponseEntity<Boolean> postCreate(@RequestBody PostRequest postRequest, @AuthenticationPrincipal JwtAuthentication user) throws Exception{
-	public  ResponseEntity<Boolean> postCreate(@RequestBody PostRequest postRequest) throws Exception{
-		postService.postCreate(postRequest, 16L);
+	public  ResponseEntity<Boolean> postCreate(@RequestBody PostRequest postRequest, @AuthenticationPrincipal JwtAuthentication user) throws Exception{
+		postService.postCreate(postRequest, user.uno);
 		return ResponseEntity.ok(true);
 	}
 	
@@ -70,8 +69,8 @@ public class PostController {
 		}
 
 	//내가 쓴 게시글 조회
-	@GetMapping("/getMyPost")
-	public ResponseEntity<Page> getMyPost(@RequestParam(value="page", defaultValue="0") int page, Long uno){
+	@GetMapping("/getMyPost/{uno}")
+	public ResponseEntity<Page> getMyPost(@RequestParam(value="page", defaultValue="0") int page, @PathVariable Long uno){
 		Page<PostResponse> paging = this.postService.getMyPost(page, uno);
 		return ResponseEntity.ok(paging);
 	}
