@@ -42,7 +42,7 @@ public class PostController {
 	}
 	
 	@PostMapping("/create")
-	public  ResponseEntity<Boolean> postCreate(@RequestBody PostRequest postRequest, @AuthenticationPrincipal JwtAuthentication user) throws Exception{
+	public  ResponseEntity<Boolean> postCreate(@Valid PostRequest postRequest, @AuthenticationPrincipal JwtAuthentication user) throws Exception{
 		postService.postCreate(postRequest, user.uno);
 		return ResponseEntity.ok(true);
 	}

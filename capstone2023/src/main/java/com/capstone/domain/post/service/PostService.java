@@ -87,8 +87,7 @@ public class PostService {
 	//모든페이지 전체조회함.
 	@Transactional
 	public Page<PostResponse> getList(int page, Long uno) {
-		Pageable pageable = PageRequest.of(page,30);
-		//Pageable pageable = PageRequest.of(page,10);
+		Pageable pageable = PageRequest.of(page,10);
 		Page<Object[]> result = postRepository.findAllWithBoardAndUser(pageable);
 
 	    return result.map(objects -> {
@@ -103,8 +102,7 @@ public class PostService {
 	//한  종류 게시판 조회
 	@Transactional
 	public Page<PostResponse> getList(int page, String bname, Long uno){
-		//Pageable pageable = PageRequest.of(page,10);
-		 Pageable pageable = PageRequest.of(page, 30, Sort.by("pno").descending());
+		 Pageable pageable = PageRequest.of(page, 10, Sort.by("pno").descending());
 		Page<Object[]> result = postRepository.findAllByBoardName(bname, pageable);
 
 	    return result.map(objects -> {
@@ -161,7 +159,7 @@ public class PostService {
 	// 내가 쓴 게시글 메소드
 	@Transactional
 	public Page<PostResponse> getMyPost(int page, Long uno) {
-		Pageable pageable = PageRequest.of(page, 30, Sort.by("pno").descending());
+		Pageable pageable = PageRequest.of(page, 10, Sort.by("pno").descending());
 		Page<Object[]> result = postRepository.findMyPost(pageable, uno);
 		return result.map(objects -> {
 			Post post = (Post) objects[0];
