@@ -1,7 +1,12 @@
 package com.capstone.domain.post.controller;
 
 import java.io.IOException;
+import java.util.List;
 
+import com.capstone.domain.hashtag.entity.Hashtag;
+import com.capstone.domain.hashtag.service.HashtagService;
+import com.capstone.domain.post.entity.Post;
+import com.capstone.domain.posthashtag.service.PostHashtagService;
 import com.capstone.global.security.jwt.JwtAuthentication;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -27,7 +32,8 @@ import lombok.extern.slf4j.Slf4j;
 public class PostController {
 	
 	private final PostService postService;
-	
+	private final HashtagService hashtagService;
+	private final PostHashtagService postHashtagService;
 	@GetMapping("/getlist")
 	public ResponseEntity<Page> getList(@RequestParam(value="page", defaultValue="0") int page, @AuthenticationPrincipal JwtAuthentication user) {
 		Page<PostResponse> paging = this.postService.getList(page, user.uno);
@@ -43,7 +49,12 @@ public class PostController {
 	
 	@PostMapping("/create")
 	public  ResponseEntity<Boolean> postCreate(@RequestBody PostRequest postRequest, @AuthenticationPrincipal JwtAuthentication user) throws Exception{
-		postService.postCreate(postRequest, user.uno);
+		System.out.println("컨트롤러 진입");
+		Post post = postService.postCreate(postRequest, user.uno);
+		System.out.println("post service 진입");
+		Hashtag hashtag = hashtagService.hashtagCreate(postRequest.getContent());
+		System.out.println("hashtag service 진입");
+//		postHashtagService.postHashtagCreate(post, hashtag);
 		return ResponseEntity.ok(true);
 	}
 	

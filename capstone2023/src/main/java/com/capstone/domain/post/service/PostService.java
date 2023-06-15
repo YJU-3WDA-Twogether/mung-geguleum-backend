@@ -59,7 +59,7 @@ public class PostService {
 	
 	//게시판 생성 메소드
 	@Transactional(rollbackFor = {Exception.class, IOException.class})
-	public void postCreate(PostRequest postRequest, Long uno) throws Exception{
+	public Post postCreate(PostRequest postRequest, Long uno) throws Exception{
 		LocalDateTime time = LocalDateTime.now();
 		postRequest.setRegDate(time);
 		User user = this.userRepository.findByUno(uno).orElseThrow(()-> new UserNotFoundException ());
@@ -81,7 +81,8 @@ public class PostService {
 		
 		if(board.getBno()==4&&postRequest.getTag() !=null) {
 			tagService.postSourceCreate(postRequest.getTag(),post);
-		}	
+		}
+		return post;
 	}
 	
 	//모든페이지 전체조회함.
