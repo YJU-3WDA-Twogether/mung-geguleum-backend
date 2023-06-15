@@ -18,13 +18,22 @@ import lombok.extern.slf4j.Slf4j;
 public class LoggerAop {
 	
 	//추후에 컨트롤러나 서비스가 늘어나면 주석처리한 부분처럼 늘리면됩니다.
-	@Pointcut("execution(* com.capstone.domain.post.controller..**(..)) || execution(* com.capstone.domain.post.service..**(..))"
+	@Pointcut(
+			//domain 영역
+			"execution(* com.capstone.domain.post.controller..**(..)) || execution(* com.capstone.domain.post.service..**(..))"
 			+ "||execution(* com.capstone.domain.log.controller..**(..)) || execution(* com.capstone.domain.log.service..**(..))"
 			+ "||execution(* com.capstone.domain.tag.controller..**(..)) || execution(* com.capstone.domain.tag.service..**(..))"
 			+ "||execution(* com.capstone.domain.user.controller..**(..)) || execution(* com.capstone.domain.user.service..**(..))"
-			+ "||execution(* com.capstone.domain.file.controller..**(..)) || execution(* com.capstone.domain.file.service..**(..))")
-			//+ "||execution(* com.capstone.domain.logState.controller..**(..)) || execution(* com.capstone.domain.tag.service..**(..))"
-			//+ "||execution(* com.capstone.domain.board.controller..**(..)) || execution(* com.capstone.domain.board.service..**(..))")
+			+ "||execution(* com.capstone.domain.file.controller..**(..)) || execution(* com.capstone.domain.file.service..**(..))"
+			+ "||execution(* com.capstone.domain.postSource.controller..**(..)) || execution(* com.capstone.domain.postSource.service..**(..))"
+			+ "||execution(* com.capstone.domain.reply.controller..**(..)) || execution(* com.capstone.domain.reply.service..**(..))"
+			+ "||execution(* com.capstone.domain.heart.controller..**(..)) || execution(* com.capstone.domain.heart.service..**(..))"
+			
+			
+			//global 영역
+			+ "||execution(* com.capstone.global.security.jwt.controller..**(..)) || execution(* com.capstone.global.security.jwt.service..**(..)) || execution(* com.capstone.global.security.jwt.filter..**(..)) "
+			+ "||execution(* com.capstone.global.exception..**(..)) "
+			)
     private void cut(){}
 	
     // Poincut에 의해 필터링된 경로로 들어오는 경우 메서드 리턴 후에 적용
