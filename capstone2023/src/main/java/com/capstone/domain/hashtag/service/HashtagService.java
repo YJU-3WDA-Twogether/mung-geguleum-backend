@@ -16,25 +16,6 @@ import java.util.regex.Pattern;
 @Service
 public class HashtagService {
 
-    private final HashtagMapper hashtagMapper;
 
-    private final HashtagRepository hashtagRepository;
-    @Transactional
-    public Hashtag hashtagCreate(String content) {
-        System.out.println(content);
-
-        List<String> hashtags = new ArrayList<>();
-
-        Pattern pattern = Pattern.compile("#(\\w+)");
-        Matcher matcher = pattern.matcher(content);
-
-        while (matcher.find()) {
-            String hashtag = matcher.group(1);
-            hashtags.add(hashtag);
-        }
-        Hashtag hashtag = hashtagMapper.toEntity(content);
-        hashtagRepository.save(hashtag);
-        return hashtag;
-    }
 
 }

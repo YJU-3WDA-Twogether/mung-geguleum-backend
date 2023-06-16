@@ -99,7 +99,7 @@ public class FileService {
   	 //2L은 파일다운로드를 의미한다.
   	 
   	 LogRequest logRequest = logMapper.toRequestLog(2L, user.getUno(), post.getUser().getUno(), post.getPno(),time);
-  	 System.out.println("로그리퀘스트 제대로 저장됨?" +logRequest.toString());
+
 		 Log log = this.logService.LogCreate(logRequest);
 		 
   	 return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,contentDisposition).body(resource);

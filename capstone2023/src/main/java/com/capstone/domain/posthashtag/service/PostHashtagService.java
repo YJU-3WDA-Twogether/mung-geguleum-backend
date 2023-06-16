@@ -15,9 +15,5 @@ import java.util.List;
 @Service
 public class PostHashtagService {
     private final PostHashtagRepository postHashtagRepository;
-    @Transactional
-    public void postHashtagCreate(Post post, Hashtag hashtag) {
-        PostHashtag postHashtag = PostHashtagMapper.toEntity(post, hashtag);
-        postHashtagRepository.save(postHashtag);
-    }
+
 }

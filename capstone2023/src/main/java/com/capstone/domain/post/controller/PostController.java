@@ -48,13 +48,8 @@ public class PostController {
 	}
 	
 	@PostMapping("/create")
-	public  ResponseEntity<Boolean> postCreate(@RequestBody PostRequest postRequest, @AuthenticationPrincipal JwtAuthentication user) throws Exception{
-		System.out.println("컨트롤러 진입");
-		Post post = postService.postCreate(postRequest, user.uno);
-		System.out.println("post service 진입");
-		Hashtag hashtag = hashtagService.hashtagCreate(postRequest.getContent());
-		System.out.println("hashtag service 진입");
-//		postHashtagService.postHashtagCreate(post, hashtag);
+	public  ResponseEntity<Boolean> postCreate(@Valid PostRequest postRequest, @AuthenticationPrincipal JwtAuthentication user) throws Exception{
+		postService.postCreate(postRequest, user.uno);
 		return ResponseEntity.ok(true);
 	}
 	

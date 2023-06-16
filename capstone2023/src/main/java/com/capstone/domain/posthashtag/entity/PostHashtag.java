@@ -13,7 +13,7 @@ import lombok.*;
 @Entity
 @ToString
 @Table(name = "post_hashtag")
-public class PostHashtag extends BaseEntity {
+public class PostHashtag{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "phno")
@@ -23,7 +23,7 @@ public class PostHashtag extends BaseEntity {
     @JoinColumn(name = "htno")
     private Hashtag hashtag;  //해시태그 키(해시태그) 참조
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "hno")
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "pno")
     private Post post;  //해시태그 아이디(게시글) 참조
 }
