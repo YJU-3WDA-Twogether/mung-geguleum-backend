@@ -7,6 +7,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.capstone.domain.hashtag.entity.Hashtag;
+import com.capstone.domain.hashtag.mapper.HashtagMapper;
+import com.capstone.domain.hashtag.repository.HashtagRepository;
+import com.capstone.domain.posthashtag.entity.PostHashtag;
+import com.capstone.domain.posthashtag.mapper.PostHashtagMapper;
+import com.capstone.domain.posthashtag.repository.PostHashtagRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -46,15 +52,19 @@ public class PostService {
 	private final UserRepository userRepository;
 	private final PostRepository postRepository;
 	private final BoardRepository boardRepository;
+	private final HashtagRepository hashtagRepository;
+	private final PostHashtagRepository postHashtagRepository;
 
 	private final FileService fileService;
 	private final LogService logService;
 	private final PostSourceService tagService;
-	
+
 	private final PostMapper postMapper;
 	private final LogMapper logMapper;
 	private final FileMapper fileMapper;
-    private final ReplyMapper replyMapper;
+	private final ReplyMapper replyMapper;
+	private final HashtagMapper hashtagMapper;
+	private final PostHashtagMapper postHashtagMapper;
 	
 	
 	//게시판 생성 메소드
@@ -67,7 +77,30 @@ public class PostService {
 		Post post = postMapper.toEntity(postRequest,board ,user);
 		
 		post = this.postRepository.save(post);
-		
+
+		/*** Hashtag 저장 ***/
+		List<Hashtag> hashtags = hashtagMapper.toEntities(postRequest);
+		for (Hashtag hashtag : hashtags) {	// hashtag 값이 db에 없다면 추가
+			Hashtag hashtagExist = hashtagRepository.findByTitle(hashtag.getTitle());
+			if(hashtagExist == null) {
+				this.hashtagRepository.save(hashtag);
+			}
+		}
+
+		/*** PostHashtag 저장 ***/
+		List<PostHashtag> postHashtags = postHashtagMapper.toEntities(post, hashtags);
+
+		for (PostHashtag postHashtag : postHashtags) {
+			String hashtagTitle = postHashtag.getHashtag().getTitle();
+			Hashtag hashtagCheck = hashtagRepository.findByTitle(hashtagTitle);
+			if(hashtagCheck != null) {
+				PostHashtag savedPostHashtag = postHashtagMapper.toEntity(post, hashtagCheck);
+				this.postHashtagRepository.save(savedPostHashtag);
+			}else {
+				this.postHashtagRepository.save(postHashtag);
+			}
+		}
+
 		if(postRequest.getFile()!=null) {
 			this.fileService.uploadFile(postRequest.getFile(),post ,time);
 		}
@@ -142,6 +175,31 @@ public class PostService {
 				throw new PostForbiddenException();
 			}
 			post = postMapper.toEntity(postDTO ,board ,user);
+
+		this.postHashtagRepository.deleteByPno(pno);	// PostHashtag 삭제 기능
+
+		/*** Hashtag 저장 ***/
+		List<Hashtag> hashtags = hashtagMapper.toEntities(postDTO);
+		for (Hashtag hashtag : hashtags) {	// hashtag 값이 db에 없다면 추가
+			Hashtag hashtagExist = hashtagRepository.findByTitle(hashtag.getTitle());
+			if(hashtagExist == null) {
+				this.hashtagRepository.save(hashtag);
+			}
+		}
+
+		/*** PostHashtag 저장 ***/
+		List<PostHashtag> postHashtags = postHashtagMapper.toEntities(post, hashtags);
+
+		for (PostHashtag postHashtag : postHashtags) {
+			String hashtagTitle = postHashtag.getHashtag().getTitle();
+			Hashtag hashtagCheck = hashtagRepository.findByTitle(hashtagTitle);
+			if(hashtagCheck != null) {
+				PostHashtag savedPostHashtag = postHashtagMapper.toEntity(post, hashtagCheck);
+				this.postHashtagRepository.save(savedPostHashtag);
+			}else {
+				this.postHashtagRepository.save(postHashtag);
+			}
+		}
 			return postMapper.toPostResponse(this.postRepository.save(post));
 	}
 	
@@ -153,7 +211,9 @@ public class PostService {
 		User user = this.userRepository.findByUno(uno).orElseThrow(() -> new UserNotFoundException());
 		if(!post.getUser().getUno().equals(user.getUno()))
 			throw new PostForbiddenException();
-		this.postRepository.deleteById(pno);
+		this.postHashtagRepository.deleteByPno(pno);
+		//게시글을 삭제 할 수 있는 기능 추가 해야함!
+		//this.postRepository.deleteById(pno);
 	}
 		
 	// 내가 쓴 게시글 메소드
