@@ -40,7 +40,7 @@ public class PostRequest {
 	
 	//재창작을 진행할때 태그 삽입이 가능하다.
 	Long[] tag;
-	
 
+	String[] hashtag;
 	
 }
