@@ -20,9 +20,13 @@ public class LoggerAop {
 	//추후에 컨트롤러나 서비스가 늘어나면 주석처리한 부분처럼 늘리면됩니다.
 	@Pointcut("execution(* com.capstone.domain.post.controller..**(..)) || execution(* com.capstone.domain.post.service..**(..))"
 			+ "||execution(* com.capstone.domain.log.controller..**(..)) || execution(* com.capstone.domain.log.service..**(..))"
-			+ "||execution(* com.capstone.domain.tag.controller..**(..)) || execution(* com.capstone.domain.tag.service..**(..))"
+			+ "||execution(* com.capstone.domain.postSource.controller..**(..)) || execution(* com.capstone.domain.postSource.service..**(..))"
 			+ "||execution(* com.capstone.domain.user.controller..**(..)) || execution(* com.capstone.domain.user.service..**(..))"
-			+ "||execution(* com.capstone.domain.file.controller..**(..)) || execution(* com.capstone.domain.file.service..**(..))")
+			+ "||execution(* com.capstone.domain.file.controller..**(..)) || execution(* com.capstone.domain.file.service..**(..))"
+			//+ "||execution(* com.capstone.domain.admin.controller..**(..)) || execution(* com.capstone.domain.admin.service..**(..))"
+		//	+ "||execution(* com.capstone.domain.hashtag.controller..**(..)) || execution(* com.capstone.domain.hashtag.service..**(..))"
+		//	+ "||execution(* com.capstone.domain.posthashtag.controller..**(..)) || execution(* com.capstone.domain.posthashtag.service..**(..))"
+			)
 			//+ "||execution(* com.capstone.domain.logState.controller..**(..)) || execution(* com.capstone.domain.tag.service..**(..))"
 			//+ "||execution(* com.capstone.domain.board.controller..**(..)) || execution(* com.capstone.domain.board.service..**(..))")
     private void cut(){}

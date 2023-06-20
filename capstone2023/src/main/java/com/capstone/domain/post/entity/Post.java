@@ -3,6 +3,9 @@ package com.capstone.domain.post.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
+
 import com.capstone.domain.board.entity.Board;
 import com.capstone.domain.file.entity.File;
 import com.capstone.domain.heart.entity.Heart;
@@ -25,6 +28,8 @@ import lombok.ToString;
 @AllArgsConstructor
 @Builder
 @ToString
+@SQLDelete(sql = "UPDATE Post SET board_no = 5 WHERE pno = ?")
+@Where(clause = "board_no != 5") // 추가
 public class Post extends BaseEntity{
 	
     @Id 
