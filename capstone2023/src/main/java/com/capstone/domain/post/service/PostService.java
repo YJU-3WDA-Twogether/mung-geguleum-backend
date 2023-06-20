@@ -5,14 +5,7 @@ package com.capstone.domain.post.service;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import com.capstone.domain.hashtag.entity.Hashtag;
-import com.capstone.domain.hashtag.mapper.HashtagMapper;
-import com.capstone.domain.hashtag.repository.HashtagRepository;
-import com.capstone.domain.posthashtag.entity.PostHashtag;
-import com.capstone.domain.posthashtag.mapper.PostHashtagMapper;
-import com.capstone.domain.posthashtag.repository.PostHashtagRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,9 +16,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.capstone.domain.board.entity.Board;
 import com.capstone.domain.board.exception.BoardNotFoundException;
 import com.capstone.domain.board.repository.BoardRepository;
-import com.capstone.domain.file.dto.FileDTO;
 import com.capstone.domain.file.mapper.FileMapper;
+import com.capstone.domain.file.respository.FileRepository;
 import com.capstone.domain.file.service.FileService;
+import com.capstone.domain.hashtag.entity.Hashtag;
+import com.capstone.domain.hashtag.service.HashtagService;
 import com.capstone.domain.log.dto.LogRequest;
 import com.capstone.domain.log.entity.Log;
 import com.capstone.domain.log.mapper.LogMapper;
@@ -38,7 +33,8 @@ import com.capstone.domain.post.exception.PostNotFoundException;
 import com.capstone.domain.post.mapper.PostMapper;
 import com.capstone.domain.post.repository.PostRepository;
 import com.capstone.domain.postSource.service.PostSourceService;
-import com.capstone.domain.reply.dto.ReplyResponse;
+import com.capstone.domain.posthashtag.repository.PostHashtagRepository;
+import com.capstone.domain.posthashtag.service.PostHashtagService;
 import com.capstone.domain.reply.mapper.ReplyMapper;
 import com.capstone.domain.user.entity.User;
 import com.capstone.domain.user.exception.UserNotFoundException;
@@ -49,22 +45,24 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Service
 public class PostService {
+	
 	private final UserRepository userRepository;
 	private final PostRepository postRepository;
 	private final BoardRepository boardRepository;
-	private final HashtagRepository hashtagRepository;
 	private final PostHashtagRepository postHashtagRepository;
+	private final FileRepository fileRepository;
 
 	private final FileService fileService;
 	private final LogService logService;
 	private final PostSourceService tagService;
-
+	private final HashtagService hashtagService;
+	private final PostHashtagService postHashTagService;
+	
 	private final PostMapper postMapper;
 	private final LogMapper logMapper;
 	private final FileMapper fileMapper;
 	private final ReplyMapper replyMapper;
-	private final HashtagMapper hashtagMapper;
-	private final PostHashtagMapper postHashtagMapper;
+	
 	
 	
 	//게시판 생성 메소드
@@ -74,32 +72,15 @@ public class PostService {
 		postRequest.setRegDate(time);
 		User user = this.userRepository.findByUno(uno).orElseThrow(()-> new UserNotFoundException ());
 		Board board = this.boardRepository.findByBno(postRequest.getBno()).orElseThrow(()-> new BoardNotFoundException ());
-		Post post = postMapper.toEntity(postRequest,board ,user);
+		Post post = postMapper.toEntity(postRequest , board ,user);
 		
 		post = this.postRepository.save(post);
+		
 		if(postRequest.getHashtag()!=null) {
-			/*** Hashtag 저장 ***/
-			List<Hashtag> hashtags = hashtagMapper.toEntities(postRequest);
-			for (Hashtag hashtag : hashtags) {	// hashtag 값이 db에 없다면 추가
-				Hashtag hashtagExist = hashtagRepository.findByTitle(hashtag.getTitle());
-				if(hashtagExist == null) {
-					this.hashtagRepository.save(hashtag);
-				}
-			}
-	
-			/*** PostHashtag 저장 ***/
-			List<PostHashtag> postHashtags = postHashtagMapper.toEntities(post, hashtags);
-	
-			for (PostHashtag postHashtag : postHashtags) {
-				String hashtagTitle = postHashtag.getHashtag().getTitle();
-				Hashtag hashtagCheck = hashtagRepository.findByTitle(hashtagTitle);
-				if(hashtagCheck != null) {
-					PostHashtag savedPostHashtag = postHashtagMapper.toEntity(post, hashtagCheck);
-					this.postHashtagRepository.save(savedPostHashtag);
-				}else {
-					this.postHashtagRepository.save(postHashtag);
-				}
-			}
+			//HashTag를 저장하는 코드다. 
+			List<Hashtag> hashtags = hashtagService.hashtagCreate(postRequest.getHashtag());
+			//PostHashtag 저장
+			postHashTagService.postHashTagCreate(post, hashtags);
 		}
 
 		if(postRequest.getFile()!=null) {
@@ -112,7 +93,6 @@ public class PostService {
 		Log log = this.logService.LogCreate(logRequest);
 		
 		//재창작인 경우 
-		
 		if(board.getBno()==4&&postRequest.getTag() !=null) {
 			tagService.postSourceCreate(postRequest.getTag(),post);
 		}	
@@ -152,57 +132,35 @@ public class PostService {
 	public PostResponse postRead(Long pno) {
 	    Post post = postRepository.findByFilesAndReply(pno).orElseThrow(()-> new PostNotFoundException());
 	    User user = userRepository.findById(post.getUser().getUno()).orElseThrow(()-> new UserNotFoundException() ); 
-		List<FileDTO> fileDTOList = post.getFiles().stream()
-    	        .map(file -> fileMapper.toFileDTO(file, pno))
-    	        .collect(Collectors.toList());
-
-        List<ReplyResponse> replyDTOList = post.getReplys().stream()
-				.map(reply -> replyMapper.toReplyDTO(reply, pno))
-				.collect(Collectors.toList());
-
-	   return postMapper.toPostResponse(post, fileDTOList, replyDTOList);
+	   return postMapper.toPostResponse(post);
 	}
 	
 	
 
 	//게시판 수정 메소드
-	@Transactional
-	public PostResponse postUpdate(Long pno, PostRequest postDTO, Long uno) {
+	@Transactional(rollbackFor = {Exception.class, IOException.class})
+	public PostResponse postUpdate(Long pno, PostRequest postRequest, Long uno) throws Exception {
 			Post post= this.postRepository.findByPno(pno).orElseThrow(() -> new PostNotFoundException()) ;
-			//pk값은 존재하고 나머지 값이 null일 경우에 nullpointException을 추가적으로 발행해줘야함.
 			User user = this.userRepository.findByUno(uno).orElseThrow(() -> new UserNotFoundException());
-			Board board = this.boardRepository.findByBno(postDTO.getBno()).orElseThrow( () -> new BoardNotFoundException());
+			Board board = this.boardRepository.findByBno(postRequest.getBno()).orElseThrow( () -> new BoardNotFoundException());
 			if(!post.getUser().getUno().equals(user.getUno())) {
-				System.out.println("post : "+ post.getUser().getUno()+" user : " + user.getUno());
 				throw new PostForbiddenException();
 			}
-			post = postMapper.toEntity(postDTO ,board ,user);
-
+			
+			fileRepository.deleteByPno(post.getPno());
+			if(postRequest.getFile()!=null) {
+				LocalDateTime time = LocalDateTime.now();
+				this.fileService.uploadFile(postRequest.getFile(),post ,time);
+			}
+			
 		this.postHashtagRepository.deleteByPno(pno);	// PostHashtag 삭제 기능
-		if(postDTO.getHashtag()!= null) {
-			/*** Hashtag 저장 ***/
-			List<Hashtag> hashtags = hashtagMapper.toEntities(postDTO);
-			for (Hashtag hashtag : hashtags) {	// hashtag 값이 db에 없다면 추가
-				Hashtag hashtagExist = hashtagRepository.findByTitle(hashtag.getTitle());
-				if(hashtagExist == null) {
-					this.hashtagRepository.save(hashtag);
-				}
-			}
-	
-			/*** PostHashtag 저장 ***/
-			List<PostHashtag> postHashtags = postHashtagMapper.toEntities(post, hashtags);
-	
-			for (PostHashtag postHashtag : postHashtags) {
-				String hashtagTitle = postHashtag.getHashtag().getTitle();
-				Hashtag hashtagCheck = hashtagRepository.findByTitle(hashtagTitle);
-				if(hashtagCheck != null) {
-					PostHashtag savedPostHashtag = postHashtagMapper.toEntity(post, hashtagCheck);
-					this.postHashtagRepository.save(savedPostHashtag);
-				}else {
-					this.postHashtagRepository.save(postHashtag);
-				}
-			}
+		if(postRequest.getHashtag()!= null) {
+			List<Hashtag> hashtags = hashtagService.hashtagCreate(postRequest.getHashtag());
+			postHashTagService.postHashTagCreate(post, hashtags);
 		}
+		
+		post = postMapper.toEntity(postRequest ,board ,user);
+		
 			return postMapper.toPostResponse(this.postRepository.save(post));
 	}
 	

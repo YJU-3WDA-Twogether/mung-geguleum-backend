@@ -30,7 +30,6 @@ import lombok.ToString;
 @Builder
 @ToString
 @SQLDelete(sql = "UPDATE Post SET board_no = 5 WHERE pno = ?")
-@Where(clause = "board_no != 5") // 추가
 public class Post extends BaseEntity{
 	
     @Id 

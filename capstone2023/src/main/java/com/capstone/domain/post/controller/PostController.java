@@ -56,7 +56,7 @@ public class PostController {
 	
 	//게시글 업데이트 메소드
 	@PutMapping("/update/{pno}")
-	public  ResponseEntity<Boolean> postUpdate(@PathVariable Long pno, @Valid PostRequest postDTO, @AuthenticationPrincipal JwtAuthentication user){
+	public  ResponseEntity<Boolean> postUpdate(@PathVariable Long pno, @Valid PostRequest postDTO, @AuthenticationPrincipal JwtAuthentication user) throws Exception{
 		PostResponse updatePost = this.postService.postUpdate(pno , postDTO, user.uno);
 		return ResponseEntity.ok(true);		 
 	}

@@ -3,11 +3,12 @@ package com.capstone.domain.post.dto;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.capstone.domain.heart.dto.HeartDTO;
-import com.capstone.domain.reply.dto.ReplyResponse;
 import org.springframework.stereotype.Component;
 
 import com.capstone.domain.file.dto.FileDTO;
+import com.capstone.domain.heart.dto.HeartDTO;
+import com.capstone.domain.posthashtag.dto.PostHashtagResponse;
+import com.capstone.domain.reply.dto.ReplyResponse;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -54,4 +55,7 @@ public class PostResponse {
 	List <ReplyResponse> reply;
 
 	List <HeartDTO> heart;
+	
+	List<PostHashtagResponse> postHashtag;
+	
 }
