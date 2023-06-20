@@ -229,5 +229,15 @@ public class PostService {
 		});
 	}
 
-	
+	public Page<PostResponse> getSearchPost(int page, String search, Long uno) {
+		Pageable pageable = PageRequest.of(page, 10, Sort.by("pno").descending());
+		Page<Object[]> result = postRepository.findSearchPost(pageable, search);
+		System.out.println("reach???");
+		return result.map(objects -> {
+			Post post = (Post) objects[0];
+			Board board = (Board) objects[1];
+			User user = (User) objects[2];
+			return postMapper.toPostResponse(post,board,user, uno) ;
+		});
+	}
 }

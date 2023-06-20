@@ -75,6 +75,12 @@ public class PostController {
 		return ResponseEntity.ok(paging);
 	}
 
+	@GetMapping("/getSearchPost/{search}")
+	public ResponseEntity<Page> searchPost(@RequestParam(value="page", defaultValue="0") int page, @PathVariable String search,  @AuthenticationPrincipal JwtAuthentication user) {
+		System.out.println("Search : " + search);
+		Page<PostResponse> paging = this.postService.getSearchPost(page, search, user.uno);
+		return ResponseEntity.ok(paging);
+	}
 
 
 

@@ -36,7 +36,7 @@ public class SecurityConfig {
 			.authorizeHttpRequests()
 			.requestMatchers("/token" ).permitAll()
 			.requestMatchers("/user/login", "user/read/**","user/create" ,"/user/useridchk/**","/user/emailchk/**","/user/nicknamechk/**" ).permitAll() //user관련된 permitall입니다.
-			.requestMatchers("/post/getlist/**","/post/read/**" , "/post/getMyPost/**" ).permitAll() //post컨트롤러와 관련된 설정
+			.requestMatchers("/post/getlist/**","/post/read/**" , "/post/getMyPost/**", "/post/getSearchPost/**" ).permitAll() //post컨트롤러와 관련된 설정
 			.requestMatchers("/file/read/**").permitAll()
 			.requestMatchers("/log/getlist").permitAll()
 			.requestMatchers("/postSource/getlist/**").permitAll()
