@@ -2,8 +2,8 @@ package com.capstone.domain.file.dto;
 
 import java.time.LocalDateTime;
 
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
