@@ -54,4 +54,6 @@ public interface PostRepository extends JpaRepository<Post, Long>{
 		@Query("SELECT distinct p, b, u FROM Post p left JOIN p.files JOIN p.board b JOIN p.user u  WHERE u.uno = :uno ORDER BY p.pno DESC")
 		Page<Object[]> findMyPost(Pageable pageable, Long uno);
 
+		@Query("SELECT DISTINCT p, b, u FROM Post p left JOIN p.files JOIN p.board b JOIN p.user u LEFT JOIN p.postHashtags ph LEFT JOIN ph.hashtag h WHERE p.title LIKE %:search% OR h.title LIKE %:search%")
+		Page<Object[]> findSearchPost(Pageable pageable, String search);
 }

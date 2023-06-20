@@ -11,6 +11,7 @@ import com.capstone.domain.file.entity.File;
 import com.capstone.domain.heart.entity.Heart;
 import com.capstone.domain.log.entity.Log;
 import com.capstone.domain.postSource.entity.PostSource;
+import com.capstone.domain.posthashtag.entity.PostHashtag;
 import com.capstone.domain.reply.entity.Reply;
 import com.capstone.domain.user.entity.User;
 import com.capstone.global.entity.BaseEntity;
@@ -69,5 +70,8 @@ public class Post extends BaseEntity{
 
     @OneToMany(mappedBy = "post", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<Heart> hearts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post")
+    private List<PostHashtag> postHashtags = new ArrayList<>();
 }
    
