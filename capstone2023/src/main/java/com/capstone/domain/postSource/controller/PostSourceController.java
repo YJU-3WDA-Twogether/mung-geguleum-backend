@@ -18,16 +18,16 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/postSource")
 public class PostSourceController {
 	
-	private final PostSourceService tagService;
+	private final PostSourceService postSourceService;
 
 	  @GetMapping("/getlist")
 	  public ResponseEntity<List<Object>> getList() {
-	       List<Object> list = this.tagService.getPostSource();
+	       List<Object> list = this.postSourceService.getPostSource();
 	       return new ResponseEntity<>(list, HttpStatus.OK);
 	   }
 	  @GetMapping("/getlist/{pno}")
 	  public ResponseEntity<List<Object>> getList(@PathVariable Long pno) {
-	       List<Object> list = this.tagService.getPostSource(pno);
+	       List<Object> list = this.postSourceService.getPostSource(pno);
 	       return new ResponseEntity<>(list, HttpStatus.OK);
 	   } 
 }

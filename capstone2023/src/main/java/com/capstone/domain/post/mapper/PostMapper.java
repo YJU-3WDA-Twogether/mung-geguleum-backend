@@ -56,20 +56,9 @@ public class PostMapper {
 				.modDate(post.getModDate())
 				.build();
 	}
-	
-	//DTO에 Entity 담기 
-		public PostResponse toPostResponse(Post post) {
-			return PostResponse.builder()
-					.pno(post.getPno())
-					.title(post.getTitle())
-					.content(post.getContent())
-					.regDate(post.getRegDate())
-					.modDate(post.getModDate())
-					.build();
-		}
-	
+		
 	//DTO에 Entity 담기 페이징 기능을 할때 파일도 담아서 같이보낸다. postEntity에서 조인을 통해서 데이터 호출해야함.
-		public PostResponse toPostResponse(Post post, List<FileDTO> file, List<ReplyResponse> reply) {
+		public PostResponse toPostResponse(Post post) {
 
 			return PostResponse.builder()
 					.pno(post.getPno())
@@ -80,8 +69,8 @@ public class PostMapper {
 					.uid(post.getUser().getUid())
 					.uno(post.getUser().getUno())
 					.bname(post.getBoard().getBname())
-					.file(file)
-					.reply(reply)
+					.file(post.getFiles().stream().map(file -> fileMapper.toFileDTO(file,post.getPno())).collect(Collectors.toList()))
+					.reply(post.getReplys().stream().map(reply -> replyMapper.toReplyResponse(reply,post.getPno())).collect(Collectors.toList()))
 					.build();
 		}
 		

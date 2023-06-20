@@ -26,10 +26,10 @@ public class PostHashtagMapper {
         return postHashtags;
     }
 
-    public PostHashtag toEntity(Post post, Hashtag hashtagCheck) {
+    public PostHashtag toEntity(Post post, Hashtag hashtag) {
         return  PostHashtag.builder()
                     .post(post)
-                    .hashtag(hashtagCheck)
+                    .hashtag(hashtag)
                     .build();
     }
 }
