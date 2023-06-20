@@ -54,7 +54,8 @@ public enum ErrorCode {
 	
 	
 	//HashTag
-	
+	,HASHTAG_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, " HT001", "존재하는 해시태그가 없습니다.")
+
 	// Token
 	,REFRESH_TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "A001", "존재하지 않는 리프레쉬 토큰입니다.")
 	,TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "A002", "유효하지 않은 토큰입니다.")

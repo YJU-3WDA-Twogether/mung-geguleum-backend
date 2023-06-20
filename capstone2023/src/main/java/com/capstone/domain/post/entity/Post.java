@@ -3,11 +3,15 @@ package com.capstone.domain.post.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
+
 import com.capstone.domain.board.entity.Board;
 import com.capstone.domain.file.entity.File;
 import com.capstone.domain.heart.entity.Heart;
 import com.capstone.domain.log.entity.Log;
 import com.capstone.domain.postSource.entity.PostSource;
+import com.capstone.domain.posthashtag.entity.PostHashtag;
 import com.capstone.domain.reply.entity.Reply;
 import com.capstone.domain.user.entity.User;
 import com.capstone.global.entity.BaseEntity;
@@ -25,6 +29,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @Builder
 @ToString
+@SQLDelete(sql = "UPDATE Post SET board_no = 5 WHERE pno = ?")
 public class Post extends BaseEntity{
 	
     @Id 
@@ -64,5 +69,8 @@ public class Post extends BaseEntity{
 
     @OneToMany(mappedBy = "post", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<Heart> hearts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post")
+    private List<PostHashtag> postHashtags = new ArrayList<>();
 }
    

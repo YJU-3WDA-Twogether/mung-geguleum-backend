@@ -2,6 +2,8 @@ package com.capstone.domain.user.entity;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedDate;
 
 import jakarta.persistence.Column;
@@ -24,6 +26,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@SQLDelete(sql = "UPDATE User SET user_grade_id = 3 WHERE uno = ?")
+@Where(clause = "user_grade_id != 3 AND user_grade_id != 4") // 추가
 public class User {
 
 	@Id

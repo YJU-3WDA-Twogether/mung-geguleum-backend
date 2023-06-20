@@ -10,6 +10,8 @@ import com.capstone.domain.postSource.entity.PostSource;
 
 public interface PostSourceRepository extends JpaRepository<PostSource,Long>{
 	
-	@Query("SELECT ps FROM PostSource ps WHERE ps.post.pno = :pno")
+	@Query("SELECT ps FROM PostSource ps WHERE ps.post.pno = :pno ")
 	List<PostSource> findAllByPno(Long pno);
+	
+	
 }

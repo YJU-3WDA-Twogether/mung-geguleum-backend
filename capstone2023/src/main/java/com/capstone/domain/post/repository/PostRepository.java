@@ -38,20 +38,22 @@ public interface PostRepository extends JpaRepository<Post, Long>{
 	    @Query("SELECT p FROM Post p LEFT JOIN FETCH p.files where p.pno = :pno ")
 	    List<Object[]> findBypnoWithFiles();
 	    
-	    @Query("SELECT p FROM Post p LEFT JOIN p.files JOIN p.board b Join p.user u LEFT Join p.replys WHERE p.pno = :pno")
+	    @Query("SELECT p FROM Post p LEFT JOIN p.files JOIN p.board b Join p.user u LEFT Join p.replys WHERE p.pno = :pno AND p.board.bno != 5")
 	    Optional<Post> findByFilesAndReply(@Param("pno") Long pno);
 
 	    
 	    
 	  //모든게시판을 조회하기위해서 사용하는 쿼리다. 애는 된다.
-		  @Query("SELECT distinct p, b, u FROM Post p JOIN p.board b JOIN p.user u left JOIN p.files")
+		  @Query("SELECT distinct p, b, u FROM Post p JOIN p.board b JOIN p.user u left JOIN p.files WHERE p.board.bno != 5")
 		    Page<Object[]> findAllWithBoardAndUser(Pageable pageable);
 		    
 		//특정 게시판을 조회하는 메소드
-	    @Query("SELECT distinct p, b, u FROM Post p left JOIN p.files JOIN p.board b JOIN p.user u  WHERE b.bname = :bname ORDER BY p.pno DESC")
+	    @Query("SELECT distinct p, b, u FROM Post p left JOIN p.files JOIN p.board b JOIN p.user u  WHERE b.bname = :bname AND p.board.bno != 5 ORDER BY p.pno DESC")
 	    Page<Object[]> findAllByBoardName(String bname, Pageable pageable);
 
-		@Query("SELECT distinct p, b, u FROM Post p left JOIN p.files JOIN p.board b JOIN p.user u  WHERE u.uno = :uno ORDER BY p.pno DESC")
+		@Query("SELECT distinct p, b, u FROM Post p left JOIN p.files JOIN p.board b JOIN p.user u  WHERE u.uno = :uno AND p.board.bno != 5 ORDER BY p.pno DESC")
 		Page<Object[]> findMyPost(Pageable pageable, Long uno);
 
+		@Query("SELECT DISTINCT p, b, u FROM Post p left JOIN p.files JOIN p.board b JOIN p.user u LEFT JOIN p.postHashtags ph LEFT JOIN ph.hashtag h WHERE p.title LIKE %:search% OR h.title LIKE %:search%")
+		Page<Object[]> findSearchPost(Pageable pageable, String search);
 }

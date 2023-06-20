@@ -24,7 +24,7 @@ public class ReplyMapper {
                 .build();
     }
 
-    public ReplyResponse toReplyDTO(@Valid Reply reply, Long pno){
+    public ReplyResponse toReplyResponse(@Valid Reply reply, Long pno){
         return ReplyResponse.builder()
                 .rno(reply.getRno())
                 .reply(reply.getReply())
