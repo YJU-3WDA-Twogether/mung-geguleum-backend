@@ -34,6 +34,7 @@ public class SecurityConfig {
 			.cors()
 			.and()
 			.authorizeHttpRequests()
+			.requestMatchers("/s3/url/**").permitAll()
 			.requestMatchers("/token" ).permitAll()
 			.requestMatchers("/user/login", "user/read/**","user/create" ,"/user/useridchk/**","/user/emailchk/**","/user/nicknamechk/**" ).permitAll() //user관련된 permitall입니다.
 			.requestMatchers("/post/getlist/**","/post/read/**" , "/post/getMyPost/**", "/post/getSearchPost/**" ).permitAll() //post컨트롤러와 관련된 설정
@@ -44,7 +45,7 @@ public class SecurityConfig {
 			.requestMatchers("/user/logout","/user/update/**","/user/delete/**").hasAnyAuthority("USER")
 			.requestMatchers("/post/create" , "/post/update/**" , "/post/delete/**"  ).hasAnyAuthority("USER")
 			.requestMatchers("/file/delete/**","file/download/**").hasAnyAuthority("USER")
-			.requestMatchers("/log/getpostsourcelist","/log/getdownlist").hasAnyAuthority("USER")
+			.requestMatchers("/log/getpostsourcelist","/log/getdownlist" ,"/log/report/**").hasAnyAuthority("USER")
 			.requestMatchers("/heart/**").hasAnyAuthority("USER")
 			.requestMatchers("/reply/**").hasAnyAuthority("USER")
 			.requestMatchers("/**").hasAnyAuthority("ADMIN")

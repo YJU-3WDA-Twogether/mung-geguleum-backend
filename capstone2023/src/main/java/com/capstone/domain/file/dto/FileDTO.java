@@ -24,11 +24,6 @@ public class FileDTO {
 	private Long fno;
 	private String fname;
 	private String fpath;
-	private String fsname;
-	private Long fsize;
-	private LocalDateTime regDate;
 	private Long pno;
 	
-	
-
 }

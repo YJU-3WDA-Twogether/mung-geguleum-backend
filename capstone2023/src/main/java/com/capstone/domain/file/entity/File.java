@@ -32,20 +32,10 @@ public class File {
 	    
 	    @Column(name = "fname")
 	    private String fname;
-	    
-	    @Column(name = "fsname")
-	    private String fsname;
-	    
+	      
 	    @Column(name = "fpath")
 	    private String fpath;
-	    
-	    @Column(name = "fsize")
-	    private Long fsize;
-	    
-	    @CreatedDate
-		@Column(name="regdate")
-		private LocalDateTime regDate;
-	      
+	        
 	    @ManyToOne(fetch = FetchType.LAZY)
 	    @JoinColumn(name = "pno")
 	    private Post post;

@@ -63,7 +63,7 @@ public class UserController {
 
 	@PutMapping("/update/{uno}")
 	public ResponseEntity<UserDTO> userUpdate(@PathVariable Long uno ,@Valid @RequestBody UserDTO userDTO, @AuthenticationPrincipal JwtAuthentication user ) {
-		UserDTO updateUser = userService.userUpdate(uno, userDTO, user.uno);
+		UserDTO updateUser = userService.userUpdate(uno, userDTO, user.uno,user.role);
 		return ResponseEntity.ok(updateUser);
 	}
 
@@ -71,7 +71,7 @@ public class UserController {
 	//사용자 삭제 
 	@DeleteMapping("/delete/{uno}")
 	public ResponseEntity<Boolean> userDelete(@PathVariable Long uno, @AuthenticationPrincipal JwtAuthentication user ){
-		this.userService.userDelete(uno,user.uno);
+		this.userService.userDelete(uno,user.uno , user.role); 
 		return new ResponseEntity<>(true, HttpStatus.NO_CONTENT);
 	}
 
