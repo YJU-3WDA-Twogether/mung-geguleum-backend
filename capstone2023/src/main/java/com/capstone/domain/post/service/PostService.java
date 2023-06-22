@@ -5,6 +5,7 @@ package com.capstone.domain.post.service;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -37,6 +38,7 @@ import com.capstone.domain.posthashtag.repository.PostHashtagRepository;
 import com.capstone.domain.posthashtag.service.PostHashtagService;
 import com.capstone.domain.reply.mapper.ReplyMapper;
 import com.capstone.domain.user.entity.User;
+import com.capstone.domain.user.exception.UserInvalidException;
 import com.capstone.domain.user.exception.UserNotFoundException;
 import com.capstone.domain.user.repository.UserRepository;
 
@@ -60,8 +62,7 @@ public class PostService {
 	
 	private final PostMapper postMapper;
 	private final LogMapper logMapper;
-	private final FileMapper fileMapper;
-	private final ReplyMapper replyMapper;
+	
 	
 	
 	
@@ -139,11 +140,15 @@ public class PostService {
 
 	//게시판 수정 메소드
 	@Transactional(rollbackFor = {Exception.class, IOException.class})
-	public PostResponse postUpdate(Long pno, PostRequest postRequest, Long uno) throws Exception {
+	public PostResponse postUpdate(Long pno, PostRequest postRequest, Long uno,String role) throws Exception {
 			Post post= this.postRepository.findByPno(pno).orElseThrow(() -> new PostNotFoundException()) ;
 			User user = this.userRepository.findByUno(uno).orElseThrow(() -> new UserNotFoundException());
 			Board board = this.boardRepository.findByBno(postRequest.getBno()).orElseThrow( () -> new BoardNotFoundException());
-			if(!post.getUser().getUno().equals(user.getUno())) {
+			if(role.equals("ADMIN")) {
+				if(!user.getUserGrade().getGname().equals("ADMIN")) {
+					throw new UserInvalidException();
+				}
+			}else if(!post.getUser().getUno().equals(user.getUno())) {
 				throw new PostForbiddenException();
 			}
 			
@@ -167,10 +172,14 @@ public class PostService {
 	
 	//게시판 삭제메소드
 	@Transactional
-	public void postDelete(Long pno, Long uno) {
+	public void postDelete(Long pno, Long uno, String role) {
 		Post post= this.postRepository.findByPno(pno).orElseThrow(() -> new PostNotFoundException()) ;
 		User user = this.userRepository.findByUno(uno).orElseThrow(() -> new UserNotFoundException());
-		if(!post.getUser().getUno().equals(user.getUno()))
+		if(role.equals("ADMIN")) {
+			if(!user.getUserGrade().getGname().equals("ADMIN")) {
+				throw new UserInvalidException();
+			}
+		}else if(!post.getUser().getUno().equals(user.getUno()))
 			throw new PostForbiddenException();
 		this.postRepository.deleteById(pno);
 	}
@@ -191,7 +200,6 @@ public class PostService {
 	public Page<PostResponse> getSearchPost(int page, String search, Long uno) {
 		Pageable pageable = PageRequest.of(page, 10, Sort.by("pno").descending());
 		Page<Object[]> result = postRepository.findSearchPost(pageable, search);
-		System.out.println("reach???");
 		return result.map(objects -> {
 			Post post = (Post) objects[0];
 			Board board = (Board) objects[1];
@@ -199,4 +207,6 @@ public class PostService {
 			return postMapper.toPostResponse(post,board,user, uno) ;
 		});
 	}
+	
+	
 }

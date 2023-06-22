@@ -22,6 +22,12 @@ public interface LogRepository extends JpaRepository<Log ,Long>{
 	Page<Log> findByPuserAndLogState(@Param("puno") Long puno, @Param("lsno") Long lsno, Pageable pageable);
 	
 	
+//	@Query("SELECT l From Log l JOIN l.post p JOIN l.user u JOIN l.post.files f WHERE l.logState.lsno = :lsno ORDER BY l.lno DESC")
+//	Page<Log> findByLogState(@Param("lsno") Long lsno , Pageable pageable);
+	
+	@Query("SELECT l From Log l JOIN l.post p  JOIN l.user u WHERE l.logState.lsno = :lsno ORDER BY l.lno DESC")
+	Page<Log> findByLogState(@Param("lsno") Long lsno , Pageable pageable);
+
 	
 }
 	

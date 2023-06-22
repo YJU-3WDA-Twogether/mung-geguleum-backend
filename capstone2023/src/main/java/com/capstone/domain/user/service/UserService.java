@@ -43,7 +43,7 @@ public class UserService {
 	//유저 회원가입 메소드
 	public void userCreate(UserCreateForm userCreateForm) {
 //			user.setPassword(passwordEncoder.encode(password));
-		UserGrade userGrade = userGradeRepository.findByGname("일반").get();
+		UserGrade userGrade = userGradeRepository.findByGname("USER").get();
 		User User= userMapper.toEntity(userCreateForm,userGrade);
 		this.userRepository.save(User);
 	}
@@ -57,21 +57,31 @@ public class UserService {
 
 	//유저 정보 수정 메소드
 	@Transactional
-	public UserDTO userUpdate(Long uno , UserDTO userDTO, Long uno2) {
-		if(!uno.equals(uno2)) {
+	public UserDTO userUpdate(Long uno , UserDTO userDTO, Long uno2,String role) {
+		if(role.equals("ADMIN")) {
+			Optional<User> user = userRepository.findById(uno2);
+			if(!user.get().getUserGrade().getGname().equals("ADMIN")) {
+				throw new UserInvalidException();
+			}
+		}else if(!uno.equals(uno2)) {
 			System.out.println("uno : "+uno + "uno2 : "+uno2);
 			throw new UserInvalidException();	
 		}
 		User user = userRepository.findByUno(uno).orElseThrow(()-> new UserNotFoundException());
-		//추후 NULLPOINTEXCETPION 처리도 추가해야함.
 		user = userRepository.save(userMapper.toEntity(userDTO));
 		return userMapper.toUserDTO(user);
 	}
 
 	//회원삭제 메소드
 	@Transactional
-	public void userDelete(Long uno,Long uno2) {
-		if(!uno.equals(uno2)) {
+	public void userDelete(Long uno,Long uno2, String role) {
+		if(role.equals("ADMIN")) {
+			Optional<User> user = userRepository.findById(uno2);
+			if(!user.get().getUserGrade().getGname().equals("ADMIN")) {
+				throw new UserInvalidException();
+			}
+		}
+		else if(!uno.equals(uno2)) {
 			System.out.println("uno : "+uno + "uno2 : "+uno2);
 			throw new UserInvalidException();	
 		}

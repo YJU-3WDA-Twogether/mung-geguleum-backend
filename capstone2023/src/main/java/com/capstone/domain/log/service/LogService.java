@@ -81,5 +81,23 @@ public class LogService {
 		
 	}
 	
+	@Transactional
+	public boolean reportPost(Long pno, Long uno) {
+		Post post= this.postRepository.findByPno(pno).orElseThrow(() -> new PostNotFoundException()) ;
+		User user = this.userRepository.findByUno(uno).orElseThrow(() -> new UserNotFoundException());
+		LogState logState = this.logStateRepository.findByLsno(3L).orElseThrow(() -> new LogStateNotFoundException());
+		Log log = logMapper.toEntity(logState, post, user);
+		logRepository.save(log);
+		return true;
+	}
+	
+	@Transactional
+	public Page<LogResponse> getReportList(int page){
+		Pageable pageable = PageRequest.of(page,10);
+		Page <Log> logList = this.logRepository.findByLogState(3L, pageable);
+ 		return logList.map(log -> this.logMapper.toLogResponse2(log));
+		
+	}
+	
 
 }
