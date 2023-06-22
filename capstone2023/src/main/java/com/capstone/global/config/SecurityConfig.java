@@ -47,6 +47,7 @@ public class SecurityConfig {
 			.requestMatchers("/log/getpostsourcelist","/log/getdownlist").hasAnyAuthority("USER")
 			.requestMatchers("/heart/**").hasAnyAuthority("USER")
 			.requestMatchers("/reply/**").hasAnyAuthority("USER")
+				.requestMatchers("/userFile/**").hasAnyAuthority("USER")
 			.requestMatchers("/**").hasAnyAuthority("ADMIN")
 			.anyRequest().authenticated()
 			.and()

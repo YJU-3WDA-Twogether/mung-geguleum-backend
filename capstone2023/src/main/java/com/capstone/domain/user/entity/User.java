@@ -48,7 +48,10 @@ public class User {
 	
 	@Column
 	private String nickname;
-	
+
+	@Column(columnDefinition = "VARCHAR(255) DEFAULT '안녕하세요.'")
+	private String introduce;
+
 	@CreatedDate
 	@Column(name="regdate")
 	private LocalDateTime regDate;
@@ -56,5 +59,8 @@ public class User {
 	@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_grade_id")
     private UserGrade userGrade;
-	
+
+	public void updateIntroduce(String introduce) {
+		this.introduce = introduce;
+	}
 }	

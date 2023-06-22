@@ -61,6 +61,16 @@ public class FileMapper {
 				.build();
 		
 	}
+
+	public  File toEntity(String fname, String fsname,Long fsize ,String fpath, LocalDateTime date) {
+		return File.builder()
+				.fname(fname)
+				.fsname(fsname)
+				.fsize(fsize)
+				.fpath(fpath)
+				.regDate(date)
+				.build();
+	}
 	
 	
 	

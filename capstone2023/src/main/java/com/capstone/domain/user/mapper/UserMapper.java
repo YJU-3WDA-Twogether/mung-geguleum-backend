@@ -35,6 +35,18 @@ public class UserMapper {
                 .regDate(LocalDateTime.now())
                 .build();
     }
+    public User toEntity(User user, String introduce) { // profile 업데이트
+        return User.builder()
+                .uid(user.getUid())
+                .uname(user.getUname())
+                .password(user.getPassword())
+                .email(user.getEmail())
+                .nickname(user.getNickname())
+                .userGrade(user.getUserGrade())
+                .regDate(LocalDateTime.now())
+                .introduce(introduce)
+                .build();
+    }
     
     public User toEntity(@Valid UserDTO userDTO) {
     	 return User.builder()

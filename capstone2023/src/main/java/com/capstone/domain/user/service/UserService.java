@@ -146,4 +146,12 @@ public class UserService {
 
 	}
 
+	@Transactional // 유저 프로필 수정
+	public void userProfileUpdate(String introduce, User user) {
+		user.updateIntroduce(introduce);
+
+		userRepository.save(user);
+
+	}
+
 }

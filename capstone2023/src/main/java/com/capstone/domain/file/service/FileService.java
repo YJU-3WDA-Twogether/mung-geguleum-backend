@@ -81,8 +81,36 @@ public class FileService {
              
 	 	}
 	 	return true;
-   }   
-   //파일 다운로드메소드        
+   }
+
+	@Transactional
+	public Long userUploadFile(MultipartFile files) throws Exception{
+		File file = null;
+		LocalDateTime time = LocalDateTime.now();
+
+			//원래파일 이름 추출
+			String fname = files.getOriginalFilename();
+			//파일이름으로 쓸 uuid 생성
+			String uuid = UUID.randomUUID().toString();
+			//확장자 추출(ex .png)
+			String extension = fname.substring(fname.lastIndexOf("."));
+
+			String fsname = uuid + extension;
+
+			String fpath = fileDir + fsname;
+			Long fsize = files.getSize();
+
+
+			file = fileMapper.toEntity(fname, fsname,fsize,fpath, time);
+
+			files.transferTo(new java.io.File(fpath));
+
+			fileRepository.save(file);
+
+
+		return file.getFno();
+	}
+	//파일 다운로드메소드
    @Transactional(rollbackFor = MalformedURLException.class)
    public ResponseEntity<Resource> downloadFile(Long fno, Long uno, Long pno ) throws MalformedURLException{
        File file = fileRepository.findByFno(fno).orElseThrow( () -> new FileNotFoundException() );
