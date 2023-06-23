@@ -75,6 +75,7 @@ public class UserService {
 	//회원삭제 메소드
 	@Transactional
 	public void userDelete(Long uno,Long uno2, String role) {
+		System.out.println(role);
 		if(role.equals("ADMIN")) {
 			Optional<User> user = userRepository.findById(uno2);
 			if(!user.get().getUserGrade().getGname().equals("ADMIN")) {

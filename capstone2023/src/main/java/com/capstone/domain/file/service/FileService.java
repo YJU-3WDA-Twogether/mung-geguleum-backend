@@ -59,10 +59,14 @@ public class FileService {
    public Boolean uploadFile(String [] files,Post post, LocalDateTime time) throws Exception{
 	   String Fpath = "https://twogether-bucket.s3.ap-northeast-2.amazonaws.com/";
 	   
-	 	for(String fname : files) {
-	 		System.out.println(fname.toString());
+	 	for(String name : files) {
+	 		int dotIndex = name.lastIndexOf(".");
+	 		String fname = name.substring(0, dotIndex);
+	 		String ftype = name.substring(dotIndex);
+	 		System.out.println(fname.toString()+" "+ftype.toString());
+	 		
 	 		 
-            File file = fileMapper.toEntity(fname, Fpath+fname, post);  
+            File file = fileMapper.toEntity(fname, Fpath+fname, ftype ,post);  
             fileRepository.save(file); 
 	 	}
 	 	return true;

@@ -24,6 +24,9 @@ public class FileDTO {
 	private Long fno;
 	private String fname;
 	private String fpath;
+	private String ftype;
+	private String fcategory;
+	private Long uno;
 	private Long pno;
 	
 }

@@ -1,10 +1,14 @@
 package com.capstone.domain.user.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedDate;
+
+import com.capstone.domain.file.entity.File;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,6 +18,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -56,5 +61,8 @@ public class User {
 	@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_grade_id")
     private UserGrade userGrade;
+	
+	@OneToMany(mappedBy = "user")
+	private List<File> files = new ArrayList<>();
 	
 }	

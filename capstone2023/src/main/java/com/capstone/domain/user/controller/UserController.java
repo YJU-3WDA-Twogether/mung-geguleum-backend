@@ -71,6 +71,7 @@ public class UserController {
 	//사용자 삭제 
 	@DeleteMapping("/delete/{uno}")
 	public ResponseEntity<Boolean> userDelete(@PathVariable Long uno, @AuthenticationPrincipal JwtAuthentication user ){
+		System.out.println("삭제 메소드");
 		this.userService.userDelete(uno,user.uno , user.role); 
 		return new ResponseEntity<>(true, HttpStatus.NO_CONTENT);
 	}

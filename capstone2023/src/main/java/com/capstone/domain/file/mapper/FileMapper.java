@@ -32,7 +32,7 @@ public class FileMapper {
 					.fno(fileDTO.getFno())
 					.fname(fileDTO.getFname())
 					.fpath(fileDTO.getFpath())
-			
+					
 					.post(null)
 					.build();
 			
@@ -47,10 +47,12 @@ public class FileMapper {
 				.build();
 		
 	}
-	public  File toEntity(String fname, String fpath ,Post post) {
+	public  File toEntity(String fname, String fpath ,String ftype,Post post) {
 		return File.builder()
 				.fname(fname)
 				.fpath(fpath)
+				.ftype(ftype)
+				.fcategory("피드")
 				.post(post)
 				.build();
 		
@@ -64,6 +66,8 @@ public class FileMapper {
 				.fno(file.getFno())
 				.fname(file.getFname())
 				.fpath(file.getFpath())
+				.ftype(file.getFtype())
+				.fcategory(file.getFcategory())
 				.pno(pno)
 				.build();
 	}
