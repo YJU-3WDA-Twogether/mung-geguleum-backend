@@ -95,6 +95,7 @@ public class PostService {
 		
 		//재창작인 경우 
 		if(board.getBno()==4&&postRequest.getTag() !=null) {
+			System.out.println("재창작입니다.========================================");
 			tagService.postSourceCreate(postRequest.getTag(),post);
 		}	
 	}
@@ -102,7 +103,7 @@ public class PostService {
 	//모든페이지 전체조회함.
 	@Transactional
 	public Page<PostResponse> getList(int page, Long uno) {
-		Pageable pageable = PageRequest.of(page,10);
+		Pageable pageable = PageRequest.of(page,100);
 		Page<Object[]> result = postRepository.findAllWithBoardAndUser(pageable);
 
 	    return result.map(objects -> {
@@ -117,7 +118,7 @@ public class PostService {
 	//한  종류 게시판 조회
 	@Transactional
 	public Page<PostResponse> getList(int page, String bname, Long uno){
-		 Pageable pageable = PageRequest.of(page, 10, Sort.by("pno").descending());
+		 Pageable pageable = PageRequest.of(page, 100, Sort.by("pno").descending());
 		Page<Object[]> result = postRepository.findAllByBoardName(bname, pageable);
 
 	    return result.map(objects -> {

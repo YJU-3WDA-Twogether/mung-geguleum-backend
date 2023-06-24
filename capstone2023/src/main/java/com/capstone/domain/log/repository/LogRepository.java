@@ -1,6 +1,6 @@
 package com.capstone.domain.log.repository;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,7 +13,7 @@ import com.capstone.domain.log.entity.Log;
 public interface LogRepository extends JpaRepository<Log ,Long>{
 
 	@Query("SELECT l FROM Log l WHERE l.user.uno = :uno AND DATE_FORMAT(l.regDate, '%Y-%m') LIKE %:date%")
-	Page<Log> findByUserAndRegDate(@Param("uno") Long uno, @Param("date") String date, Pageable pageable);
+	List<Log> findByUserAndRegDate(@Param("uno") Long uno, @Param("date") String date);
 	 
 	@Query("SELECT l From Log l WHERE l.user.uno = :uno AND l.logState.lsno = :lsno")
 	Page<Log> findByUserAndLogState(@Param("uno") Long uno, @Param("lsno") Long lsno, Pageable pageable);

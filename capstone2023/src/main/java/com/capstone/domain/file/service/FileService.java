@@ -60,12 +60,10 @@ public class FileService {
 	   String Fpath = "https://twogether-bucket.s3.ap-northeast-2.amazonaws.com/";
 	   
 	 	for(String name : files) {
+	 		System.out.println(name.toString());
 	 		int dotIndex = name.lastIndexOf(".");
 	 		String fname = name.substring(0, dotIndex);
 	 		String ftype = name.substring(dotIndex);
-	 		System.out.println(fname.toString()+" "+ftype.toString());
-	 		
-	 		 
             File file = fileMapper.toEntity(fname, Fpath+fname, ftype ,post);  
             fileRepository.save(file); 
 	 	}
@@ -73,13 +71,13 @@ public class FileService {
    }   
    //파일 다운로드메소드        
    @Transactional(rollbackFor = MalformedURLException.class)
-   public ResponseEntity<Resource> downloadFile(Long fno, Long uno, Long pno ) throws MalformedURLException{
+   public FileDTO downloadFile(Long fno, Long uno, Long pno ) throws MalformedURLException{
        File file = fileRepository.findByFno(fno).orElseThrow( () -> new FileNotFoundException() );
-       Path filePath = Paths.get(file.getFpath());
-       
-       UrlResource resource = new UrlResource("file:" + file.getFpath());
-  	 String encodedFileName = UriUtils.encode(file.getFname(), StandardCharsets.UTF_8);
-  	 String contentDisposition = "attachment; filename=\"" + encodedFileName + "\"";
+//       Path filePath = Paths.get(file.getFpath());
+//       
+//       UrlResource resource = new UrlResource("file:" + file.getFpath());
+//  	 String encodedFileName = UriUtils.encode(file.getFname(), StandardCharsets.UTF_8);
+//  	 String contentDisposition = "attachment; filename=\"" + encodedFileName + "\"";
   	 
   	 //파일 다운로드 로그 생성.
   	 Post post= this.postRepository.findByPno(pno).orElseThrow(() -> new PostNotFoundException() );
@@ -90,7 +88,8 @@ public class FileService {
   	 LogRequest logRequest = logMapper.toRequestLog(2L, user.getUno(), post.getUser().getUno(), post.getPno(),time);
 		 Log log = this.logService.LogCreate(logRequest);
 		 
-  	 return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,contentDisposition).body(resource);
+  	// return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,contentDisposition).body(resource);
+		 return fileMapper.toFileDTO(file,pno );
     }
     
     //파일 단일 조회메소드 

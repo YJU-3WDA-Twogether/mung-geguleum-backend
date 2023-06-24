@@ -58,7 +58,8 @@ public class S3Service {
     public Map<String, Object> getPreSignedUrl(Long size) {
     	  Map<String, Object> result = new HashMap<>();
     	 
-    	  List<Serializable> list = new ArrayList<>();
+    	  List<Serializable> filelist = new ArrayList<>();
+    	  List<Serializable> urllist = new ArrayList<>();
     	  if(size==0) {
     		  return result;
     	  }
@@ -69,11 +70,13 @@ public class S3Service {
 	        useOnlyOneFileName = onlyOneFileName;
 	 
 	        generatePresignedUrlRequest = getGeneratePreSignedUrlRequest(bucket, onlyOneFileName);
-	        list.add(useOnlyOneFileName);
+	        filelist.add(useOnlyOneFileName);
+	        urllist.add(amazonS3.generatePresignedUrl(generatePresignedUrlRequest).toString());
 	        System.out.println(onlyOneFileName);
     	  }
-    	  result.put("encodedFileName", list);
-    	  result.put("preSignedUrl", amazonS3.generatePresignedUrl(generatePresignedUrlRequest).toString());
+    	  result.put("encodedFileName", filelist);
+    	  result.put("preSignedUrl", urllist);
+    	 // result.put("preSignedUrl", amazonS3.generatePresignedUrl(generatePresignedUrlRequest).toString());
 
         return result;
     }

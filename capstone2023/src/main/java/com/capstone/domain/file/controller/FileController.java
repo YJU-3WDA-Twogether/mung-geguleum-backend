@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.capstone.domain.file.dto.FileDTO;
 import com.capstone.domain.file.service.FileService;
 import com.capstone.global.security.jwt.JwtAuthentication;
 
@@ -29,9 +30,9 @@ public class FileController {
 	private final FileService fileService;
 	
 	@GetMapping("/download/{fno}")
-	    public ResponseEntity<Resource> downloadFile(@PathVariable Long fno,@AuthenticationPrincipal JwtAuthentication user, @RequestParam Long pno) throws MalformedURLException {	
-			ResponseEntity<Resource> result = this.fileService.downloadFile(fno, user.uno , pno);
-	    	return result;
+	    public ResponseEntity<FileDTO> downloadFile(@PathVariable Long fno,@AuthenticationPrincipal JwtAuthentication user, @RequestParam Long pno) throws MalformedURLException {	
+			FileDTO result = this.fileService.downloadFile(fno, user.uno , pno);
+	    	return ResponseEntity.ok(result);
 	    }
 	    
 	    //파일 보여주기 메소드
