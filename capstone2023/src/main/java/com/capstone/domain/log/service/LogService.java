@@ -1,10 +1,7 @@
 package com.capstone.domain.log.service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,14 +15,15 @@ import com.capstone.domain.log.entity.Log;
 import com.capstone.domain.log.mapper.LogMapper;
 import com.capstone.domain.log.repository.LogRepository;
 import com.capstone.domain.logState.entity.LogState;
+import com.capstone.domain.logState.exception.LogStateNotFoundException;
 import com.capstone.domain.logState.repository.LogStateRepository;
-import com.capstone.domain.logState.exception.*;
 import com.capstone.domain.post.entity.Post;
+import com.capstone.domain.post.exception.PostNotFoundException;
 import com.capstone.domain.post.repository.PostRepository;
-import com.capstone.domain.post.exception.*;
 import com.capstone.domain.user.entity.User;
+import com.capstone.domain.user.exception.UserNotFoundException;
 import com.capstone.domain.user.repository.UserRepository;
-import com.capstone.domain.user.exception.*;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -53,11 +51,13 @@ public class LogService {
 	
 	//달력로그 호출하는 메소드
 	@Transactional
-	public Page<LogResponse> getList(int page, String date, Long uno){
+	public List<LogResponse> getList(String date, Long uno){
 		//Pageable pageable = PageRequest.of(page,10);
-		Pageable pageable = PageRequest.of(page,100);
-		Page <Log> logList = this.logRepository.findByUserAndRegDate(uno, date, pageable);
- 		return logList.map(log -> this.logMapper.toLogResponse(log));
+		//Pageable pageable = PageRequest.of(page,100);
+		List <Log> logList = this.logRepository.findByUserAndRegDate(uno, date);
+		 return logList.stream()
+                 .map(log -> this.logMapper.toLogResponse(log))
+                 .collect(Collectors.toList());
 	}
 	
 	
