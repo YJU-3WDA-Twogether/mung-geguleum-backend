@@ -11,7 +11,7 @@ import com.capstone.global.logger.LoggerInterceptor;
 
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
-	private String address ="http://172.26.21.142:3000";
+	private String address ="http://192.168.28.197:3000";
 	private String localhost = "http://localhost:3000";
 	
     @Override

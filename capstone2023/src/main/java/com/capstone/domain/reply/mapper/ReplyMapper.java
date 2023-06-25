@@ -45,6 +45,7 @@ public class ReplyMapper {
                 .pno(reply.getPost().getPno())
                 .nickname(reply.getUser().getNickname())
                 .postname(reply.getPost().getTitle())
+                .fpath(reply.getUser().getFile().getFpath())
                 .build();
     }
     
