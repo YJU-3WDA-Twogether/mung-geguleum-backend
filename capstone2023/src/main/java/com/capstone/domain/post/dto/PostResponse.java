@@ -53,6 +53,8 @@ public class PostResponse {
 	private Long lCount;
 
 	private Boolean hExist;
+	
+	private String fpath; //유저사진 경로
 
 	List <FileDTO> file;
 	

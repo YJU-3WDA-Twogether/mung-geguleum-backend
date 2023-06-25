@@ -18,7 +18,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -65,14 +65,17 @@ public class User {
     @JoinColumn(name = "user_grade_id")
     private UserGrade userGrade;
 	
-	@OneToMany(mappedBy = "user")
-	private List<File> files = new ArrayList<>();
+	@OneToOne(mappedBy = "user")
+	private File file;
 
-	public void setIntroduce(String introduce) {
+	public void register(String nickname ,String introduce ,UserGrade userGrade) {
 		this.introduce = introduce;
+		this.nickname = nickname;
+		this.userGrade = userGrade;
 	}
 
 	public void setNickname(String nickname) {
 		this.nickname = nickname;
 	}
+
 }	

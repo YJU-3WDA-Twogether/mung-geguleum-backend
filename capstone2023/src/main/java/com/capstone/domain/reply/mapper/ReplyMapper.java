@@ -35,8 +35,9 @@ public class ReplyMapper {
                 .uno(reply.getUser().getUno())
                 .cno(reply.getParentReply() != null ? reply.getParentReply().getRno() : null)
                 .uname(reply.getUser().getUname())
+                .fpath(reply.getUser().getFile().getFpath())
                 .build();
-    }
+    } 
     public ReplyResponse toReplyResponse(Reply reply){
         return ReplyResponse.builder()
                 .reply(reply.getReply())
@@ -46,12 +47,14 @@ public class ReplyMapper {
                 .postname(reply.getPost().getTitle())
                 .build();
     }
-
-     public ReplyRequest toReplyRequest(Reply reply){ 
+    
+    public ReplyRequest toReplyRequest(Reply reply){ 
         return ReplyRequest.builder()
                 .rno(reply.getRno())
                 .reply(reply.getReply())
                 .deph(reply.getDeph())
                 .build();
     }
+    
+   
 }

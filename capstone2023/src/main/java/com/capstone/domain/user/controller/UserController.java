@@ -64,6 +64,7 @@ public class UserController {
 
 	@PutMapping("/update/{uno}")
 	public ResponseEntity<UserDTO> userUpdate(@PathVariable Long uno ,@Valid @RequestBody UserDTO userDTO, @AuthenticationPrincipal JwtAuthentication user ) {
+		System.out.println("여서죽나???컨트롤러인데");
 		UserDTO updateUser = userService.userUpdate(uno, userDTO, user.uno,user.role);
 		return ResponseEntity.ok(updateUser);
 	}
@@ -144,9 +145,9 @@ public class UserController {
 		return ResponseEntity.ok(tokenInfo.getAccessToken());
 	}
 
-	@PutMapping("/userUpdate")
-	public ResponseEntity<Boolean> userProfile(@Valid FileRequest fileRequest, @AuthenticationPrincipal JwtAuthentication user){
-		this.userService.updateUser(fileRequest, user.uno);
-		return ResponseEntity.ok(true);
-	}
+//	@PutMapping("/userUpdate")
+//	public ResponseEntity<Boolean> userProfile(@Valid FileRequest fileRequest, @AuthenticationPrincipal JwtAuthentication user){
+//		this.userService.updateUser(fileRequest, user.uno);
+//		return ResponseEntity.ok(true);
+//	}
 }

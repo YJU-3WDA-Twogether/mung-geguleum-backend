@@ -33,8 +33,17 @@ public class FileMapper {
 					.fno(fileDTO.getFno())
 					.fname(fileDTO.getFname())
 					.fpath(fileDTO.getFpath())
-					
 					.post(null)
+					.build();
+			
+		}
+		
+		public File toEntity(String fpath,String fname , User user) {
+			return File.builder()
+					.fpath(fpath)
+					.fname(fname)
+					.fcategory("프로필")
+					.user(user)
 					.build();
 			
 		}

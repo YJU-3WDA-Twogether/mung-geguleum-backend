@@ -20,7 +20,7 @@ public class UserMapper {
                 .password(userCreateForm.getPassword())
                 .email(userCreateForm.getEmail())
                 .nickname(userCreateForm.getNickname())
-              
+                
                 .build();
     }
     
@@ -68,6 +68,8 @@ public class UserMapper {
                 .nickname(user.getNickname())
                 .regDate(user.getRegDate())
                 .grade(user.getUserGrade().getGname())
+                .fpath(user.getFile().getFpath())
+                .introduce(user.getIntroduce())
                 .build();
     };
 }

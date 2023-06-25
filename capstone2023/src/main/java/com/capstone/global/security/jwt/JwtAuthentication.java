@@ -13,8 +13,9 @@ public class JwtAuthentication {
 	public final String uid;
 	public final String nickname;
 	public final String role;
+	public final String fpath;
 
-	public JwtAuthentication(String accessToken, Long uno, String uid, String nickname, String role) {
+	public JwtAuthentication(String accessToken, Long uno, String uid, String nickname, String role,String fpath) {
 		if (accessToken.isEmpty() || accessToken.isBlank()) {
 			throw new TokenInvalidException();
 		}
@@ -26,6 +27,7 @@ public class JwtAuthentication {
 		this.uid = uid;
 		this.nickname = nickname;
 		this.role = role;
+		this.fpath = fpath;
 	}
 
 }

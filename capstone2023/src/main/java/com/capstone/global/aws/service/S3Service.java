@@ -54,17 +54,16 @@ public class S3Service {
 // 
 //    }
     
-    //파일 업로드전 키와 filename 발급 메소드
     public Map<String, Object> getPreSignedUrl(Long size) {
-    	  Map<String, Object> result = new HashMap<>();
-    	 
-    	  List<Serializable> filelist = new ArrayList<>();
-    	  List<Serializable> urllist = new ArrayList<>();
-    	  if(size==0) {
-    		  return result;
-    	  }
-    	
-    	  for(int i = 0 ; i <size ; i++) {
+  	  Map<String, Object> result = new HashMap<>();
+  	 
+  	  List<Serializable> filelist = new ArrayList<>();
+  	  List<Serializable> urllist = new ArrayList<>();
+  	  if(size==0) {
+  		  return result;
+  	  }
+  	
+  	  for(int i = 0 ; i <size ; i++) {
 	        String onlyOneFileName = onlyOneFileName();
 	
 	        useOnlyOneFileName = onlyOneFileName;
@@ -73,13 +72,38 @@ public class S3Service {
 	        filelist.add(useOnlyOneFileName);
 	        urllist.add(amazonS3.generatePresignedUrl(generatePresignedUrlRequest).toString());
 	        System.out.println(onlyOneFileName);
-    	  }
-    	  result.put("encodedFileName", filelist);
-    	  result.put("preSignedUrl", urllist);
-    	 // result.put("preSignedUrl", amazonS3.generatePresignedUrl(generatePresignedUrlRequest).toString());
+  	  }
+  	  result.put("encodedFileName", filelist);
+  	  result.put("preSignedUrl", urllist);
+  	 // result.put("preSignedUrl", amazonS3.generatePresignedUrl(generatePresignedUrlRequest).toString());
 
-        return result;
-    }
+      return result;
+  }
+    
+    //파일 업로드전 키와 filename 발급 메소드
+//    public Map<String, Object> getPreSignedUrl(String []size) {
+//    	  Map<String, Object> result = new HashMap<>();
+//    	 
+//    	  List<Serializable> filelist = new ArrayList<>();
+//    	  List<Serializable> urllist = new ArrayList<>();
+//    	
+//    	
+//    	  for(String filename : size) {
+//	        String onlyOneFileName = onlyOneFileName() + filename;
+//	
+//	        useOnlyOneFileName = onlyOneFileName;
+//	 
+//	        generatePresignedUrlRequest = getGeneratePreSignedUrlRequest(bucket, onlyOneFileName);
+//	        filelist.add(useOnlyOneFileName);
+//	        urllist.add(amazonS3.generatePresignedUrl(generatePresignedUrlRequest).toString());
+//	        System.out.println(onlyOneFileName);
+//    	  }
+//    	  result.put("encodedFileName", filelist);
+//    	  result.put("preSignedUrl", urllist);
+//    	 // result.put("preSignedUrl", amazonS3.generatePresignedUrl(generatePresignedUrlRequest).toString());
+//
+//        return result;
+//    }
 
     private GeneratePresignedUrlRequest getGeneratePreSignedUrlRequest(String bucket, String fileName) {
         GeneratePresignedUrlRequest generatePresignedUrlRequest =
