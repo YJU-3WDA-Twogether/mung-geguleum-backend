@@ -3,6 +3,7 @@ package com.capstone.domain.file.mapper;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 
+import com.capstone.domain.user.entity.User;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -37,6 +38,17 @@ public class FileMapper {
 					.build();
 			
 		}
+
+	public  File toEntity(String fname, String fpath ,String ftype, String category, User user) {
+		return File.builder()
+				.fname(fname)
+				.fpath(fpath)
+				.ftype(ftype)
+				.fcategory(category)
+				.user(user)
+				.build();
+
+	}
 	
 	//Entity에 DTO담기
 	public  File toEntity(MultipartFile file, Path filePath , LocalDateTime date ,Post post) {

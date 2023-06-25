@@ -108,5 +108,17 @@ public class FileService {
 	 this.fileRepository.deleteById(fno); 
     }
 
+	@Transactional
+	public void userUpdate(String file,User user, String category) {
+		String Fpath = "https://twogether-bucket.s3.ap-northeast-2.amazonaws.com/";
+
+		int dotIndex = file.lastIndexOf(".");
+		String fname = file.substring(0, dotIndex);
+		String ftype = file.substring(dotIndex);
+		System.out.println(fname.toString()+" "+ftype.toString());
+
+		File file2 = fileMapper.toEntity(fname, Fpath+fname, ftype, category, user);
+		fileRepository.save(file2);
+	}
 
   }

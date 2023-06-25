@@ -43,7 +43,7 @@ public class SecurityConfig {
 			.requestMatchers("/log/getlist","/log/report/**").permitAll()
 			.requestMatchers("/postSource/getlist/**").permitAll()
 			
-			.requestMatchers("/user/logout","/user/update/**","/user/delete/**").hasAnyAuthority("USER","ADMIN")
+			.requestMatchers("/user/logout","/user/update/**","/user/delete/**", "/user/userUpdate").hasAnyAuthority("USER","ADMIN")
 			.requestMatchers("/post/create" , "/post/update/**" , "/post/delete/**"  ).hasAnyAuthority("USER","ADMIN")
 			.requestMatchers("/file/delete/**","file/download/**").hasAnyAuthority("USER","ADMIN")
 			.requestMatchers("/log/getpostsourcelist","/log/getdownlist" ).hasAnyAuthority("USER","ADMIN")

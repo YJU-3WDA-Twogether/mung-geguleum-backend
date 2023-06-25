@@ -1,5 +1,6 @@
 package com.capstone.domain.user.controller;
 
+import com.capstone.domain.file.dto.FileRequest;
 import com.capstone.global.security.jwt.JwtAuthentication;
 import com.capstone.global.security.jwt.dto.TokenInfo;
 import jakarta.servlet.http.Cookie;
@@ -141,5 +142,11 @@ public class UserController {
 		refreshTokenCookie.setMaxAge(0);
 		response.addCookie(refreshTokenCookie);
 		return ResponseEntity.ok(tokenInfo.getAccessToken());
+	}
+
+	@PutMapping("/userUpdate")
+	public ResponseEntity<Boolean> userProfile(@Valid FileRequest fileRequest, @AuthenticationPrincipal JwtAuthentication user){
+		this.userService.updateUser(fileRequest, user.uno);
+		return ResponseEntity.ok(true);
 	}
 }
