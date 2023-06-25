@@ -46,4 +46,12 @@ public class ReplyMapper {
                 .postname(reply.getPost().getTitle())
                 .build();
     }
+
+     public ReplyRequest toReplyRequest(Reply reply){ 
+        return ReplyRequest.builder()
+                .rno(reply.getRno())
+                .reply(reply.getReply())
+                .deph(reply.getDeph())
+                .build();
+    }
 }
