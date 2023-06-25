@@ -23,5 +23,10 @@ public interface FileRepository extends JpaRepository<File, Long> {
     int deleteByPno(Long pno);
 
     @Query("SELECT f FROM File f WHERE f.user.uno = :uno AND f.fcategory = :category")
+    
     File findByUserAndCategory(Long uno, String category);
+    
+    @Modifying
+    @Query("DELETE FROM File f WHERE f.user.uno = :uno")
+	void deleteByUno(Long uno);
 }

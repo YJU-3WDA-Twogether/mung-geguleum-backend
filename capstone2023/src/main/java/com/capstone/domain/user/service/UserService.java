@@ -3,8 +3,7 @@ package com.capstone.domain.user.service;
 
 import java.util.Optional;
 
-import com.capstone.domain.file.dto.FileRequest;
-import com.capstone.domain.file.service.FileService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capstone.domain.file.service.FileService;
 import com.capstone.domain.user.dto.UserCreateForm;
 import com.capstone.domain.user.dto.UserDTO;
 import com.capstone.domain.user.entity.User;
@@ -41,13 +41,16 @@ public class UserService {
 	private final TokenService tokenService;
 	private final FileService fileService;
 	//	private final PasswordEncoder passwordEncoder;
+	
 //
 	//유저 회원가입 메소드
 	public void userCreate(UserCreateForm userCreateForm) {
 //			user.setPassword(passwordEncoder.encode(password));
 		UserGrade userGrade = userGradeRepository.findByGname("USER").get();
-		User User= userMapper.toEntity(userCreateForm,userGrade);
-		this.userRepository.save(User);
+		User user= userMapper.toEntity(userCreateForm,userGrade);
+		
+		user = this.userRepository.save(user);
+		fileService.basicImg(user);
 	}
 
 	//유저 본인정보 조회메소드
@@ -70,7 +73,20 @@ public class UserService {
 			throw new UserInvalidException();	
 		}
 		User user = userRepository.findByUno(uno).orElseThrow(()-> new UserNotFoundException());
-		user = userRepository.save(userMapper.toEntity(userDTO));
+		Optional<UserGrade> grade = userGradeRepository.findByGname(userDTO.getGrade());
+		
+		if(grade == null)
+			user.register(userDTO.getNickname(), userDTO.getIntroduce(),user.getUserGrade());
+		else 
+			user.register(userDTO.getNickname(), userDTO.getIntroduce(),grade.get());
+		user = userRepository.save(user);
+		System.out.println(userDTO.getFile());
+		if(userDTO.getFile()!= null)
+			fileService.userUpdate(userDTO.getFile(),user);
+		else
+			fileService.basicImg(user);
+		
+		
 		return userMapper.toUserDTO(user);
 	}
 
@@ -158,36 +174,4 @@ public class UserService {
 		//	return null;
 
 	}
-
-	@Transactional
-	public void updateUser(FileRequest fileRequest, Long uno) {
-
-		User user = this.userRepository.findByUno(uno).orElseThrow(()-> new UserNotFoundException ());
-
-
-		//main 요청
-		if(fileRequest.getMain() != null) {
-			System.out.println("1");
-			fileService.userUpdate(fileRequest.getMain(),user, "MAIN");
-		}
-		//back 요청
-		if(fileRequest.getBack() != null) {
-			System.out.println("2");
-			fileService.userUpdate(fileRequest.getBack(),user, "BACK");
-		}
-		//introduce 요청
-		if(fileRequest.getIntroduce() != null) {
-			System.out.println("3");
-			user.setIntroduce(fileRequest.getIntroduce());
-		}
-		//nickname 요청
-		if(!fileRequest.getNickname().equals(user.getNickname())){
-			System.out.println("4");
-			Optional<User> userCheck = this.userRepository.findByNickname(fileRequest.getNickname());
-			if(!userCheck.isPresent()) {
-				user.setNickname(fileRequest.getNickname());
-			}
-		}
-	}
-
 }

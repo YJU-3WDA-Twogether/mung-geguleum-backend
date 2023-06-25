@@ -71,6 +71,7 @@ public class PostMapper {
 					.bname(post.getBoard().getBname())
 					.file(post.getFiles().stream().map(file -> fileMapper.toFileDTO(file,post.getPno())).collect(Collectors.toList()))
 					.reply(post.getReplys().stream().map(reply -> replyMapper.toReplyResponse(reply,post.getPno())).collect(Collectors.toList()))
+					.fpath(post.getUser().getFile().getFpath())
 					.build();
 		}
 		
@@ -98,6 +99,7 @@ public class PostMapper {
 							.hCount(Long.valueOf(post.getHearts().size()))
 							.lCount(logCount)
 							.hExist(hExist)
+							.fpath(post.getUser().getFile().getFpath())
 							.file(post.getFiles().stream().map(file -> fileMapper.toFileDTO(file,post.getPno())).collect(Collectors.toList()))
 							.build();
 					
@@ -128,6 +130,7 @@ public class PostMapper {
 							.lCount(logCount)
 							.hExist(hExist)
 							.file(post.getFiles().stream().map(file -> fileMapper.toFileDTO(file,post.getPno())).collect(Collectors.toList()))
+							.fpath(post.getUser().getFile().getFpath())
 							.build();
 					
 							

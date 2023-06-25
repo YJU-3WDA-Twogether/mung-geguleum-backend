@@ -52,12 +52,20 @@ public class FileService {
 
    @Value("${file.dir}")
     private String fileDir;
-
+   
+   @Value("${aws.url}")
+   private String Fpath;
+   
+   @Value("${aws.basic.url}")
+   private String basicImage;
+   
+   @Value("${aws.basic.name}")
+   private String basicname;
    
    //파일 업로드 메소드
    @Transactional(rollbackFor = {IOException.class, Exception.class})
    public Boolean uploadFile(String [] files,Post post, LocalDateTime time) throws Exception{
-	   String Fpath = "https://twogether-bucket.s3.ap-northeast-2.amazonaws.com/";
+	  // String Fpath = "https://twogether-bucket.s3.ap-northeast-2.amazonaws.com/";
 	   
 	 	for(String name : files) {
 	 		System.out.println(name.toString());
@@ -70,14 +78,9 @@ public class FileService {
 	 	return true;
    }   
    //파일 다운로드메소드        
-   @Transactional(rollbackFor = MalformedURLException.class)
-   public FileDTO downloadFile(Long fno, Long uno, Long pno ) throws MalformedURLException{
+   @Transactional
+   public FileDTO downloadFile(Long fno, Long uno, Long pno ){
        File file = fileRepository.findByFno(fno).orElseThrow( () -> new FileNotFoundException() );
-//       Path filePath = Paths.get(file.getFpath());
-//       
-//       UrlResource resource = new UrlResource("file:" + file.getFpath());
-//  	 String encodedFileName = UriUtils.encode(file.getFname(), StandardCharsets.UTF_8);
-//  	 String contentDisposition = "attachment; filename=\"" + encodedFileName + "\"";
   	 
   	 //파일 다운로드 로그 생성.
   	 Post post= this.postRepository.findByPno(pno).orElseThrow(() -> new PostNotFoundException() );
@@ -87,8 +90,7 @@ public class FileService {
   	 
   	 LogRequest logRequest = logMapper.toRequestLog(2L, user.getUno(), post.getUser().getUno(), post.getPno(),time);
 		 Log log = this.logService.LogCreate(logRequest);
-		 
-  	// return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,contentDisposition).body(resource);
+
 		 return fileMapper.toFileDTO(file,pno );
     }
     
@@ -109,16 +111,27 @@ public class FileService {
     }
 
 	@Transactional
-	public void userUpdate(String file,User user, String category) {
-		String Fpath = "https://twogether-bucket.s3.ap-northeast-2.amazonaws.com/";
-
-		int dotIndex = file.lastIndexOf(".");
-		String fname = file.substring(0, dotIndex);
-		String ftype = file.substring(dotIndex);
-		System.out.println(fname.toString()+" "+ftype.toString());
-
-		File file2 = fileMapper.toEntity(fname, Fpath+fname, ftype, category, user);
-		fileRepository.save(file2);
+	public void userUpdate(FileDTO [] files, User user) {
+		//String Fpath = "https://twogether-bucket.s3.ap-northeast-2.amazonaws.com/";
+		if(!files[0].getFname().equals("기본")) {
+				fileRepository.deleteByUno(user.getUno());
+			for(FileDTO  file : files) {
+				int dotIndex = file.getFname().lastIndexOf(".");
+				String fname = file.getFname().substring(0, dotIndex);
+				String ftype = file.getFname().substring(dotIndex);
+				System.out.println(fname.toString()+" "+ftype.toString());
+				File entity = fileMapper.toEntity(fname, Fpath+fname, ftype, file.getFcategory(), user);
+				fileRepository.save(entity);
+			}
+		}
+	}
+		
+		@Transactional
+		public void basicImg(User user) {
+			//String Fpath = "https://twogether-bucket.s3.ap-northeast-2.amazonaws.com/";
+			fileRepository.deleteByUno(user.getUno());
+			File file = fileMapper.toEntity(basicImage,basicname,user);
+			fileRepository.save(file);
 	}
 
   }

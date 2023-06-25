@@ -52,7 +52,7 @@ public class TokenService {
 		User user = userRepository.findByUno(refreshToken.getUno())
 			.orElseThrow(() -> new UserNotFoundException());
 
-		String reIssuedAccessToken = reIssueAccessToken(user.getUno(),user.getUid(),user.getNickname(), user.getUserGrade().getGname());
+		String reIssuedAccessToken = reIssueAccessToken(user.getUno(),user.getUid(),user.getNickname(), user.getUserGrade().getGname(), user.getFile().getFpath());
 		String reIssuedRefreshToken = reIssueRefreshToken(user.getUno());
 
 		String accessTokenCookie = createAccessTokenCookie(reIssuedAccessToken);
@@ -62,8 +62,8 @@ public class TokenService {
 
 	}
 
-	public String reIssueAccessToken(Long uno,String uid , String nickname, String role) {
-		return jwtTokenProvider.createAccessToken(uno,uid,nickname, role);
+	public String reIssueAccessToken(Long uno,String uid , String nickname, String role,String fpath) {
+		return jwtTokenProvider.createAccessToken(uno,uid,nickname, role, fpath);
 	}
 
 	@Transactional
@@ -98,8 +98,9 @@ public class TokenService {
 		String uid = claims.get("uid", String.class);
 		String nickname = claims.get("nickname",String.class);
 		String role = claims.get("role", String.class);
+		String fpath = claims.get("fpath", String.class);
 		System.out.println(role);
-		JwtAuthentication principal = new JwtAuthentication(accessToken, uno,uid,nickname,role);
+		JwtAuthentication principal = new JwtAuthentication(accessToken, uno,uid,nickname,role,fpath);
 		List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
 		System.out.println(authorities.get(0));
 		return new JwtAuthenticationToken(principal, null, authorities);
@@ -112,7 +113,7 @@ public class TokenService {
 				.orElseThrow(() -> new UserNotFoundException());
 		System.out.println("user 아이디"+user.getUid());
 		String refreshToken = jwtTokenProvider.createRefreshToken();
-		String accessToken = jwtTokenProvider.createAccessToken(user.getUno(),user.getUid(),user.getNickname(), user.getUserGrade().getGname());
+		String accessToken = jwtTokenProvider.createAccessToken(user.getUno(),user.getUid(),user.getNickname(), user.getUserGrade().getGname(), user.getFile().getFpath());
 		jwtTokenProvider.saveRefreshToken(user.getUno(), refreshToken);
 		
 		  return TokenInfo.builder()
