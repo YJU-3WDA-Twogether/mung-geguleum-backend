@@ -3,6 +3,8 @@ package com.capstone.domain.user.service;
 
 import java.util.Optional;
 
+import com.capstone.domain.file.dto.FileRequest;
+import com.capstone.domain.file.service.FileService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -37,7 +39,7 @@ public class UserService {
 	private final UserMapper userMapper;
 	private final AuthenticationManagerBuilder authenticationManagerBuilder;
 	private final TokenService tokenService;
-
+	private final FileService fileService;
 	//	private final PasswordEncoder passwordEncoder;
 //
 	//유저 회원가입 메소드
@@ -155,6 +157,37 @@ public class UserService {
 		return tokenInfo;
 		//	return null;
 
+	}
+
+	@Transactional
+	public void updateUser(FileRequest fileRequest, Long uno) {
+
+		User user = this.userRepository.findByUno(uno).orElseThrow(()-> new UserNotFoundException ());
+
+
+		//main 요청
+		if(fileRequest.getMain() != null) {
+			System.out.println("1");
+			fileService.userUpdate(fileRequest.getMain(),user, "MAIN");
+		}
+		//back 요청
+		if(fileRequest.getBack() != null) {
+			System.out.println("2");
+			fileService.userUpdate(fileRequest.getBack(),user, "BACK");
+		}
+		//introduce 요청
+		if(fileRequest.getIntroduce() != null) {
+			System.out.println("3");
+			user.setIntroduce(fileRequest.getIntroduce());
+		}
+		//nickname 요청
+		if(!fileRequest.getNickname().equals(user.getNickname())){
+			System.out.println("4");
+			Optional<User> userCheck = this.userRepository.findByNickname(fileRequest.getNickname());
+			if(!userCheck.isPresent()) {
+				user.setNickname(fileRequest.getNickname());
+			}
+		}
 	}
 
 }

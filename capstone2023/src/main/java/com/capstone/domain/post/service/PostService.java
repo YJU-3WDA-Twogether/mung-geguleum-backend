@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import com.capstone.domain.file.entity.File;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -120,7 +121,7 @@ public class PostService {
 	public Page<PostResponse> getList(int page, String bname, Long uno){
 		 Pageable pageable = PageRequest.of(page, 100, Sort.by("pno").descending());
 		Page<Object[]> result = postRepository.findAllByBoardName(bname, pageable);
-
+		File file = fileRepository.findByUserAndCategory(uno, "MAIN");
 	    return result.map(objects -> {
 	        Post post = (Post) objects[0];
 	        Board board = (Board) objects[1];
