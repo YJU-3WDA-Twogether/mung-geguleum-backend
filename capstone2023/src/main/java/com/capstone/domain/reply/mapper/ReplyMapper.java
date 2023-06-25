@@ -38,6 +38,14 @@ public class ReplyMapper {
                 .fpath(reply.getUser().getFile().getFpath())
                 .build();
     }
+    public ReplyRequest toReplyRequest(Reply reply){ 
+        return ReplyRequest.builder()
+                .rno(reply.getRno())
+                .reply(reply.getReply())
+                .deph(reply.getDeph())
+                .build();
+    }
+    
     public ReplyResponse toReplyResponse(Reply reply){
         return ReplyResponse.builder()
                 .reply(reply.getReply())
@@ -48,11 +56,5 @@ public class ReplyMapper {
                 .build();
     }
     
-    public ReplyRequest toReplyRequest(Reply reply){ 
-        return ReplyRequest.builder()
-                .rno(reply.getRno())
-                .reply(reply.getReply())
-                .deph(reply.getDeph())
-                .build();
-    }
+   
 }

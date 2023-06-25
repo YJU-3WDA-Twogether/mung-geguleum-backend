@@ -31,11 +31,11 @@ public class ReplyResponse {
 
     private Long cno;   // 부모 댓글 번호(대댓글)
     
-    private String fpath;
-    
     private String nickname;
     
     private String postname;
+    
+    private String fpath;
     
 }
 
