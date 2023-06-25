@@ -38,7 +38,17 @@ public class ReplyMapper {
                 .fpath(reply.getUser().getFile().getFpath())
                 .build();
     }
-    public ReplyRequest toReplyResponse(Reply reply){ 
+    public ReplyResponse toReplyResponse(Reply reply){
+        return ReplyResponse.builder()
+                .reply(reply.getReply())
+                .modDate(reply.getModDate())
+                .pno(reply.getPost().getPno())
+                .nickname(reply.getUser().getNickname())
+                .postname(reply.getPost().getTitle())
+                .build();
+    }
+    
+    public ReplyRequest toReplyRequest(Reply reply){ 
         return ReplyRequest.builder()
                 .rno(reply.getRno())
                 .reply(reply.getReply())

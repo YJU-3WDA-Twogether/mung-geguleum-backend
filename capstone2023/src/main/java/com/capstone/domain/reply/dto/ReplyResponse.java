@@ -33,5 +33,9 @@ public class ReplyResponse {
     
     private String fpath;
     
+    private String nickname;
+    
+    private String postname;
+    
 }
 
