@@ -1,6 +1,13 @@
 package com.capstone.domain.heart.service;
 
 
+import com.capstone.domain.board.entity.Board;
+import com.capstone.domain.post.dto.PostResponse;
+import com.capstone.domain.post.mapper.PostMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.capstone.domain.board.exception.BoardNotFoundException;
@@ -28,6 +35,7 @@ public class HeartService {
     private final HeartRepository heartRepository;
 
     private final HeartMapper heartMapper;
+    private final PostMapper postMapper;
     @Transactional
     public void create(HeartDTO heartDTO, Long uno){
 
@@ -61,5 +69,17 @@ public class HeartService {
                 .orElseThrow(() -> new HeartNotFoundException());
 
         heartRepository.delete(heart);
+    }
+
+    @Transactional
+    public Page<PostResponse> getMyHeart(int page, Long uno) {
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("hno").descending());
+        Page<Object[]> result = heartRepository.findByUserUno(pageable, uno);
+        return result.map(objects -> {
+            Post post = (Post) objects[0];
+            Board board = (Board) objects[1];
+            User user = (User) objects[2];
+            return postMapper.toPostResponse(post,board,user, uno) ;
+        });
     }
 }

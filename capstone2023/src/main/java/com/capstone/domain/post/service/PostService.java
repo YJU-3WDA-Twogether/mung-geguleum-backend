@@ -120,14 +120,26 @@ public class PostService {
 	@Transactional
 	public Page<PostResponse> getList(int page, String bname, Long uno){
 		 Pageable pageable = PageRequest.of(page, 100, Sort.by("pno").descending());
-		Page<Object[]> result = postRepository.findAllByBoardName(bname, pageable);
-		File file = fileRepository.findByUserAndCategory(uno, "MAIN");
-	    return result.map(objects -> {
-	        Post post = (Post) objects[0];
-	        Board board = (Board) objects[1];
-	        User user = (User) objects[2];
-			return postMapper.toPostResponse(post,board,user,uno) ;
-	    });
+		 if(bname.equals("베스트")) {
+			 pageable = PageRequest.of(page, 10);
+			 Page<Object[]> result = postRepository.findTopTenPosts(pageable);
+			 return result.map(objects -> {
+				 Post post = (Post) objects[0];
+				 Board board = (Board) objects[1];
+				 User user = (User) objects[2];
+
+				 return postMapper.toPostResponse(post,board,user,uno) ;
+			 });
+		 } else {
+			 Page<Object[]> result = postRepository.findAllByBoardName(bname, pageable);
+			 File file = fileRepository.findByUserAndCategory(uno, "MAIN");
+			 return result.map(objects -> {
+				 Post post = (Post) objects[0];
+				 Board board = (Board) objects[1];
+				 User user = (User) objects[2];
+				 return postMapper.toPostResponse(post,board,user,uno) ;
+			 });
+		 }
 	}
 	
 	//게시판 디테일 조회하는 메소드
