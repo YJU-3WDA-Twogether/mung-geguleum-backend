@@ -34,5 +34,8 @@ public class ReplyResponse {
     private String nickname; // 유저 닉네임
 
     private String postname; // 게시글 제목
+
+    private String fpath;
+    
 }
 
