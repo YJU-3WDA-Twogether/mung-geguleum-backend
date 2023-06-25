@@ -37,11 +37,13 @@ public class ReplyMapper {
                 .uname(reply.getUser().getUname())
                 .build();
     }
-    public ReplyRequest toReplyResponse(Reply reply){
-        return ReplyRequest.builder()
-                .rno(reply.getRno())
+    public ReplyResponse toReplyResponse(Reply reply){
+        return ReplyResponse.builder()
                 .reply(reply.getReply())
-                .deph(reply.getDeph())
+                .modDate(reply.getModDate())
+                .pno(reply.getPost().getPno())
+                .nickname(reply.getUser().getNickname())
+                .postname(reply.getPost().getTitle())
                 .build();
     }
 }

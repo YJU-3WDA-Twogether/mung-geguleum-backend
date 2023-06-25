@@ -1,11 +1,13 @@
 package com.capstone.domain.reply.controller;
 
 import com.capstone.domain.reply.dto.ReplyRequest;
+import com.capstone.domain.reply.dto.ReplyResponse;
 import com.capstone.domain.reply.service.ReplyService;
 import com.capstone.global.security.jwt.JwtAuthentication;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -35,5 +37,12 @@ public class ReplyController {
         replyService.replyUpdate(replyDTO, user.uno);
         System.out.println("wefwef" + replyDTO.toString());
         return ResponseEntity.ok(true);
+    }
+
+    @GetMapping("/getMyReply")
+    public ResponseEntity<Page> getMyReply(@RequestParam(value="page", defaultValue="0") int page, @AuthenticationPrincipal JwtAuthentication user){
+        Page<ReplyResponse> paging = this.replyService.getMyReply(page, user.uno);
+
+        return ResponseEntity.ok(paging);
     }
 }
