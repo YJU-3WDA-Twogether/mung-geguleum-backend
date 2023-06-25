@@ -30,5 +30,9 @@ public class ReplyResponse {
     private String uname;   //유저 이름
 
     private Long cno;   // 부모 댓글 번호(대댓글)
+
+    private String nickname; // 유저 닉네임
+
+    private String postname; // 게시글 제목
 }
 

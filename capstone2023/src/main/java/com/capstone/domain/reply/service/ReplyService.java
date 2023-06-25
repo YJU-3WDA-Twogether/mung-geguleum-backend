@@ -1,5 +1,10 @@
 package com.capstone.domain.reply.service;
 
+import com.capstone.domain.reply.dto.ReplyResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -86,5 +91,11 @@ public class ReplyService {
         	throw new ReplyForbiddenException();
         }
         replyRepository.save(reply);
+    }
+
+    public Page<ReplyResponse> getMyReply(int page, Long uno) {
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("rno").descending());
+        Page<Reply> result = replyRepository.findByUserUno(pageable, uno);
+        return result.map(replyMapper::toReplyResponse);
     }
 }
