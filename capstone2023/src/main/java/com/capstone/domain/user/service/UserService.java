@@ -127,7 +127,7 @@ public class UserService {
 	//페이징 사용한 유저 조회
 	@Transactional
 	public Page<UserDTO> getList(int page) {
-		Pageable pageable = PageRequest.of(page,10);
+		Pageable pageable = PageRequest.of(page,30);
 		Page <User> userList =  this.userRepository.findAll(pageable);
 		return userList.map(user -> userMapper.toUserDTO(user));
 	}

@@ -111,6 +111,9 @@ public class TokenService {
 	
 		User user = userRepository.findByUid(authentication.getName())
 				.orElseThrow(() -> new UserNotFoundException());
+		if(user.getUserGrade().getGname().equals("DROP") || user.getUserGrade().getGname().equals("BEN")) {
+			throw new UserNotFoundException();
+		}
 		System.out.println("user 아이디"+user.getUid());
 		String refreshToken = jwtTokenProvider.createRefreshToken();
 		String accessToken = jwtTokenProvider.createAccessToken(user.getUno(),user.getUid(),user.getNickname(), user.getUserGrade().getGname(), user.getFile().getFpath());
