@@ -1,6 +1,7 @@
 package com.capstone.domain.log.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -97,6 +98,17 @@ public class LogService {
 		Page <Log> logList = this.logRepository.findByLogState(3L, pageable);
  		return logList.map(log -> this.logMapper.toLogResponse2(log));
 		
+	}
+
+	@Transactional
+	public void blackComplete(Long pno, Long uno, String role){
+
+		List<Log> logs = this.logRepository.findByLsnoAndPno(3L, pno);
+		LogState logState = this.logStateRepository.findByLsno(4L).orElseThrow(() -> new LogStateNotFoundException());
+
+		for (Log log : logs) {
+			log.setLsno(logState);
+		}
 	}
 	
 
