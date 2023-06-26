@@ -54,7 +54,7 @@ public interface PostRepository extends JpaRepository<Post, Long>{
 		@Query("SELECT distinct p, b, u FROM Post p left JOIN p.files JOIN p.board b JOIN p.user u  WHERE u.uno = :uno AND p.board.bno != 5 AND (p.user.userGrade.gid = 1 OR p.user.userGrade.gid = 2) ORDER BY p.pno DESC")
 		Page<Object[]> findMyPost(Pageable pageable, Long uno);
 
-		@Query("SELECT DISTINCT p, b, u FROM Post p LEFT JOIN p.files JOIN p.board b JOIN p.user u LEFT JOIN p.postHashtags ph LEFT JOIN ph.hashtag h WHERE (p.title LIKE %:search% OR h.title LIKE %:search%) AND (p.user.userGrade.gid = 1 OR p.user.userGrade.gid = 2)")
+		@Query("SELECT DISTINCT p, b, u FROM Post p LEFT JOIN p.files JOIN p.board b JOIN p.user u LEFT JOIN p.postHashtags ph LEFT JOIN ph.hashtag h WHERE (p.title LIKE %:search% OR h.title LIKE %:search%) AND p.board.bno != 5 AND (p.user.userGrade.gid = 1 OR p.user.userGrade.gid = 2)")
 		Page<Object[]> findSearchPost(Pageable pageable, String search);
 
 		@Query("SELECT p, b, u, COUNT(h) as postCount FROM Post p LEFT JOIN p.board b LEFT JOIN p.user u LEFT JOIN p.files LEFT JOIN p.hearts h WHERE b.bno != 5 AND (u.userGrade.gid = 1 OR u.userGrade.gid = 2) GROUP BY p.pno ORDER BY postCount DESC")

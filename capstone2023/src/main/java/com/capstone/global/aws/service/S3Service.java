@@ -1,7 +1,9 @@
 package com.capstone.global.aws.service;
 
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -10,6 +12,10 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.amazonaws.HttpMethod;
@@ -17,6 +23,10 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.Headers;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.amazonaws.util.IOUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,20 +49,20 @@ public class S3Service {
     private  GeneratePresignedUrlRequest generatePresignedUrlRequest;
 
     //파일다운로드
-//    public ResponseEntity<byte[]> getObject(String storedFileName) throws IOException {
-//        S3Object o = amazonS3.getObject(new GetObjectRequest(bucket, storedFileName));
-//        S3ObjectInputStream objectInputStream = ((S3Object) o).getObjectContent();
-//        byte[] bytes = IOUtils.toByteArray(objectInputStream);
-// 
-//        String fileName = URLEncoder.encode(storedFileName, "UTF-8").replaceAll("\\+", "%20");
-//        HttpHeaders httpHeaders = new HttpHeaders();
-//        httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-//        httpHeaders.setContentLength(bytes.length);
-//        httpHeaders.setContentDispositionFormData("attachment", fileName);
-// 
-//        return new ResponseEntity<>(bytes, httpHeaders, HttpStatus.OK);
-// 
-//    }
+    public ResponseEntity<byte[]> downloadFile(String storedFileName) throws IOException {
+        S3Object o = amazonS3.getObject(new GetObjectRequest(bucket, storedFileName));
+        S3ObjectInputStream objectInputStream = ((S3Object) o).getObjectContent();
+        byte[] bytes = IOUtils.toByteArray(objectInputStream);
+ 
+        String fileName = URLEncoder.encode(storedFileName, "UTF-8").replaceAll("\\+", "%20");
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        httpHeaders.setContentLength(bytes.length);
+        httpHeaders.setContentDispositionFormData("attachment", fileName);
+ 
+        return new ResponseEntity<>(bytes, httpHeaders, HttpStatus.OK);
+ 
+    }
     
     public Map<String, Object> getPreSignedUrl(Long size) {
   	  Map<String, Object> result = new HashMap<>();

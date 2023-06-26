@@ -1,10 +1,13 @@
 package com.capstone.domain.file.controller;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.capstone.domain.file.dto.FileDTO;
 import com.capstone.domain.file.service.FileService;
+import com.capstone.global.aws.service.S3Service;
 import com.capstone.global.security.jwt.JwtAuthentication;
 
 import lombok.RequiredArgsConstructor;
@@ -28,12 +32,22 @@ import lombok.RequiredArgsConstructor;
 public class FileController {
 	
 	private final FileService fileService;
+	private final S3Service s3Service;
 	
+//	@GetMapping("/download/{fno}")
+//	    public ResponseEntity<FileDTO> downloadFile(@PathVariable Long fno,@AuthenticationPrincipal JwtAuthentication user, @RequestParam Long pno) throws MalformedURLException {	
+//			FileDTO result = this.fileService.downloadFile(fno, user.uno , pno);
+//	    	return ResponseEntity.ok(result);
+//	    }
 	@GetMapping("/download/{fno}")
-	    public ResponseEntity<FileDTO> downloadFile(@PathVariable Long fno,@AuthenticationPrincipal JwtAuthentication user, @RequestParam Long pno) throws MalformedURLException {	
-			FileDTO result = this.fileService.downloadFile(fno, user.uno , pno);
-	    	return ResponseEntity.ok(result);
-	    }
+	public ResponseEntity<byte[]> downloadFile(@PathVariable Long fno, @AuthenticationPrincipal JwtAuthentication user,@RequestParam Long pno) throws IOException {
+	    FileDTO fileDTO = this.fileService.downloadFile(fno, user.uno,pno);
+	    
+	    // S3 버킷에서 파일을 읽어옴
+	    ResponseEntity<byte[]> fileContent = s3Service.downloadFile(fileDTO.getFname());
+	    
+	    return fileContent;
+	}
 	    
 	    //파일 보여주기 메소드
 	    @GetMapping("/read/{fno}")

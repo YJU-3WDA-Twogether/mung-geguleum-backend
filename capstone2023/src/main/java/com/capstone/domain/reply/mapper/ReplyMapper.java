@@ -36,6 +36,7 @@ public class ReplyMapper {
                 .cno(reply.getParentReply() != null ? reply.getParentReply().getRno() : null)
                 .uname(reply.getUser().getUname())
                 .fpath(reply.getUser().getFile().getFpath())
+                .nickname(reply.getUser().getNickname())
                 .build();
     } 
     public ReplyResponse toReplyResponse(Reply reply){
