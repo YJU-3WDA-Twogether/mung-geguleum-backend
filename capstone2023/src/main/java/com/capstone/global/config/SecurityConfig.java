@@ -49,6 +49,7 @@ public class SecurityConfig {
 			.requestMatchers("/log/getpostsourcelist","/log/getdownlist" ).hasAnyAuthority("USER","ADMIN")
 			.requestMatchers("/heart/**").hasAnyAuthority("USER","ADMIN")
 			.requestMatchers("/reply/**").hasAnyAuthority("USER","ADMIN")
+			.requestMatchers("/admin/blackPostDelete/**").hasAnyAuthority("ADMIN")
 			.requestMatchers("/**").hasAnyAuthority("ADMIN")
 			.anyRequest().authenticated()
 			.and()

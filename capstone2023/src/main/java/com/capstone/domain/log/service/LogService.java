@@ -99,5 +99,17 @@ public class LogService {
 		
 	}
 	
+	   @Transactional
+	   public void blackComplete(Long pno, Long uno, String role){
+
+	      List<Log> logs = this.logRepository.findByLsnoAndPno(3L, pno);
+	      LogState logState = this.logStateRepository.findByLsno(4L).orElseThrow(() -> new LogStateNotFoundException());
+
+	      for (Log log : logs) {
+	         log.registerLsno(logState);
+	      }
+	   }
+
+	
 
 }
