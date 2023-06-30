@@ -20,7 +20,7 @@ public class UserMapper {
                 .password(userCreateForm.getPassword())
                 .email(userCreateForm.getEmail())
                 .nickname(userCreateForm.getNickname())
-              
+                
                 .build();
     }
     
@@ -58,14 +58,18 @@ public class UserMapper {
                 .build();
     }
     
-    public UserDTO toUserDTO(User User) {
+    public UserDTO toUserDTO(User user) {
     	return UserDTO.builder()
-    			.uno(User.getUno())
-    			.uid(User.getUid())
-                .uname(User.getUname())
-                .email(User.getEmail())
-                .password(User.getPassword())
-                .nickname(User.getNickname())
+    			.uno(user.getUno())
+    			.uid(user.getUid())
+                .uname(user.getUname())
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .nickname(user.getNickname())
+                .regDate(user.getRegDate())
+                .grade(user.getUserGrade().getGname())
+                .fpath(user.getFile().getFpath())
+                .introduce(user.getIntroduce())
                 .build();
     };
 }

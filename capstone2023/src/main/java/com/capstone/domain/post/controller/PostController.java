@@ -50,21 +50,21 @@ public class PostController {
 	//게시글 디테일 조회
 	@GetMapping("/read/{pno}")
 	public ResponseEntity<PostResponse> postRead(@PathVariable Long pno){
-		PostResponse result = postService.postRead(pno);
+		PostResponse result = postService.postRead(pno); 
 		return ResponseEntity.ok(result);
 	} 
 	
 	//게시글 업데이트 메소드
 	@PutMapping("/update/{pno}")
 	public  ResponseEntity<Boolean> postUpdate(@PathVariable Long pno, @Valid PostRequest postDTO, @AuthenticationPrincipal JwtAuthentication user) throws Exception{
-		PostResponse updatePost = this.postService.postUpdate(pno , postDTO, user.uno);
+		PostResponse updatePost = this.postService.postUpdate(pno , postDTO, user.uno,user.role);
 		return ResponseEntity.ok(true);		 
 	}
 	
 	//게시글 삭제 
 		@DeleteMapping("/delete/{pno}")
 		public ResponseEntity<Boolean> postDelete(@PathVariable Long pno ,@AuthenticationPrincipal JwtAuthentication user){
-			this.postService.postDelete(pno, user.uno);
+			this.postService.postDelete(pno, user.uno,user.role);
 			return new ResponseEntity<>(true, HttpStatus.NO_CONTENT);
 		}
 
@@ -77,10 +77,12 @@ public class PostController {
 
 	@GetMapping("/getSearchPost/{search}")
 	public ResponseEntity<Page> searchPost(@RequestParam(value="page", defaultValue="0") int page, @PathVariable String search,  @AuthenticationPrincipal JwtAuthentication user) {
-		System.out.println("Search : " + search);
+	
 		Page<PostResponse> paging = this.postService.getSearchPost(page, search, user.uno);
 		return ResponseEntity.ok(paging);
 	}
+	
+	
 
 
 

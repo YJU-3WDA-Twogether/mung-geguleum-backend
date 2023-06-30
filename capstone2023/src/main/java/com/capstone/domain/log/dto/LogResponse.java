@@ -1,6 +1,9 @@
 package com.capstone.domain.log.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
+import com.capstone.domain.file.dto.FileDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,6 +41,8 @@ public class LogResponse{
 	
 	//게시글 제목
 	private String ptitle;
+	
+	private List <FileDTO> file;
 	
 	
 	private LocalDateTime regDate;

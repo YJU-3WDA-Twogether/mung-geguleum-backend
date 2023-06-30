@@ -36,11 +36,12 @@ public class PostRequest {
 	
 	private Long uno;
 	
-	MultipartFile[] file;
+	//private MultipartFile [] file;
+	private String [] file;
 	
 	//재창작을 진행할때 태그 삽입이 가능하다.
-	Long[] tag;
+	private Long[] tag;
 
-	String[] hashtag;
+	private String[] hashtag;
 	
 }

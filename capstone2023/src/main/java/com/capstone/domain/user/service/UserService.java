@@ -3,6 +3,7 @@ package com.capstone.domain.user.service;
 
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capstone.domain.file.service.FileService;
 import com.capstone.domain.user.dto.UserCreateForm;
 import com.capstone.domain.user.dto.UserDTO;
 import com.capstone.domain.user.entity.User;
@@ -37,15 +39,18 @@ public class UserService {
 	private final UserMapper userMapper;
 	private final AuthenticationManagerBuilder authenticationManagerBuilder;
 	private final TokenService tokenService;
-
+	private final FileService fileService;
 	//	private final PasswordEncoder passwordEncoder;
+	
 //
 	//유저 회원가입 메소드
 	public void userCreate(UserCreateForm userCreateForm) {
 //			user.setPassword(passwordEncoder.encode(password));
-		UserGrade userGrade = userGradeRepository.findByGname("일반").get();
-		User User= userMapper.toEntity(userCreateForm,userGrade);
-		this.userRepository.save(User);
+		UserGrade userGrade = userGradeRepository.findByGname("USER").get();
+		User user= userMapper.toEntity(userCreateForm,userGrade);
+		
+		user = this.userRepository.save(user);
+		fileService.basicImg(user);
 	}
 
 	//유저 본인정보 조회메소드
@@ -57,21 +62,45 @@ public class UserService {
 
 	//유저 정보 수정 메소드
 	@Transactional
-	public UserDTO userUpdate(Long uno , UserDTO userDTO, Long uno2) {
-		if(!uno.equals(uno2)) {
+	public UserDTO userUpdate(Long uno , UserDTO userDTO, Long uno2,String role) {
+		if(role.equals("ADMIN")) {
+			Optional<User> user = userRepository.findById(uno2);
+			if(!user.get().getUserGrade().getGname().equals("ADMIN")) {
+				throw new UserInvalidException();
+			}
+		}else if(!uno.equals(uno2)) {
 			System.out.println("uno : "+uno + "uno2 : "+uno2);
 			throw new UserInvalidException();	
 		}
 		User user = userRepository.findByUno(uno).orElseThrow(()-> new UserNotFoundException());
-		//추후 NULLPOINTEXCETPION 처리도 추가해야함.
-		user = userRepository.save(userMapper.toEntity(userDTO));
+		Optional<UserGrade> grade = userGradeRepository.findByGname(userDTO.getGrade());
+		
+		if(grade == null)
+			user.register(userDTO.getNickname(), userDTO.getIntroduce(),user.getUserGrade());
+		else 
+			user.register(userDTO.getNickname(), userDTO.getIntroduce(),grade.get());
+		user = userRepository.save(user);
+		System.out.println(userDTO.getFile());
+		if(userDTO.getFile()!= null)
+			fileService.userUpdate(userDTO.getFile(),user);
+		else
+			fileService.basicImg(user);
+		
+		
 		return userMapper.toUserDTO(user);
 	}
 
 	//회원삭제 메소드
 	@Transactional
-	public void userDelete(Long uno,Long uno2) {
-		if(!uno.equals(uno2)) {
+	public void userDelete(Long uno,Long uno2, String role) {
+		System.out.println(role);
+		if(role.equals("ADMIN")) {
+			Optional<User> user = userRepository.findById(uno2);
+			if(!user.get().getUserGrade().getGname().equals("ADMIN")) {
+				throw new UserInvalidException();
+			}
+		}
+		else if(!uno.equals(uno2)) {
 			System.out.println("uno : "+uno + "uno2 : "+uno2);
 			throw new UserInvalidException();	
 		}
@@ -98,7 +127,7 @@ public class UserService {
 	//페이징 사용한 유저 조회
 	@Transactional
 	public Page<UserDTO> getList(int page) {
-		Pageable pageable = PageRequest.of(page,10);
+		Pageable pageable = PageRequest.of(page,30);
 		Page <User> userList =  this.userRepository.findAll(pageable);
 		return userList.map(user -> userMapper.toUserDTO(user));
 	}
@@ -145,5 +174,4 @@ public class UserService {
 		//	return null;
 
 	}
-
 }

@@ -34,19 +34,22 @@ public class SecurityConfig {
 			.cors()
 			.and()
 			.authorizeHttpRequests()
+			
+			.requestMatchers("/s3/url/**").permitAll()
 			.requestMatchers("/token" ).permitAll()
-			.requestMatchers("/user/login", "user/read/**","user/create" ,"/user/useridchk/**","/user/emailchk/**","/user/nicknamechk/**" ).permitAll() //user관련된 permitall입니다.
+			.requestMatchers("/user/login", "/user/read/**","/user/create" ,"/user/useridchk/**","/user/emailchk/**","/user/nicknamechk/**" ).permitAll() //user관련된 permitall입니다.
 			.requestMatchers("/post/getlist/**","/post/read/**" , "/post/getMyPost/**", "/post/getSearchPost/**" ).permitAll() //post컨트롤러와 관련된 설정
 			.requestMatchers("/file/read/**").permitAll()
-			.requestMatchers("/log/getlist").permitAll()
+			.requestMatchers("/log/getlist","/log/report/**").permitAll()
 			.requestMatchers("/postSource/getlist/**").permitAll()
 			
-			.requestMatchers("/user/logout","/user/update/**","/user/delete/**").hasAnyAuthority("USER")
-			.requestMatchers("/post/create" , "/post/update/**" , "/post/delete/**"  ).hasAnyAuthority("USER")
-			.requestMatchers("/file/delete/**","file/download/**").hasAnyAuthority("USER")
-			.requestMatchers("/log/getpostsourcelist","/log/getdownlist").hasAnyAuthority("USER")
-			.requestMatchers("/heart/**").hasAnyAuthority("USER")
-			.requestMatchers("/reply/**").hasAnyAuthority("USER")
+			.requestMatchers("/user/logout","/user/update/**","/user/delete/**", "/user/userUpdate").hasAnyAuthority("USER","ADMIN")
+			.requestMatchers("/post/create" , "/post/update/**" , "/post/delete/**"  ).hasAnyAuthority("USER","ADMIN")
+			.requestMatchers("/file/delete/**","file/download/**").hasAnyAuthority("USER","ADMIN")
+			.requestMatchers("/log/getpostsourcelist","/log/getdownlist" ).hasAnyAuthority("USER","ADMIN")
+			.requestMatchers("/heart/**").hasAnyAuthority("USER","ADMIN")
+			.requestMatchers("/reply/**").hasAnyAuthority("USER","ADMIN")
+			.requestMatchers("/admin/blackPostDelete/**").hasAnyAuthority("ADMIN")
 			.requestMatchers("/**").hasAnyAuthority("ADMIN")
 			.anyRequest().authenticated()
 			.and()

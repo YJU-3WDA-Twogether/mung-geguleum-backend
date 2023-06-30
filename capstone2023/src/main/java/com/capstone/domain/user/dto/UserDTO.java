@@ -1,10 +1,12 @@
 package com.capstone.domain.user.dto;
 
+import java.time.LocalDateTime;
+
 import org.springframework.stereotype.Component;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
+import com.capstone.domain.file.dto.FileDTO;
 
+import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,4 +35,14 @@ public class UserDTO {
 		private String email;
 		
 		private String nickname;
+		
+		private String grade;
+		
+		private LocalDateTime regDate;
+		
+		private String introduce;
+		
+		private FileDTO [] file; 
+		
+		private String fpath; 
 }

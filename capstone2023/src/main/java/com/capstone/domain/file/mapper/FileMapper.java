@@ -3,6 +3,7 @@ package com.capstone.domain.file.mapper;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 
+import com.capstone.domain.user.entity.User;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,7 +22,6 @@ public class FileMapper {
 				.fno(fileDTO.getFno())
 				.fname(fileDTO.getFname())
 				.fpath(fileDTO.getFpath())
-				.regDate(fileDTO.getRegDate())
 				.post(post)
 				.build();
 		
@@ -33,30 +33,47 @@ public class FileMapper {
 					.fno(fileDTO.getFno())
 					.fname(fileDTO.getFname())
 					.fpath(fileDTO.getFpath())
-					.regDate(fileDTO.getRegDate())
 					.post(null)
 					.build();
 			
 		}
+		
+		public File toEntity(String fpath,String fname , User user) {
+			return File.builder()
+					.fpath(fpath)
+					.fname(fname)
+					.fcategory("프로필")
+					.user(user)
+					.build();
+			
+		}
+
+	public  File toEntity(String fname, String fpath ,String ftype, String category, User user) {
+		return File.builder()
+				.fname(fname)
+				.fpath(fpath)
+				.ftype(ftype)
+				.fcategory(category)
+				.user(user)
+				.build();
+
+	}
 	
 	//Entity에 DTO담기
 	public  File toEntity(MultipartFile file, Path filePath , LocalDateTime date ,Post post) {
 		return File.builder()
 				.fname(file.getOriginalFilename())
-				.fsize(file.getSize())
 				.fpath(filePath.toString())
-				.regDate(date)
 				.post(post)
 				.build();
 		
 	}
-	public  File toEntity(String fname, String fsname,Long fsize ,String fpath , LocalDateTime date ,Post post) {
+	public  File toEntity(String fname, String fpath ,String ftype,Post post) {
 		return File.builder()
 				.fname(fname)
-				.fsname(fsname)
-				.fsize(fsize)
 				.fpath(fpath)
-				.regDate(date)
+				.ftype(ftype)
+				.fcategory("피드")
 				.post(post)
 				.build();
 		
@@ -70,9 +87,8 @@ public class FileMapper {
 				.fno(file.getFno())
 				.fname(file.getFname())
 				.fpath(file.getFpath())
-				.fsname(file.getFsname())
-				.fsize(file.getFsize())
-				.regDate(file.getRegDate())
+				.ftype(file.getFtype())
+				.fcategory(file.getFcategory())
 				.pno(pno)
 				.build();
 	}
@@ -83,7 +99,6 @@ public class FileMapper {
 					.fno(file.getFno())
 					.fname(file.getFname())
 					.fpath(file.getFpath())
-					.regDate(file.getRegDate())
 					.pno(null)
 					.build();
 		}
@@ -92,10 +107,8 @@ public class FileMapper {
 		public static FileDTO toFileDTO(MultipartFile file, Path filePath , LocalDateTime date, Long pno) {
 			return FileDTO.builder()
 					
-					.fname(file.getOriginalFilename())
-					.fsize(file.getSize())
+					.fname(file.getOriginalFilename())	
 					.fpath(filePath.toString())
-					.regDate(date)
 					.pno(pno)
 					.build();
 		}

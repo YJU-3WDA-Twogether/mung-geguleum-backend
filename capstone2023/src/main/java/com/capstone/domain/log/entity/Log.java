@@ -57,5 +57,9 @@ public class Log {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uno")
     private User user;
+    
+    public void registerLsno(LogState lsno) {
+        this.logState = lsno;
+    }
 }
 

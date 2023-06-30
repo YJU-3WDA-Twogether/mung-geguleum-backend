@@ -23,6 +23,7 @@ public class PostSourceResponse {
 	private Long uno;
 	private String nickname;
 	private String title;
+	private String fpath;
 	private LocalDateTime regDate;
 
 	 @Override
