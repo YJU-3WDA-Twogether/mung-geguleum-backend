@@ -39,7 +39,12 @@ public class PostResponse {
 	
 	private String uid;
 	
+	private String nickname;
+	
+	private LocalDateTime uregDate;
+	
 	private Long uno;
+	
 
 	private Long rCount;
 
@@ -48,6 +53,8 @@ public class PostResponse {
 	private Long lCount;
 
 	private Boolean hExist;
+	
+	private String fpath; //유저사진 경로
 
 	List <FileDTO> file;
 	

@@ -6,7 +6,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -28,11 +27,12 @@ import com.capstone.domain.log.entity.Log;
 import com.capstone.domain.log.mapper.LogMapper;
 import com.capstone.domain.log.service.LogService;
 import com.capstone.domain.post.entity.Post;
+import com.capstone.domain.post.exception.PostForbiddenException;
+import com.capstone.domain.post.exception.PostNotFoundException;
 import com.capstone.domain.post.repository.PostRepository;
-import com.capstone.domain.post.exception.*;
 import com.capstone.domain.user.entity.User;
+import com.capstone.domain.user.exception.UserNotFoundException;
 import com.capstone.domain.user.repository.UserRepository;
-import com.capstone.domain.user.exception.*;
 
 import lombok.RequiredArgsConstructor;
 
@@ -52,45 +52,35 @@ public class FileService {
 
    @Value("${file.dir}")
     private String fileDir;
-
+   
+   @Value("${aws.url}")
+   private String Fpath;
+   
+   @Value("${aws.basic.url}")
+   private String basicImage;
+   
+   @Value("${aws.basic.name}")
+   private String basicname;
    
    //파일 업로드 메소드
    @Transactional(rollbackFor = {IOException.class, Exception.class})
-   public Boolean uploadFile(MultipartFile [] files,Post post, LocalDateTime time) throws Exception{
-	   File file;
-	   FileDTO fileDTO;
-	 	for(MultipartFile filetmp : files) {
-   			//원래파일 이름 추출
-   			String fname = filetmp.getOriginalFilename();
-   			//파일이름으로 쓸 uuid 생성
-   			String uuid = UUID.randomUUID().toString();
-   			//확장자 추출(ex .png)
-   			String extension = fname.substring(fname.lastIndexOf("."));
-   			
-   			String fsname = uuid + extension;
-   			
-   			String fpath = fileDir + fsname;
-   			Long fsize = filetmp.getSize();
-         
-           
-            file = fileMapper.toEntity(fname, fsname,fsize,fpath, time, post);
-   		
-            filetmp.transferTo(new java.io.File(fpath));
-            
-            fileRepository.save(file);
-             
+   public Boolean uploadFile(String [] files,Post post, LocalDateTime time) throws Exception{
+	  // String Fpath = "https://twogether-bucket.s3.ap-northeast-2.amazonaws.com/";
+	   
+	 	for(String name : files) {
+	 		System.out.println(name.toString());
+	 		int dotIndex = name.lastIndexOf(".");
+	 		String fname = name.substring(0, dotIndex);
+	 		String ftype = name.substring(dotIndex);
+            File file = fileMapper.toEntity(fname, Fpath+fname, ftype ,post);  
+            fileRepository.save(file); 
 	 	}
 	 	return true;
    }   
    //파일 다운로드메소드        
-   @Transactional(rollbackFor = MalformedURLException.class)
-   public ResponseEntity<Resource> downloadFile(Long fno, Long uno, Long pno ) throws MalformedURLException{
+   @Transactional
+   public FileDTO downloadFile(Long fno, Long uno, Long pno ){
        File file = fileRepository.findByFno(fno).orElseThrow( () -> new FileNotFoundException() );
-       Path filePath = Paths.get(file.getFpath());
-       
-       UrlResource resource = new UrlResource("file:" + file.getFpath());
-  	 String encodedFileName = UriUtils.encode(file.getFname(), StandardCharsets.UTF_8);
-  	 String contentDisposition = "attachment; filename=\"" + encodedFileName + "\"";
   	 
   	 //파일 다운로드 로그 생성.
   	 Post post= this.postRepository.findByPno(pno).orElseThrow(() -> new PostNotFoundException() );
@@ -100,8 +90,8 @@ public class FileService {
   	 
   	 LogRequest logRequest = logMapper.toRequestLog(2L, user.getUno(), post.getUser().getUno(), post.getPno(),time);
 		 Log log = this.logService.LogCreate(logRequest);
-		 
-  	 return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,contentDisposition).body(resource);
+
+		 return fileMapper.toFileDTO(file,pno );
     }
     
     //파일 단일 조회메소드 
@@ -120,5 +110,28 @@ public class FileService {
 	 this.fileRepository.deleteById(fno); 
     }
 
+	@Transactional
+	public void userUpdate(FileDTO [] files, User user) {
+		//String Fpath = "https://twogether-bucket.s3.ap-northeast-2.amazonaws.com/";
+		if(!files[0].getFname().equals("기본")) {
+				fileRepository.deleteByUno(user.getUno());
+			for(FileDTO  file : files) {
+				int dotIndex = file.getFname().lastIndexOf(".");
+				String fname = file.getFname().substring(0, dotIndex);
+				String ftype = file.getFname().substring(dotIndex);
+				System.out.println(fname.toString()+" "+ftype.toString());
+				File entity = fileMapper.toEntity(fname, Fpath+fname, ftype, file.getFcategory(), user);
+				fileRepository.save(entity);
+			}
+		}
+	}
+		
+		@Transactional
+		public void basicImg(User user) {
+			//String Fpath = "https://twogether-bucket.s3.ap-northeast-2.amazonaws.com/";
+			fileRepository.deleteByUno(user.getUno());
+			File file = fileMapper.toEntity(basicImage,basicname,user);
+			fileRepository.save(file);
+	}
 
   }

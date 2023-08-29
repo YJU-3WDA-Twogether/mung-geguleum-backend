@@ -27,6 +27,7 @@ public class PostSourceMapper {
 				.nickname(postSource.getUser().getNickname())
 				.title(postSource.getTitle())
 				.regDate(postSource.getRegDate())
+				.fpath(postSource.getUser().getFile().getFpath())
 				.build();
 	}
 	

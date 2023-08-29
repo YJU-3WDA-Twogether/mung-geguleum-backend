@@ -10,6 +10,8 @@
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
+application.properties
+
 # Package Files #
 *.jar
 *.war
@@ -31,3 +33,7 @@ capstone2023/src/main/resources/application.properties
 capstone2023/bin/pom.xml
 capstone2023/bin/mvnw.cmd
 capstone2023/src/main/resources/application.properties
+capstone2023/src/main/resources/application.properties
+capstone2023/src/main/resources/application.properties
+capstone2023/src/main/resources/application.properties
+capstone2023/src/main/resources/application-aws.properties

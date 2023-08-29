@@ -11,15 +11,13 @@ import com.capstone.global.logger.LoggerInterceptor;
 
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
-	private String address ="http://172.26.14.40:3000";
+	private String address ="http://172.18.7.97:3000";
 	private String localhost = "http://localhost:3000";
 	
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-         
-       	.allowedOrigins(localhost)
-        //	.allowedOrigins(address)
+       	.allowedOrigins(localhost,address)
             .allowedMethods("GET", "POST", "PUT", "DELETE")
             .allowedHeaders("*")
             .allowCredentials(true)

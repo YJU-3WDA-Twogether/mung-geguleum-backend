@@ -1,11 +1,8 @@
 package com.capstone.domain.file.entity;
 
 
-import java.time.LocalDateTime;
-
-import org.springframework.data.annotation.CreatedDate;
-
 import com.capstone.domain.post.entity.Post;
+import com.capstone.domain.user.entity.User;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -32,20 +29,20 @@ public class File {
 	    
 	    @Column(name = "fname")
 	    private String fname;
-	    
-	    @Column(name = "fsname")
-	    private String fsname;
-	    
+	      
 	    @Column(name = "fpath")
 	    private String fpath;
 	    
-	    @Column(name = "fsize")
-	    private Long fsize;
+	    @Column(name ="ftype")
+	    private String ftype;
+	        
+	    @Column(name = "fcategory")
+	    private String fcategory;
 	    
-	    @CreatedDate
-		@Column(name="regdate")
-		private LocalDateTime regDate;
-	      
+	    @ManyToOne(fetch = FetchType.LAZY)
+	    @JoinColumn(name = "uno")
+	    private User user;
+	    
 	    @ManyToOne(fetch = FetchType.LAZY)
 	    @JoinColumn(name = "pno")
 	    private Post post;

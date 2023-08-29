@@ -1,5 +1,6 @@
 package com.capstone.domain.user.controller;
 
+import com.capstone.domain.file.dto.FileRequest;
 import com.capstone.global.security.jwt.JwtAuthentication;
 import com.capstone.global.security.jwt.dto.TokenInfo;
 import jakarta.servlet.http.Cookie;
@@ -63,7 +64,8 @@ public class UserController {
 
 	@PutMapping("/update/{uno}")
 	public ResponseEntity<UserDTO> userUpdate(@PathVariable Long uno ,@Valid @RequestBody UserDTO userDTO, @AuthenticationPrincipal JwtAuthentication user ) {
-		UserDTO updateUser = userService.userUpdate(uno, userDTO, user.uno);
+		System.out.println("여서죽나???컨트롤러인데");
+		UserDTO updateUser = userService.userUpdate(uno, userDTO, user.uno,user.role);
 		return ResponseEntity.ok(updateUser);
 	}
 
@@ -71,7 +73,8 @@ public class UserController {
 	//사용자 삭제 
 	@DeleteMapping("/delete/{uno}")
 	public ResponseEntity<Boolean> userDelete(@PathVariable Long uno, @AuthenticationPrincipal JwtAuthentication user ){
-		this.userService.userDelete(uno,user.uno);
+		System.out.println("삭제 메소드");
+		this.userService.userDelete(uno,user.uno , user.role); 
 		return new ResponseEntity<>(true, HttpStatus.NO_CONTENT);
 	}
 
@@ -141,4 +144,10 @@ public class UserController {
 		response.addCookie(refreshTokenCookie);
 		return ResponseEntity.ok(tokenInfo.getAccessToken());
 	}
+
+//	@PutMapping("/userUpdate")
+//	public ResponseEntity<Boolean> userProfile(@Valid FileRequest fileRequest, @AuthenticationPrincipal JwtAuthentication user){
+//		this.userService.updateUser(fileRequest, user.uno);
+//		return ResponseEntity.ok(true);
+//	}
 }
